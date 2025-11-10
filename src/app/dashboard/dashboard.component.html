@@ -1,0 +1,157 @@
+<!-- พื้นหลังอ่อน -->
+<div class="py-5" style="background-color: #eaf6f9;">
+
+  <div class="container" style="max-width: 1100px;">
+    @if (!token || token.trim().length === 0) {
+    <!-- กล่อง Dashboard หลัก -->
+    <div class="card shadow border-0 mb-5" style="border-radius: 12px;">
+      <div class="card-header text-white" style="background:#36393c; border-top-left-radius:12px; border-top-right-radius:12px;">
+        <h4 class="mb-0">
+          <i class="fas fa-chart-line me-2"></i> Dashboard
+        </h4>
+      </div>
+      <div class="card-body p-4">
+        
+        <!-- Dashboard 1 -->
+        <div class="card border-0 mb-4" style="border-radius:10px; background-color:#e0e0e0;">
+          <div class="card-header text-white fw-semibold" 
+               style="background-color:#2c2c2c; border-top-left-radius:10px; border-top-right-radius:10px;">
+            Parts wait move by Store PC
+          </div>
+          <div class="card-body">
+            <div class="d-flex justify-content-between align-items-center p-3 rounded" 
+                 style="background:#79f2a2;">
+              <span class="fw-semibold">Lamination</span>
+              <span class="fw-semibold">12</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Dashboard 2 -->
+        <div class="card border-0 mb-4" style="border-radius:10px; background-color:#e0e0e0;">
+          <div class="card-header text-white fw-semibold" 
+               style="background-color:#2c2c2c; border-top-left-radius:10px; border-top-right-radius:10px;">
+            Parts wait move by Store PC
+          </div>
+          <div class="card-body">
+            <div class="row g-3">
+              <div class="col-md-6">
+                <div class="d-flex justify-content-between align-items-center p-3 rounded" 
+                     style="background:#d4f787;">
+                  <span class="fw-semibold">General</span>
+                  <span class="fw-semibold">8</span>
+                </div>
+              </div>
+              <div class="col-md-6">
+                <div class="d-flex justify-content-between align-items-center p-3 rounded" 
+                     style="background:#9feefc;">
+                  <span class="fw-semibold">stator</span>
+                  <span class="fw-semibold">5</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div> <!-- card-body -->
+    </div> <!-- card -->
+  }
+  @if(check === 0 ){
+
+    <!-- Lamination -->
+
+          <!-- พื้นหลังเพจ -->
+        <div class="min-vh-100 py-4" style="background:#eaf6f9;">
+          <div class="container-lg">
+
+            <!-- การ์ดครอบ Dashboard -->
+            <div class="card shadow-lg border-0" style="border-radius:14px;">
+              <div class="card-header text-white d-flex align-items-center gap-2"
+                  style="background:#36393c;border-top-left-radius:14px;border-top-right-radius:14px;">
+                <i class="fas fa-chart-line fs-4"></i>
+                <h4 class="mb-0 fw-bold">Dashboard</h4>
+              </div>
+
+              <div class="card-body p-4">
+
+                <!-- SECTION: Parts wait move by Store PC (1) -->
+                <div class="mb-5 position-relative panel-wrap">
+                  <div class="card border-0" style="border-radius:12px;background:#e3e3e3;">
+                    <div class="card-header text-white fw-semibold"
+                        style="background:#2f2f30;border-top-left-radius:12px;border-top-right-radius:12px;">
+                      Parts wait move by Store PC
+                    </div>
+
+                    <div class="card-body p-4">
+
+                      <!-- แถบหัวเขียว Lamination + Summary -->
+                      <div class="d-flex flex-wrap justify-content-between align-items-center p-3 rounded-3 mb-4"
+                          style="background:#79f2a2;">
+                        <span class="fw-semibold fs-5">Lamination</span>
+
+                        <div class="d-flex gap-4">
+                          <span class="summary-chip">
+                            wait : {{section1.waitCount}}
+                          </span>
+                          <span class="summary-chip">
+                            pending : {{section1.pendingCount}}
+                          </span>
+                        </div>
+                      </div>
+
+                      <!-- 2 คอลัมน์รายการ -->
+                      <div class="row g-3">
+                        <div class="col-md-6">
+                          <div class="list-group rounded-3 overflow-hidden">
+                            <a *ngFor="let item of section1.left"
+                              class="list-group-item list-group-item-action d-flex align-items-center justify-content-between"
+                              [ngClass]="rowClass(item)">
+                              <div class="d-flex align-items-center gap-3">
+                                <span class="mono small">{{item.time}}</span>
+                                <span class="fw-semibold">{{item.station}}</span>
+                              </div>
+
+                              <div class="d-flex align-items-center gap-2">
+                                <span class="status-chip" [ngClass]="item.status">{{item.status}}</span>
+                                <button class="btn btn-sm btn-warning fw-semibold">Update</button>
+                              </div>
+                            </a>
+                          </div>
+                        </div>
+
+                        <div class="col-md-6">
+                          <div class="list-group rounded-3 overflow-hidden">
+                            <a *ngFor="let item of section1.right"
+                              class="list-group-item list-group-item-action d-flex align-items-center justify-content-between"
+                              [ngClass]="rowClass(item)">
+                              <div class="d-flex align-items-center gap-3">
+                                <span class="mono small">{{item.time}}</span>
+                                <span class="fw-semibold">{{item.station}}</span>
+                              </div>
+
+                              <div class="d-flex align-items-center gap-2">
+                                <span class="status-chip" [ngClass]="item.status">{{item.status}}</span>
+                                <button class="btn btn-sm btn-warning fw-semibold">Update</button>
+                              </div>
+                            </a>
+                          </div>
+                        </div>
+                      </div>
+
+                    </div>
+                  </div>
+                 
+                </div>
+              
+              </div>
+            </div>
+          </div>
+        </div>
+}
+@if(check === 1){
+    
+}
+
+
+  </div> <!-- container -->
+</div>

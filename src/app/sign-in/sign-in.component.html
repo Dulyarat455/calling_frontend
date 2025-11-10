@@ -1,0 +1,109 @@
+<div class="login-container">
+  @if (token == undefined) {
+  <div class="login-card">
+    <div class="card-header">
+      <h4 class="text-center mb-0">
+        <i class="fas fa-shield-alt me-2"></i>Sign In
+      </h4>
+    </div>
+
+    <div class="card-body">
+      <!-- RFID Login Section -->
+      <div class="login-section">
+        <div class="section-title">
+          <span class="line"></span>
+          <span>RFID Login</span>
+          <span class="line"></span>
+        </div>
+
+        <div class="input-group">
+          <span class="input-group-text">
+            <i class="fas fa-id-card"></i>
+          </span>
+          <input
+            #rfidInput
+            type="password"
+            class="form-control"
+            placeholder="Scan your RFID card"
+            autocomplete="off"
+            [disabled]="isLoading"
+            (input)="onRFIDInput($event)"
+          />
+        </div>
+        @if (isLoading) {
+        <div class="text-center mt-2">
+          <small class="text-muted">
+            <i class="fas fa-spinner fa-spin me-1"></i>กำลังตรวจสอบ...
+          </small>
+        </div>
+        }
+      </div>
+
+      <div class="divider">
+        <span class="divider-text">OR</span>
+      </div>
+
+      <!-- Employee Login Section -->
+      <div class="login-section">
+        <div class="section-title">
+          <span class="line"></span>
+          <span>Employee Login</span>
+          <span class="line"></span>
+        </div>
+
+        <div class="input-group mb-2">
+          <span class="input-group-text">
+            <i class="fas fa-user"></i>
+          </span>
+          <input
+            type="text"
+            class="form-control"
+            placeholder="Employee No."
+            [(ngModel)]="empNo"
+            [disabled]="isLoading"
+          />
+        </div>
+
+        <div class="input-group mb-3">
+          <span class="input-group-text">
+            <i class="fas fa-lock"></i>
+          </span>
+          <input
+            type="password"
+            class="form-control"
+            placeholder="Password"
+            [(ngModel)]="password"
+            [disabled]="isLoading"
+            (keyup.enter)="signIn()"
+          />
+        </div>
+
+        <button
+          class="btn btn-primary w-100"
+          (click)="signIn()"
+          [disabled]="isLoading"
+        >
+          @if (isLoading) {
+          <i class="fas fa-spinner fa-spin me-2"></i>
+          Processing... } @else {
+          <i class="fas fa-sign-in-alt me-2"></i>
+          Sign In }
+        </button>
+        <button class="btn btn-secondary w-100 mt-3" (click)="clearInputs()">
+          @if (isLoading) {
+          <i class="fas fa-spinner fa-spin me-2"></i>
+          Processing... } @else {
+          <i class="fas fa-times me-2"></i>
+          Clear }
+        </button>
+      </div>
+    </div>
+  </div>
+
+
+  
+  } 
+  @else {
+  
+  }
+</div>

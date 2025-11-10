@@ -1,0 +1,24 @@
+<div class="wrapper">
+  <!-- @if (token != '' ) -->
+  @if (token && token.trim().length > 0) 
+  {
+  <app-navbar></app-navbar>
+  <app-sidebar></app-sidebar>
+  <div class="content-wrapper">
+    <section class="content">
+      <div class="container-fluid ">
+        <router-outlet></router-outlet>
+      </div>
+    </section>
+  </div>
+  } @else {
+   <app-navbar></app-navbar>
+   <div>
+    <section class="content">
+      <div class="container-fluid ">
+        <router-outlet></router-outlet>
+      </div>
+    </section>
+  </div>
+  }
+</div>
