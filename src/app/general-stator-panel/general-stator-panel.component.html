@@ -1,0 +1,51 @@
+<!-- การ์ดครอบทั้งบล็อค -->
+<div class="card shadow border-0 mb-4" style="border-radius: 12px">
+    <div
+      class="card-header text-white fw-semibold"
+      style="background: #2f2f30; border-top-left-radius: 12px; border-top-right-radius: 12px"
+    >
+      Parts wait move by Store PC
+    </div>
+  
+    <div class="card-body" style="background: #e3e3e3">
+      <div class="row g-4">
+        <div class="col-md-6" *ngFor="let g of groups">
+          <!-- หัวคอลัมน์ + summary -->
+          <div
+            class="p-3 rounded-3 mb-3 head-block"
+            [ngClass]="{ 'head-green': g.base === 'green', 'head-blue': g.base === 'blue' }"
+          >
+            <div class="d-flex justify-content-between align-items-center">
+              <span class="fw-semibold">{{ g.title }}</span>
+              <div class="d-flex gap-3">
+                <span class="summary-chip">wait : {{ g.waitCount }}</span>
+                <span class="summary-chip">pending : {{ g.pendingCount }}</span>
+              </div>
+            </div>
+          </div>
+  
+          <!-- ตารางแถว -->
+          <div class="list-group rounded-3 overflow-hidden">
+            <a
+              *ngFor="let r of g.rows; trackBy: trackByRow"
+              class="list-group-item list-group-item-action d-flex align-items-center justify-content-between"
+              [ngClass]="rowClass(g, r)"
+            >
+              <div class="d-flex align-items-center gap-3">
+                <span class="mono kanit kanit-bold">{{ r.time }}</span>
+                <span class="fw-semibold">{{ r.station }}</span>
+              </div>
+              <div class="d-flex align-items-center gap-2">
+                <span class="status-chip" [ngClass]="r.status">{{ r.status }}</span>
+                <button class="btn btn-sm btn-warning fw-semibold">Update</button>
+              </div>
+            </a>
+  
+            <!-- ช่องว่างด้านล่างของคอลัมน์ (เอาไว้ให้เหมือนแบบ) -->
+            <div class="filler" *ngIf="g.rows.length < 5"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  

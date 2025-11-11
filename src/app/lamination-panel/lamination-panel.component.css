@@ -1,0 +1,72 @@
+/* ฟอนต์ mono สำหรับคอลัมน์เวลา */
+.mono {
+    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas,
+      'Liberation Mono', 'Courier New', monospace;
+  }
+  
+  /* ชิปสรุปด้านบน */
+  .summary-chip {
+    background: #f2f2f2;
+    color: #222;
+    padding: 0.25rem 0.75rem;
+    border-radius: 999px;
+    font-weight: 600;
+  }
+  
+  /* สีพื้นหลังของแต่ละแถวตามสถานะ */
+  .row-wait {
+    background: #79f2a2; /* เขียวอ่อน */
+  }
+  .row-pending {
+    background: #f3a3a3; /* แดงอ่อน (pending) */
+  }
+  
+  /* เส้นขอบของ list-group */
+  .list-group-item {
+    border-color: rgba(0, 0, 0, 0.05);
+  }
+  .list-group-item.row-pending {
+    border-color: transparent;
+  }
+  
+  /* ป้ายสถานะทางขวา (wait / pending) */
+  .status-chip {
+    padding: 0.25rem 0.75rem;
+    border-radius: 999px;
+    font-weight: 600;
+    background: #e9ecef;
+    color: #333;
+    text-transform: capitalize;
+  }
+  
+  .status-chip.wait {
+    background: #e9ecef; /* เทาอ่อน */
+  }
+  
+  .status-chip.pending {
+    background: #ffe9a8; /* เหลืองอ่อน */
+  }
+  
+  /* เพิ่ม spacing เล็กน้อยสำหรับแผง */
+  .panel-wrap {
+    padding-right: 16px;
+  }
+  
+  @media (max-width: 576px) {
+    .panel-wrap {
+      padding-right: 8px;
+    }
+  }
+  
+
+  @import url('https://fonts.googleapis.com/css2?family=Kanit:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap');
+  
+
+  .kanit {
+    font-family: "Kanit", sans-serif !important;
+    font-weight: 500; 
+    font-style: normal;
+  } 
+
+  .kanit-light { font-weight: 300; }
+  .kanit-bold { font-weight: 700; }

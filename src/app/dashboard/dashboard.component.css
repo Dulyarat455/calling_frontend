@@ -1,81 +1,43 @@
+
 .mono {
-    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas,
-      'Liberation Mono', 'Courier New', monospace;
-  }
-  
-  .summary-chip {
-    background: #f2f2f2;
-    color: #222;
-    padding: 0.25rem 0.75rem;
-    border-radius: 999px;
-    font-weight: 600;
-  }
-  
-  /* แถวปกติ/รอ/เพ็นดิ้ง */
-  .row-normal {
-    background: #79f2a2;
-  }
-  .row-pending {
-    background: #f3a3a3; /* โทนชมพูแดงเหมือน figma */
-  }
-  .row-wait {
-    background: #79f2a2;
-  }
-  
-  .list-group-item {
-    border-color: rgba(0, 0, 0, 0.05);
-  }
-  .list-group-item.row-pending {
-    border-color: transparent;
-  }
-  
-  .status-chip {
-    padding: 0.25rem 0.75rem;
-    border-radius: 999px;
-    font-weight: 600;
-    background: #e9ecef;
-    color: #333;
-    text-transform: capitalize;
-  }
-  .status-chip.wait {
-    background: #e9ecef;
-  }
-  .status-chip.pending {
-    background: #ffe9a8;
-  }
-  
-  /* ปุ่ม S ลอย */
-  .floating-s {
-    position: absolute;
-    width: 44px;
-    height: 44px;
-    border-radius: 50%;
-    border: 0;
-    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.15);
-    background: #ff6b4a;
-    color: #fff;
-    font-weight: 800;
-  }
-  .top-right {
-    top: -16px;
-    right: -16px;
-  }
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace;
+}
+
+/* ปุ่ม S ลอย */
+.floating-s {
+  position: absolute;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  border: 0;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.15);
+  background: #ff6b4a;
+  color: #fff;
+  font-weight: 800;
+}
+.top-right {
+  top: -16px;
+  right: -16px;
+}
+.bottom-right {
+  bottom: -16px;
+  right: -16px;
+}
+
+.panel-wrap {
+  padding-right: 16px;
+}
+
+@media (max-width: 576px) {
+  .top-right,
   .bottom-right {
-    bottom: -16px;
-    right: -16px;
+    right: -8px;
   }
-  
   .panel-wrap {
-    padding-right: 16px;
+    padding-right: 8px;
   }
-  
-  @media (max-width: 576px) {
-    .top-right,
-    .bottom-right {
-      right: -8px;
-    }
-    .panel-wrap {
-      padding-right: 8px;
-    }
-  }
-  
+}
+
+
+
+ 
