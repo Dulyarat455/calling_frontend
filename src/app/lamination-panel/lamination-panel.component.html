@@ -33,9 +33,9 @@
                   <span class="status-chip" [ngClass]="item.status">{{ item.status }}</span>
                   <!-- ปุ่มคนละสีซ้าย/ขวาได้ตาม index -->
                   <button class="btn btn-sm fw-semibold btn-primary"
-                  (click)="onUpdate(item)">
+                  (click)="onUpdate(item); openModal()">
                         Update 
-                   </button>
+                  </button>
                 </div>
               </a>
             </div>
@@ -45,4 +45,5 @@
       </div>
     </div>
   </div>
-  
+
+  <app-modal-template #foodTypeModal (saved)="onSaved($event)"></app-modal-template>

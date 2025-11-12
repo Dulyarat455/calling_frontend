@@ -1,5 +1,6 @@
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { Component, EventEmitter, Input, Output, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { ModalTemplateComponent } from '../modal-template/modal-template.component';
 
 export type Status = 'wait' | 'pending';
 export interface RowItem {
@@ -20,13 +21,23 @@ export interface LaminationSection {
 @Component({
   selector: 'app-lamination-panel',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule,ModalTemplateComponent],
   templateUrl: './lamination-panel.component.html',
   styleUrl: './lamination-panel.component.css'
 })
 export class LaminationPanelComponent {
   @Input() section!: LaminationSection;
   @Output() updateRow = new EventEmitter<RowItem>();
+
+  @ViewChild('foodTypeModal') modal!: ModalTemplateComponent;
+
+  openModal() {
+    this.modal.open({ group: 'Lamination' });
+  }
+
+  onSaved(data: any) {
+    console.log('บันทึกข้อมูลแล้ว:', data);
+  }
 
 
   // แปลง section ให้กลายเป็นลิสต์คอลัมน์เดียวเสมอ (ใหม่/เก่าใช้ร่วมกัน)

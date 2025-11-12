@@ -1,15 +1,64 @@
-<app-my-modal modalId="modalFoodType" title="foodType" (closeRequest)="myModal.close()">
-    <div>
-        <div>ชื่อประเภท</div>
-        <input class="form-control" [(ngModel)]="name" />
-      </div>
-      <div class="mt-3">
-        <div>หมายเหตุ</div>
-        <input class="form-control" [(ngModel)]="remark" />
-      </div>
-      <div class="mt-3">
-        <button class="btn btn-primary" (click)="save()">
-          <i class="fa fa-check mr-2"></i>บันทึก
-        </button>
-      </div>
+<app-my-modal modalId="modalFoodType" title="foodType" modalSize="modal-md" (closeRequest)="myModal.close()">
+        <!-- เนื้อหาโมดัล -->
+        <div class="mt-2">
+          <!-- Group -->
+          <div class="mb-3">
+            <label class="form-label fw-bold">Group</label>
+            <select class="form-select" [(ngModel)]="model.group">
+              <option value="Lamination">Lamination</option>
+              <option value="Stator">Stator</option>
+              <option value="Rotor">Rotor</option>
+              <option value="General">General</option>
+            </select>
+          </div>
+
+          <!-- Machine -->
+          <div class="mb-3">
+            <label class="form-label fw-bold">Machine</label>
+            <input
+              class="form-control"
+              type="text"
+              [(ngModel)]="model.machine"
+              placeholder="เช่น A6 R / M12 / Press-01"
+            />
+          </div>
+
+          <!-- Call From -->
+          <div class="mb-3">
+            <label class="form-label fw-bold">Call From</label>
+            <select class="form-select" [(ngModel)]="model.callFrom">
+              <option value="Lam_Outgoing">Lam_Outgoing</option>
+              <option value="Store_PC">Store_PC</option>
+              <option value="PD">PD</option>
+              <option value="QA">QA</option>
+            </select>
+          </div>
+
+          <!-- Call To -->
+          <div class="mb-3">
+            <label class="form-label fw-bold">Call To</label>
+            <select class="form-select" [(ngModel)]="model.callTo">
+              <option value="PD">PD</option>
+              <option value="Store_PC">Store_PC</option>
+              <option value="QA">QA</option>
+              <option value="Repair">Repair</option>
+            </select>
+          </div>
+
+          <!-- แสดง error (ถ้ามี) -->
+          <div *ngIf="errorMsg" class="alert alert-danger py-2">
+            {{ errorMsg }}
+          </div>
+        </div>
+
+        <!-- ปุ่มล่าง -->
+        <div class="mt-3 d-flex gap-2 justify-content-end">
+          <button class="btn btn-outline-secondary" (click)="clear()" [disabled]="isSaving">
+            <i class="fa fa-eraser me-1"></i>Clear
+          </button>
+
+          <button class="btn btn-primary" (click)="save()" [disabled]="!canSave">
+            <i class="fa fa-check me-1"></i>{{ isSaving ? 'กำลังบันทึก…' : 'บันทึก' }}
+          </button>
+        </div>
 </app-my-modal>

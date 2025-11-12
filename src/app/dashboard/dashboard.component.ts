@@ -19,8 +19,6 @@ export class DashboardComponent {
     
   }
 
-
-
   //part for lam
   section1 = {
     waitCount: 8,
