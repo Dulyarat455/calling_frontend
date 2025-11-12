@@ -1,0 +1,15 @@
+<app-my-modal modalId="modalFoodType" title="foodType" (closeRequest)="myModal.close()">
+    <div>
+        <div>ชื่อประเภท</div>
+        <input class="form-control" [(ngModel)]="name" />
+      </div>
+      <div class="mt-3">
+        <div>หมายเหตุ</div>
+        <input class="form-control" [(ngModel)]="remark" />
+      </div>
+      <div class="mt-3">
+        <button class="btn btn-primary" (click)="save()">
+          <i class="fa fa-check mr-2"></i>บันทึก
+        </button>
+      </div>
+</app-my-modal>

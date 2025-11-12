@@ -12,6 +12,7 @@ export interface LaminationSection {
   header?: string;  // ชื่อแถบเขียว ("Lamination")
   waitCount: number;
   pendingCount: number;
+  columns?: RowItem[][];  // ✅ โครงสร้างใหม่แบบรวมคอลัมน์
   left: RowItem[];
   right: RowItem[];
 }
@@ -27,6 +28,13 @@ export class LaminationPanelComponent {
   @Input() section!: LaminationSection;
   @Output() updateRow = new EventEmitter<RowItem>();
 
+
+  // แปลง section ให้กลายเป็นลิสต์คอลัมน์เดียวเสมอ (ใหม่/เก่าใช้ร่วมกัน)
+  columns(): RowItem[][] {
+    if (this.section?.columns?.length) return this.section.columns!;
+    return [this.section?.left ?? [], this.section?.right ?? []];
+  }
+
   rowClass(item: RowItem) {
     return {
       'row-wait': item.status === 'wait',
@@ -38,5 +46,6 @@ export class LaminationPanelComponent {
     this.updateRow.emit(item);
   }
 
-  trackRow = (_: number, r: RowItem) => `${r.time}-${r.station}`;
+  trackCol = (i: number, _c: RowItem[]) => i;                       // คอลัมน์
+  trackRow = (_: number, r: RowItem) => `${r.time}-${r.station}`;   // แถว
 }
