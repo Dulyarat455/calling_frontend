@@ -37,7 +37,7 @@
               </div>
               <div class="d-flex align-items-center gap-2">
                 <span class="status-chip" [ngClass]="r.status">{{ r.status }}</span>
-                <button class="btn btn-sm btn-success fw-semibold">Update</button>
+                <button class="btn btn-sm btn-success fw-semibold" (click)="openModal()">Update</button>
               </div>
             </a>
   
@@ -49,3 +49,5 @@
     </div>
   </div>
   
+
+  <app-modal-template #foodTypeModal (saved)="onSaved($event)"></app-modal-template>

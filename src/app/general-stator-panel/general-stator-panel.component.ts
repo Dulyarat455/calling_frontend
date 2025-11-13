@@ -1,5 +1,6 @@
-import { Component, Input } from '@angular/core';
+import { Component, Input, ViewChild  } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { ModalTemplateComponent } from '../modal-template/modal-template.component';
 
 type Status = 'wait' | 'pending';
 
@@ -21,13 +22,22 @@ export interface Group {
 @Component({
   selector: 'app-general-stator-panel',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule,ModalTemplateComponent],
   templateUrl: './general-stator-panel.component.html',
   styleUrls: ['./general-stator-panel.component.css'],
 })
 export class GeneralStatorPanelComponent {
   /** ใส่ได้ 1–2 คอลัมน์ (เช่น General และ stator) */
   @Input() groups: Group[] = [];
+  @ViewChild('foodTypeModal') modal!: ModalTemplateComponent;
+
+  openModal() {
+    this.modal.open();
+  }
+
+  onSaved(data: any) {
+    console.log('บันทึกข้อมูลแล้ว:', data);
+  }
 
   /** สร้างคลาสของแถวตามสถานะ + สีธีมคอลัมน์ */
   rowClass(g: Group, r: RowItem) {

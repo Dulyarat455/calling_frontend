@@ -82,7 +82,7 @@ export class SignInComponent {
       this.isLoading = true;
 
       const payload = {
-        rfid: rfidValue,
+        rfId: rfidValue,
       };
 
       this.http
@@ -166,6 +166,8 @@ export class SignInComponent {
       });
     }
   }
+
+
 
   // Regular login
   signIn() {

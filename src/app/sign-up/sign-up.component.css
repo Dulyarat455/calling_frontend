@@ -1,0 +1,58 @@
+.login-container {
+    min-height: calc(100vh - 80px);
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    padding-top: 40px;   /* ระยะจาก navbar */
+    padding-bottom: 60px; /* ระยะด้านล่างใหม่ */
+    background: #f5f7fb;
+  }
+  
+  
+  .login-card {
+    width: 420px;
+    background: #ffffff;
+    border-radius: 12px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+    overflow: hidden;
+  }
+  
+  .card-header {
+    background: #1f2933;
+    color: #fff;
+    padding: 0.75rem 1rem;
+  }
+  
+  .card-body {
+    padding: 1.25rem 1.5rem;
+  }
+  
+  .login-section {
+    margin-bottom: 1rem;
+  }
+  
+  .section-title {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    font-weight: 600;
+    margin-bottom: 0.75rem;
+  }
+  
+  .section-title .line {
+    flex: 1;
+    height: 1px;
+    background: #e5e7eb;
+  }
+  
+  .divider {
+    text-align: center;
+    margin: 1rem 0;
+  }
+  
+  .divider-text {
+    font-size: 0.8rem;
+    color: #6b7280;
+  }
+  

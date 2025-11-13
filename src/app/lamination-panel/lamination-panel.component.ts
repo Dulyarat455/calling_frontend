@@ -2,6 +2,7 @@ import { Component, EventEmitter, Input, Output, ViewChild } from '@angular/core
 import { CommonModule } from '@angular/common';
 import { ModalTemplateComponent } from '../modal-template/modal-template.component';
 
+
 export type Status = 'wait' | 'pending';
 export interface RowItem {
   time: string;
