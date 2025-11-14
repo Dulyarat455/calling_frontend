@@ -41,6 +41,7 @@ export class AuthService {
     localStorage.setItem('calling_name', userData.name);
     localStorage.setItem('calling_id', userData.id);
     localStorage.setItem('calling_empNo', userData.empNo);
+    localStorage.setItem('calling_role',userData.role);
     this.authStatus.next(true);
     this.refreshComponents.next(true);
   }

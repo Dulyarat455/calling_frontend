@@ -2,19 +2,32 @@ import { Component,ViewChild,ElementRef } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
 import { Router,RouterModule } from '@angular/router';
+import { MyModal } from '../my-modal/my-modal.component';
+
+
 import Swal from 'sweetalert2';
 import config from '../../config';
+
+type UserRow = {
+  empNo: string;
+  name: string;
+  rfid: string;
+  level: string;
+  section: string;
+};
 
 
 @Component({
   selector: 'app-sign-up',
   standalone: true,
-  imports: [FormsModule,RouterModule],
+  imports: [FormsModule,RouterModule,MyModal],
   templateUrl: './sign-up.component.html',
   styleUrl: './sign-up.component.css'
 })
 export class SignUpComponent {
   @ViewChild('rfidInput') rfidInput!: ElementRef;
+  @ViewChild(MyModal) myModal!: MyModal;
+
   name: string = '';
   username: string = '';
   empNo:string = '';
@@ -23,10 +36,76 @@ export class SignUpComponent {
   role: string = '';
   rfId: string = '';
   isLoading = false;
+  group: string = '';
+  subGroup: string = '';
+
+  searchEmpNo:string = '';
+  // users: any[] = [];
+
+
+  users: UserRow[] = [
+    {
+      empNo: 'LE519',
+      name: 'สมชาย ใจดี',
+      rfid: '9900112233',
+      level: 'Admin',
+      section: 'Store PC',
+    },
+    {
+      empNo: 'LM101',
+      name: 'วิศรุต ลามิเนต',
+      rfid: '9900112244',
+      level: 'Leader',
+      section: 'Lamination',
+    },
+    {
+      empNo: 'ST203',
+      name: 'กิตติพงษ์ สเตเตอร์',
+      rfid: '9900112255',
+      level: 'User',
+      section: 'Stator',
+    },
+    {
+      empNo: 'RT305',
+      name: 'จิรายุส โรเตอร์',
+      rfid: '9900112266',
+      level: 'User',
+      section: 'Rotor',
+    },
+    {
+      empNo: 'PR411',
+      name: 'สุพจน์ เพรสไลน์',
+      rfid: '9900112277',
+      level: 'User',
+      section: 'Press Line',
+    },
+    {
+      empNo: 'STO501',
+      name: 'วราภรณ์ สโตร์',
+      rfid: '9900112288',
+      level: 'Store',
+      section: 'Store Incoming',
+    },
+    {
+      empNo: 'QA612',
+      name: 'ธนกฤต คิวซี',
+      rfid: '9900112299',
+      level: 'User',
+      section: 'QA',
+    },
+    {
+      empNo: 'PD720',
+      name: 'สุรีย์พร ผลิต',
+      rfid: '9900112200',
+      level: 'Supervisor',
+      section: 'Production',
+    },
+  ];
+  
 
   constructor(private http: HttpClient, private router: Router) {}
 
-  
+
   ngAfterViewInit() {
     this.focusRFIDInput();
   }
@@ -51,8 +130,12 @@ export class SignUpComponent {
       }
     }
 
-
-
+    openModal() {
+      // รีเซ็ตค่าในฟอร์มก่อนเปิด
+  
+      // เรียกใช้ฟังก์ชัน open() ของ child component
+      this.myModal.open();
+    }
 
   signUp() {
     // 1) validate ฝั่ง client
@@ -130,4 +213,28 @@ export class SignUpComponent {
       },
     });
   }
+
+  remove(item: any){
+
+  }
+
+  edit(item: any){
+
+  }
+
+  filterEmpNo(){
+
+  }
+
+  clearForm(){
+
+  }
+
+  downloadExcel(){
+
+
+  }
+
+
+
 }

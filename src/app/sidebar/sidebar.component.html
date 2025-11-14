@@ -56,6 +56,14 @@
             <p class="ms-2">หน้าหลัก</p>
           </a>
         </li>
+        @if (role === 'admin') {
+        <li class="nav-item mb-1">
+          <a routerLink="/signup" class="nav-link" routerLinkActive="active">
+            <i class="nav-icon fas fa-user-plus"></i>
+            <p class="ms-2">Add Members</p>
+          </a>
+        </li>
+      }
 
         <!-- Inventory Menu -->
         <!-- @if (level == 'Admin') {} -->
@@ -63,12 +71,12 @@
           <h6
             class="sidebar-heading d-flex justify-content-between align-items-center px-3 mb-1 text-light"
           >
-            <span><b>Inventory</b></span>
+            <span><b>Add</b></span>
           </h6>
           <a href="#" class="nav-link">
-            <i class="nav-icon fas fa-cofas fa-warehouse"></i>
+            <i class="nav-icon fas fa-plus"></i>
             <p class="ms-2">
-              Inventory
+              Data setup
               <i class="fas fa-angle-right ms-auto"></i>
             </p>
           </a>
@@ -80,19 +88,40 @@
                 routerLinkActive="active"
               >
                 <i class="fas fa-warehouse nav-icon"></i>
-                <p class="ms-2">Inventory Report</p>
+                <p class="ms-2">Add Groups</p>
               </a>
             </li>
             <li class="nav-item">
               <a
-                routerLink="/machine-output"
+                routerLink="/inventory-report"
                 class="nav-link"
                 routerLinkActive="active"
               >
-                <i class="fas fa-chart-bar nav-icon"></i>
-                <p class="ms-2">Production Output</p>
+                <i class="fas fa-warehouse nav-icon"></i>
+                <p class="ms-2">Add Machines</p>
               </a>
             </li>
+            <li class="nav-item">
+              <a
+                routerLink="/inventory-report"
+                class="nav-link"
+                routerLinkActive="active"
+              >
+                <i class="fas fa-warehouse nav-icon"></i>
+                <p class="ms-2">Add UserSections</p>
+              </a>
+            </li>
+            <li class="nav-item">
+              <a
+                routerLink="/inventory-report"
+                class="nav-link"
+                routerLinkActive="active"
+              >
+                <i class="fas fa-warehouse nav-icon"></i>
+                <p class="ms-2">Add UserSections</p>
+              </a>
+            </li>
+           
           </ul>
         </li>
 

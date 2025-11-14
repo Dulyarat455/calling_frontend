@@ -27,6 +27,7 @@ export class SidebarComponent {
   name: string = '';
   level: string = '';
   empNo: string = '';
+  role: string = '';
 
   ngOnInit() {
     this.authService.refreshComponents$.subscribe(() => {
@@ -34,6 +35,7 @@ export class SidebarComponent {
     });
     this.name = localStorage.getItem('calling_name')!;
     this.empNo = localStorage.getItem('calling_empNo')!;
+    this.role = localStorage.getItem('calling_role')!;
     if (!this.name) {
       // เปลี่ยนเส้นทางไปที่หน้า LoginPage ก่อน
       this.router.navigate(['/']).then(() => {
