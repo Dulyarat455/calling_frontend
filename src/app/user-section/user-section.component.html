@@ -1,1 +1,76 @@
-<p>user-section works!</p>
+<div class="mt-3">
+    <div class="card-header">Groups Page</div>
+    <div class="card-body mt-3">
+      <button
+        class="btn btn-primary me-2"
+        data-bs-toggle="modal"
+        data-bs-target="#modalRegister"
+      >
+        <i class="fa fa-user-plus me-2"></i>Add Groups
+      </button>
+      <button
+        class="btn btn-success me-2"
+        data-bs-toggle="modal"
+        data-bs-target="#modalExcel"
+      >
+        <i class="fa fa-upload me-2"></i>Add by Excel file
+      </button>
+      <button class="btn btn-success">
+        <i class="fa fa-download me-2"></i>Export to Excel
+      </button>
+      <div class="form-inline mt-3">
+        <div class="input-group">
+          <input
+            type="text"
+            class="form-control"
+            placeholder="ค้นหา machine code"
+          />
+          <div class="input-group-append">
+            <button class="btn btn-primary">
+              <i class="fas fa-search fa-fw"></i>
+            </button>
+          </div>
+        </div>
+      </div>
+      <table class="table table-bordered table-striped mt-3">
+        <thead>
+          <tr>
+            <th>Group name</th>
+            <th>CreateAt</th>
+            <th>CreateUpdate</th>
+            <th width="50px">แก้ไข</th>
+            <th width="50px">ลบ</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (item of userSections; track $index) {
+          <tr>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td class="text-center">
+              <button
+                class="btn btn-primary"
+                (click)="edit(item)"
+                data-bs-target="#modalRegister"
+                data-bs-toggle="modal"
+              >
+                <i class="fa fa-edit"></i>
+              </button>
+            </td>
+            <td class="text-center">
+              <button class="btn btn-danger" (click)="remove(item)">
+                <i class="fa fa-times"></i>
+              </button>
+            </td>
+          </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+<app-my-modal modalId="modalSection" (closeRequest)="myModal.close()">
+
+
+</app-my-modal>

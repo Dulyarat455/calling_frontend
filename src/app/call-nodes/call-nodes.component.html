@@ -1,5 +1,5 @@
 <div class="mt-3">
-    <div class="card-header">Groups Page</div>
+    <div class="card-header">Map Position Page</div>
     <div class="card-body mt-3">
       <button
         class="btn btn-primary me-2"
@@ -7,7 +7,7 @@
         data-bs-target="#modalRegister"
         (click)="openModal()"
       >
-        <i class="fa fa-user-plus me-2"></i>Add Groups
+        <i class="fa fa-user-plus me-2"></i>Add Position
       </button>
       <button
         class="btn btn-success me-2"
@@ -36,15 +36,17 @@
       <table class="table table-bordered table-striped mt-3">
         <thead>
           <tr>
-            <th>Group name</th>
-            <th>CreateAt</th>
-            <th>CreateUpdate</th>
+            <th>Code</th>
+            <th>Label</th>
+            <th>Section</th>
+            <th>Group</th>
+            <th>Status</th>
             <th width="50px">แก้ไข</th>
             <th width="50px">ลบ</th>
           </tr>
         </thead>
         <tbody>
-          @for (item of groups; track $index) {
+          @for (item of callNodes; track $index) {
           <tr>
             <td>{{item.name}}</td>
             <td>{{item.createdAt}}</td>
@@ -71,7 +73,7 @@
     </div>
   </div>
 
-  <app-my-modal modalId="modalGroup" (closeRequest)="myModal.close()">
+  <app-my-modal modalId="modalCallNode" (closeRequest)="myModal.close()">
     <div class="login-container" style="margin-top: 25px;margin-bottom: 25px;">
       <div class="login-card" style="padding-bottom: 20px;">
         <div class="card-header text-center">
@@ -123,4 +125,3 @@
       </div>
     </div>
   </app-my-modal>
-  

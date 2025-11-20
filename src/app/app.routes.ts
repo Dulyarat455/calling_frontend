@@ -3,6 +3,13 @@ import { SignInComponent } from './sign-in/sign-in.component';
 import { NotFoundComponent } from './not-found/not-found.component';
 import { DashboardComponent } from './dashboard/dashboard.component';
 import { SignUpComponent } from './sign-up/sign-up.component';
+import { MachinesComponent } from './machines/machines.component';
+import { GroupsComponent } from './groups/groups.component';
+import { UserGroupComponent } from './user-group/user-group.component';
+import { UserSectionComponent } from './user-section/user-section.component';
+import { SectionsComponent } from './sections/sections.component';
+import { CallNodesComponent } from './call-nodes/call-nodes.component';
+import { SubSectionComponent } from './sub-section/sub-section.component';
 
 
 export const routes: Routes = [
@@ -22,6 +29,30 @@ export const routes: Routes = [
   {
     path: 'dashboard',
     component: DashboardComponent,
+  },
+  {
+    path: 'machine',
+    component: MachinesComponent
+  },
+  {
+    path: 'group',
+    component: GroupsComponent
+  },
+  {
+    path: 'userGroups',
+    component: UserGroupComponent
+  },
+  {
+    path: 'section',
+    component: SectionsComponent
+  },
+  {
+    path: 'subSection',
+    component: SubSectionComponent
+  },
+  {
+    path: 'callNodes',
+    component: CallNodesComponent
   },
   {
     path: '404',
