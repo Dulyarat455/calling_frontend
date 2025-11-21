@@ -6,8 +6,9 @@
         class="btn btn-primary me-2"
         data-bs-toggle="modal"
         data-bs-target="#modalRegister"
+        (click)="openModal()"
       >
-        <i class="fa fa-user-plus me-2"></i>Register Employee
+        <i class="fa fa-user-plus me-2"></i>Add Machine
       </button>
       <button
         class="btn btn-success me-2"
@@ -73,7 +74,71 @@
   
 
 
-<app-my-modal modalId="modalSignUp" (closeRequest)="myModal.close()">
+  <app-my-modal modalId="modalMachine" (closeRequest)="myModal.close()">
+    <div class="login-container" style="margin-top: 25px;margin-bottom: 25px;">
+      <div class="login-card" style="padding-bottom: 20px;">
+        <div class="card-header text-center">
+          <h5 class="mb-0 fw-bold">
+            <i class="fas fas fa-cogs me-2"></i>
+            Add Machine
+          </h5>
+        </div>
+  
+        <div class="card-body">
+  
+          <!-- Title -->
+          <div class="section-title mt-2 mb-3">
+            <span class="line"></span>
+            <span>Add Machine name</span>
+            <span class="line"></span>
+          </div>
+  
+          <!-- Input -->
+          <div class="input-group mb-4">
+            <span class="input-group-text">
+              <i class="fas fa-tag"></i>
+            </span>
+            <input
+              type="text"
+              class="form-control"
+              placeholder="Group Name"
+           
+              [disabled]="isLoading"
+            />
+          </div>
 
-
-</app-my-modal>
+          
+          <div class="input-group mb-3">
+            <span class="input-group-text">
+              <i class="fas fa-user-cog"></i>
+            </span>
+            <select
+              class="form-select text-center"
+              [disabled]="isLoading"
+            >
+              <option value="" disabled selected> ----------------- Group -----------------</option>
+              <option value="user">Lamination</option>
+              <option value="admin">General</option>
+              <option value="admin">Stator</option>
+            </select>
+          </div>
+  
+          <!-- Buttons -->
+          <div class="mt-4">
+            <button class="btn btn-primary w-100"  [disabled]="isLoading">
+              @if(isLoading){
+                <i class="fas fa-spinner fa-spin me-2"></i>Processing...
+              } @else {
+                <i class="fas fa-save me-2"></i> Save Group
+              }
+            </button>
+  
+            <button class="btn btn-secondary w-100 mt-3" [disabled]="isLoading">
+              <i class="fas fa-times me-2"></i> Clear
+            </button>
+          </div>
+  
+        </div>
+      </div>
+    </div>
+  </app-my-modal>

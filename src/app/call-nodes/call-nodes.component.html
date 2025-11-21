@@ -37,7 +37,7 @@
         <thead>
           <tr>
             <th>Code</th>
-            <th>Label</th>
+            <th>SubSection</th>
             <th>Section</th>
             <th>Group</th>
             <th>Status</th>
@@ -48,9 +48,11 @@
         <tbody>
           @for (item of callNodes; track $index) {
           <tr>
-            <td>{{item.name}}</td>
-            <td>{{item.createdAt}}</td>
-            <td>{{item.updateAt}}</td>
+            <td>{{item.code}}</td>
+            <td>{{item.subSectionName}}</td>
+            <td>{{item.sectionName}}</td>
+            <td>{{item.groupName}}</td>
+            <td>{{ item.isActive === 1 ? 'Active': 'Inactive'}}</td>
             <td class="text-center">
               <button
                 class="btn btn-primary"
@@ -79,7 +81,7 @@
         <div class="card-header text-center">
           <h5 class="mb-0 fw-bold">
             <i class="fas fa-layer-group me-2"></i>
-            Add Group
+            Map Position
           </h5>
         </div>
   
@@ -88,7 +90,7 @@
           <!-- Title -->
           <div class="section-title mt-2 mb-3">
             <span class="line"></span>
-            <span>Add Group Name</span>
+            <span>Add Position</span>
             <span class="line"></span>
           </div>
   
@@ -100,23 +102,78 @@
             <input
               type="text"
               class="form-control"
-              placeholder="Group Name"
-           
+              placeholder="Code Name"
+              [(ngModel)]="codeName"
               [disabled]="isLoading"
             />
           </div>
-  
+
+
+          <div class="input-group mb-3">
+            <span class="input-group-text">
+              <i class="fas fa-user-cog"></i>
+            </span>
+            <select
+              class="form-select text-center"
+              [(ngModel)]="selectedGroupId"
+              [disabled]="isLoading"
+            >
+              <option [ngValue]="null" disabled> --------------- Group  -----------------</option>
+              <option *ngFor="let g of groups" [ngValue]="g.id">
+                {{ g.name }}
+              </option>
+             
+            </select>
+          </div>
+
+          <div class="input-group mb-3">
+            <span class="input-group-text">
+              <i class="fas fa-user-cog"></i>
+            </span>
+            <select
+              class="form-select text-center"
+              [(ngModel)]="selectedSectionId"
+              (change)="fetchSubSectionBySection()"
+              [disabled]="isLoading"
+            >
+              <option [ngValue]="null" disabled> --------------- Section  -----------------</option>
+              <option *ngFor="let s of sections" [ngValue]="s.id">
+                {{ s.name }}
+              </option>
+            </select>
+          </div>
+
+
+          
+          <div class="input-group mb-3">
+            <span class="input-group-text">
+              <i class="fas fa-user-cog"></i>
+            </span>
+            <select
+              class="form-select text-center"
+              [(ngModel)]="selectedSubSectionId"
+              [disabled]="isLoading || !selectedSectionId" 
+            > <!-- ถ้ายังไม่เลือก section ให้ disable -->
+
+              <option [ngValue]="null" disabled> --------------- Subsection  -----------------</option>
+              <option *ngFor="let ss of subSections" [ngValue]="ss.id">
+                {{ ss.name }}
+              </option>
+            </select>
+          </div>
+
+          
           <!-- Buttons -->
           <div class="mt-4">
-            <button class="btn btn-primary w-100"  [disabled]="isLoading">
+            <button class="btn btn-primary w-100" (click)="createCallNode()" [disabled]="isLoading">
               @if(isLoading){
                 <i class="fas fa-spinner fa-spin me-2"></i>Processing...
               } @else {
-                <i class="fas fa-save me-2"></i> Save Group
+                <i class="fas fa-save me-2"></i> Save Position
               }
             </button>
   
-            <button class="btn btn-secondary w-100 mt-3" [disabled]="isLoading">
+            <button class="btn btn-secondary w-100 mt-3" (click)="clearForm()" [disabled]="isLoading">
               <i class="fas fa-times me-2"></i> Clear
             </button>
           </div>

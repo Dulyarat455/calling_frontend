@@ -37,8 +37,9 @@
         <thead>
           <tr>
             <th>Subsection name</th>
+            <th>Section</th>
             <th>CreateAt</th>
-            <th>CreateUpdate</th>
+            <th>UpdateAt</th>
             <th width="50px">แก้ไข</th>
             <th width="50px">ลบ</th>
           </tr>
@@ -47,7 +48,8 @@
           @for (item of subSections; track $index) {
           <tr>
             <td>{{item.name}}</td>
-            <td>{{item.createdAt}}</td>
+            <td>{{item.section}}</td>
+            <td>{{item.createAt}}</td>
             <td>{{item.updateAt}}</td>
             <td class="text-center">
               <button

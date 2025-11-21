@@ -36,9 +36,14 @@ export class MachinesComponent {
   constructor(private http: HttpClient, private router: Router) {}
 
   machines: MachineRow[] = []
+  isLoading = false;
 
   ngOnInit() {
     this.fetchData();
+  }
+
+  openModal(){
+    this.myModal.open();
   }
 
 

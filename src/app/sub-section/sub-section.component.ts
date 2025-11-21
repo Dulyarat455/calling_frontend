@@ -13,8 +13,10 @@ type subSectionRow = {
   id: number;
   name: string;
   state: string;
-  createdAt: string;
+  createAt: string;
   updateAt: string;
+  section: string;
+  sectionId: number;
 };
 
 @Component({
@@ -51,8 +53,10 @@ export class SubSectionComponent {
             id: r.id,
             name: r.name,
             state: r.State,
-            createdAt: r.createAt, 
-            updateAt: r.updateAt
+            createAt: r.createAt, 
+            updateAt: r.updateAt,
+            section: r.section,
+            sectionId: r.sectionId
           }))
         },
         error: (err) => {
