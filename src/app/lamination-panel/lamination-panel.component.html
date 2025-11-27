@@ -1,4 +1,5 @@
 <div class="mb-5 position-relative panel-wrap">
+ 
     <div class="card border-0" style="border-radius:12px;background:#e3e3e3;">
       <div class="card-header text-white fw-semibold"
            style="background:#2f2f30;border-top-left-radius:12px;border-top-right-radius:12px;">
@@ -6,16 +7,34 @@
       </div>
   
       <div class="card-body p-4">
+
+
+
         <!-- แถบหัว + สรุป -->
-        <div class="d-flex flex-wrap justify-content-between align-items-center p-3 rounded-3 mb-4"
-             style="background:#79f2a2;">
-          <span class="fw-semibold fs-5">{{ section.header || 'Lamination' }}</span>
-  
-          <div class="d-flex gap-4">
-            <span class="summary-chip">wait : {{ section.waitCount }}</span>
-            <span class="summary-chip">pending : {{ section.pendingCount }}</span>
+        <div class="d-flex align-items-center justify-content-between mb-4">
+          <!-- กรอบเขียว -->
+          <div class="flex-grow-1 d-flex justify-content-between align-items-center p-3 rounded-3"
+               style="background:#79f2a2;">
+            <span class="fw-semibold fs-5">{{ section.header || 'Lamination' }}</span>
+        
+            <div class="d-flex gap-4">
+              <span class="summary-chip">wait : {{ section.waitCount }}</span>
+              <span class="summary-chip">pending : {{ section.pendingCount }}</span>
+            </div>
           </div>
+        
+          <!-- ปุ่มอยู่นอกกรอบ แต่บรรทัดเดียวกัน -->
+          <button
+            class="btn btn-primary  ms-3"
+            data-bs-toggle="modal"
+            data-bs-target="#modalRegister"
+            (click)="openModal()"
+          >
+            <i class="fa fa-file-alt me-1"></i>  Add Job
+          </button>
         </div>
+        
+      
   
         <!-- ✅ ลูปคอลัมน์แบบรวม -->
         <div class="row g-3">
@@ -39,11 +58,14 @@
                 </div>
               </a>
             </div>
+            
           </div>
         </div>
-  
+        
       </div>
+      
     </div>
+     
   </div>
 
   <app-modal-template #foodTypeModal (saved)="onSaved($event)"></app-modal-template>

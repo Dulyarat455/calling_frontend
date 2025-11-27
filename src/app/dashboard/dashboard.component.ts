@@ -13,7 +13,7 @@ import { GeneralStatorPanelComponent,Group } from '../general-stator-panel/gener
 })
 export class DashboardComponent {
   token: string | undefined = '';
-  check: number | undefined = 1;
+  check: number | undefined = 0;
   ngOnInit() {
     this.token = localStorage.getItem('calling_token')!;
     
@@ -74,6 +74,27 @@ export class DashboardComponent {
       ],
     },
   ];
+
+  createJob(){
+    //add job to dashboard
+  }
+  confirmJob(){
+    // 
+  }
+  cancelJob(){
+    //cancel
+  }
+
+
+
+
+
+
+
+
+
+
+
 
 
 

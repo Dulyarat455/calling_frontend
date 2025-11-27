@@ -1,4 +1,5 @@
 import { Component,ViewChild,ElementRef } from '@angular/core';
+import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
 import { Router,RouterModule } from '@angular/router';
@@ -16,11 +17,35 @@ type UserRow = {
   section: string;
 };
 
+type GroupRow = {
+  id: number;
+  name: string;
+  State: string;
+  createdAt: string;
+  updateAt: string;
+};
+
+type SectionRow = {
+  id: number;
+  name: string;
+  State: string;
+  createdAt: string;
+  updateAt: string;
+};
+
+type SubSectionRow = {
+  id: number;
+  name: string;
+  State: string;
+  createdAt: string;
+  updateAt: string;
+};
+
 
 @Component({
   selector: 'app-sign-up',
   standalone: true,
-  imports: [FormsModule,RouterModule,MyModal],
+  imports: [FormsModule,RouterModule,MyModal,CommonModule],
   templateUrl: './sign-up.component.html',
   styleUrl: './sign-up.component.css'
 })
@@ -32,15 +57,25 @@ export class SignUpComponent {
   username: string = '';
   empNo:string = '';
   password: string = '';
-  confirmPassword: string = '';
   role: string = '';
   rfId: string = '';
   isLoading = false;
-  group: string = '';
-  subGroup: string = '';
+  searchEmpNo: string = '';
 
-  searchEmpNo:string = '';
-  // users: any[] = [];
+  groups: GroupRow[] = [];
+  sections: SectionRow[] = [];
+  subSections: SubSectionRow[] = [];
+  selectedGroupId: number | null = null;
+  selectedSectionId: number | null = null;
+  selectedSubSectionId: number | null = null;
+
+
+  // group: string = '';
+  // subGroup: string = '';
+  // searchEmpNo:string = '';
+
+
+ 
 
 
   users: UserRow[] = [
@@ -106,8 +141,25 @@ export class SignUpComponent {
   constructor(private http: HttpClient, private router: Router) {}
 
 
+
+  ngOnInit() {
+   this.fetchGroup();
+   this.fetchSection();
+   
+ }
+
+
   ngAfterViewInit() {
-    this.focusRFIDInput();
+    // this.focusRFIDInput();
+
+    const modalEl = document.getElementById('modalSignUp');
+
+    if (modalEl) {
+      modalEl.addEventListener('shown.bs.modal', () => {
+        this.focusRFIDInput();
+      });
+    }
+
   }
 
   // Helper function to focus RFID input
@@ -117,6 +169,67 @@ export class SignUpComponent {
     }
   }
 
+
+
+  fetchGroup(){
+    this.http.get(config.apiServer + '/api/group/list').subscribe({
+      next: (res: any) => {
+        this.groups = res.results || [];
+        // console.log('groups : ', this.groups);
+      },
+      error: (err) => {
+        Swal.fire({
+          title: 'Error',
+          text: err.message,
+          icon: 'error',
+        });
+      },
+    });
+  }
+
+  fetchSection(){
+    this.http.get(config.apiServer + '/api/section/list').subscribe({
+      next: (res: any) => {
+        this.sections = res.results || [];
+        // console.log('sections : ', this.sections);
+      },
+      error: (err) => {
+        Swal.fire({
+          title: 'Error',
+          text: err.message,
+          icon: 'error',
+        });
+      },
+    });
+  }
+
+   fetchSubSectionBySection(){
+       // ถ้าไม่ได้เลือก section ไม่ต้องยิง API
+       if (!this.selectedSectionId) {
+        this.subSections = [];
+        this.selectedSubSectionId = null;
+        return;
+      }
+
+      this.http
+      .post(config.apiServer + '/api/subsection/filterBySection', {
+        sectionId: this.selectedSectionId,
+      })
+      .subscribe({
+        next: (res: any) => {
+          // backend ส่ง { results: [...] }
+          this.subSections = res.results || [];
+          this.selectedSubSectionId = null; // เลือกใหม่ทุกครั้งที่เปลี่ยน section
+        },
+        error: (err) => {
+          Swal.fire({
+            title: 'Error',
+            text: err.message || 'Cannot load Subsection',
+            icon: 'error',
+          });
+        },
+      });
+   }
 
 
     // Handle RFID input
@@ -129,17 +242,30 @@ export class SignUpComponent {
         
       }
     }
+    
+    clearForm(){
+      this.name = '';
+      this.empNo = '';
+      this.password = '';
+      this.role = '';
+      this.rfId = '';
+      this.selectedGroupId = null;
+      this.selectedSectionId = null;
+      this.selectedSubSectionId = null;
+      this.subSections = [];
+    }
 
     openModal() {
       // รีเซ็ตค่าในฟอร์มก่อนเปิด
-  
+      this.clearForm();
       // เรียกใช้ฟังก์ชัน open() ของ child component
       this.myModal.open();
     }
 
-  signUp() {
+  addMember() {
     // 1) validate ฝั่ง client
-    if (!this.name || !this.username || !this.empNo || !this.password) {
+    if (!this.name || !this.empNo || !this.password || !this.rfId 
+      || !this.role || this.selectedGroupId == null ||  this.selectedSectionId == null || this.selectedSubSectionId == null) {
       Swal.fire({
         title: 'ตรวจสอบข้อมูล',
         text: 'โปรดกรอกข้อมูลให้ครบถ้วน (Name, Username, Employee No., Password)',
@@ -148,24 +274,20 @@ export class SignUpComponent {
       return;
     }
 
-    if (this.password !== this.confirmPassword) {
-      Swal.fire({
-        title: 'รหัสผ่านไม่ตรงกัน',
-        text: 'กรุณาตรวจสอบ Password และ Confirm Password',
-        icon: 'error',
-      });
-      return;
-    }
+   
 
     this.isLoading = true;
 
     const payload = {
+      userRole: "admin",
       name: this.name,
-      username: this.username,
       empNo: this.empNo,
       password: this.password,
       role: this.role,
-      rfId: this.rfId
+      rfId: this.rfId,
+      groupId: Number(this.selectedGroupId),
+      sectionId: Number(this.selectedSectionId),
+      subSectionId: Number(this.selectedSubSectionId)
     };
 
     this.http.post(config.apiServer + '/api/user/create', payload).subscribe({
@@ -175,7 +297,7 @@ export class SignUpComponent {
         if (res.message === 'user_already_exists') {
           let msg = 'ข้อมูลผู้ใช้ซ้ำในระบบ';
           if (res.detail?.empNo) msg += '\n- Employee No. นี้ถูกใช้แล้ว';
-          if (res.detail?.username) msg += '\n- Username นี้ถูกใช้แล้ว';
+          if (res.detail?.name) msg += '\n- name นี้ถูกใช้แล้ว';
           if (res.detail?.rfId) msg += '\n- RFID นี้ถูกใช้แล้ว';
 
           Swal.fire({
@@ -192,9 +314,10 @@ export class SignUpComponent {
           icon: 'success',
           timer: 1500,
           showConfirmButton: true,
-        }).then(() => {
-          this.router.navigate(['/sign-in']); // ปรับให้ตรงกับ route จริง
-        });
+        })
+
+        this.myModal.close();
+        this.clearForm();
       },
       error: (error) => {
         this.isLoading = false;
@@ -217,21 +340,13 @@ export class SignUpComponent {
   remove(item: any){
 
   }
-
   edit(item: any){
 
   }
-
   filterEmpNo(){
 
   }
-
-  clearForm(){
-
-  }
-
   downloadExcel(){
-
 
   }
 

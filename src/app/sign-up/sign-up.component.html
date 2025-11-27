@@ -159,13 +159,30 @@
                   </span>
                   <select
                     class="form-select  text-center"
-                    [(ngModel)]="group"
+                    [(ngModel)]="selectedGroupId"
                     [disabled]="isLoading"
                   >
-                  <option value="" disabled selected> ----------------- Group -----------------</option>
-                    <option value="user">Lamination</option>
-                    <option value="admin">General</option>
-                    <option value="admin">Stator</option>
+                  <option [ngValue]="null" disabled> ----------------- Group -----------------</option>
+                  <option *ngFor="let g of groups" [ngValue]="g.id">
+                    {{ g.name }}
+                  </option>
+                  </select>
+                </div>
+
+                <div class="input-group mb-3">
+                  <span class="input-group-text">
+                    <i class="fas fa-user-cog"></i>
+                  </span>
+                  <select
+                    class="form-select text-center"
+                    [(ngModel)]="selectedSectionId"
+                    (change)="fetchSubSectionBySection()"
+                    [disabled]="isLoading"
+                  >
+                    <option [ngValue]="null" disabled> --------------- Section  -----------------</option>
+                    <option *ngFor="let s of sections" [ngValue]="s.id">
+                      {{ s.name }}
+                    </option>
                   </select>
                 </div>
       
@@ -176,14 +193,18 @@
                   </span>
                   <select
                     class="form-select text-center"
-                    [(ngModel)]="role"
-                    [disabled]="isLoading"
+                    [(ngModel)]="selectedSubSectionId"
+                    [disabled]="isLoading || !selectedSectionId" 
                   >
-                    <option value="" disabled selected> --------------- SubGroup  -----------------</option>
-                    <option value="user">Lam_Regular</option>
-                    <option value="admin">Lam_Outgoing</option>
+                    <option [ngValue]="null" disabled> --------------- SubSection  -----------------</option>
+                    <option *ngFor="let ss of subSections" [ngValue]="ss.id">
+                      {{ ss.name }}
+                    </option>
                   </select>
                 </div>
+
+
+               
       
               </div>
         
@@ -200,7 +221,7 @@
                     <i class="fas fa-lock"></i>
                   </span>
                   <input
-                    type="password"
+                    type="text"
                     class="form-control"
                     placeholder="Password"
                     [(ngModel)]="password"
@@ -210,7 +231,7 @@
         
                 <button
                   class="btn btn-primary w-100"
-                  (click)="signUp()"
+                  (click)="addMember()"
                   [disabled]="isLoading"
                 >
                   @if (isLoading) {
@@ -224,7 +245,7 @@
         
                 <button
                   class="btn btn-secondary w-100 mt-3"
-                  [routerLink]="['/sign-in']"
+                  (click)="clearForm()"
                   [disabled]="isLoading"
                 >
                   <i class="fas fa-times me-2"></i>
