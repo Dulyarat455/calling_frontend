@@ -30,6 +30,7 @@ export class GroupsComponent {
 
   constructor(private http: HttpClient, private router: Router) {}
 
+  name: string = '';
   groups: groupRow[] = []
   isLoading = false;
 
@@ -41,6 +42,10 @@ export class GroupsComponent {
     // รีเซ็ตค่าในฟอร์มก่อนเปิด
     // เรียกใช้ฟังก์ชัน open() ของ child component
     this.myModal.open();
+  }
+
+  clearForm(){
+
   }
 
 
@@ -66,6 +71,54 @@ export class GroupsComponent {
       },
     });
   }
+
+  add(){
+      // 1) validate 
+        if (!this.name) {
+          Swal.fire({
+            title: 'ตรวจสอบข้อมูล',
+            text: 'โปรดกรอกข้อมูลให้ครบถ้วน',
+            icon: 'error',
+          });
+          return;
+        }
+
+        this.isLoading = true;
+
+        const payload = {
+          role: "admin",
+          name: this.name
+        }
+
+        this.http.post(config.apiServer + '/api/group/add', payload).subscribe({
+          next: (res: any) => {
+            this.isLoading = false;
+
+            Swal.fire({
+                      title: 'Add Group Success',
+                      text: 'Group ถูกเพิ่มเข้าฐานข้อมูลเรียบร้อย',
+                      icon: 'success',
+                      timer: 1500,
+                      showConfirmButton: true,
+                    })
+                    this.myModal.close();
+                    this.fetchData();
+                    this.clearForm();
+          }, error: (err) => {
+         this.isLoading = false;
+
+          Swal.fire({
+                     title: 'ไม่สามารถบันทึกได้',
+                     text: err.error?.message,
+                     icon: 'error',
+          });
+          },
+        })
+  }
+
+
+
+
 
   edit(item:any){
 

@@ -39,10 +39,13 @@
       <thead>
         <tr>
           <th>รหัสพนักงาน</th>
-          <th>ชื่อ</th>
+          <th>Name</th>
+          <th>Role</th>
           <th>RFID</th>
-          <th>ระดับ</th>
-          <th>ส่วนงาน</th>
+          <th>Group</th>
+          <th>Section</th>
+          <th>Subsection</th>
+          <th>Satus</th>
           <th width="50px">แก้ไข</th>
           <th width="50px">ลบ</th>
         </tr>
@@ -52,15 +55,16 @@
         <tr>
           <td>{{ item.empNo }}</td>
           <td>{{ item.name }}</td>
-          <td>{{ item.rfid }}</td>
-          <td>{{ item.level }}</td>
-          <td>{{ item.section }}</td>
+          <td>{{ item.role }}</td>
+          <td>{{ item.rfId }}</td>
+          <td>{{ item.groupName }}</td>
+          <td>{{ item.sectionName }}</td>
+          <td>{{ item.subSectionName }}</td>
+          <td>{{ item.status }}</td>
           <td class="text-center">
             <button
               class="btn btn-primary"
-              (click)="edit(item)"
-              data-bs-target="#modalRegister"
-              data-bs-toggle="modal"
+              (click)="onEditClick(item)"
             >
               <i class="fa fa-edit"></i>
             </button>
@@ -160,6 +164,7 @@
                   <select
                     class="form-select  text-center"
                     [(ngModel)]="selectedGroupId"
+                    (change)="fetchSectionByGroup()"
                     [disabled]="isLoading"
                   >
                   <option [ngValue]="null" disabled> ----------------- Group -----------------</option>
@@ -177,7 +182,7 @@
                     class="form-select text-center"
                     [(ngModel)]="selectedSectionId"
                     (change)="fetchSubSectionBySection()"
-                    [disabled]="isLoading"
+                    [disabled]="isLoading || !selectedGroupId"
                   >
                     <option [ngValue]="null" disabled> --------------- Section  -----------------</option>
                     <option *ngFor="let s of sections" [ngValue]="s.id">

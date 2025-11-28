@@ -34,7 +34,7 @@
           </div>
         </div>
       </div>
-      <table class="table table-bordered table-striped mt-3">
+      <table class="table table-bordered table-striped mt-3 mb-4">
         <thead>
           <tr>
             <th> Machines Code</th>
@@ -102,7 +102,7 @@
               type="text"
               class="form-control"
               placeholder="Group Name"
-           
+              [(ngModel)]="code"
               [disabled]="isLoading"
             />
           </div>
@@ -114,18 +114,19 @@
             </span>
             <select
               class="form-select text-center"
+              [(ngModel)]="selectedGroupId"
               [disabled]="isLoading"
             >
-              <option value="" disabled selected> ----------------- Group -----------------</option>
-              <option value="user">Lamination</option>
-              <option value="admin">General</option>
-              <option value="admin">Stator</option>
+              <option [ngValue]="null" disabled> ----------------- Group -----------------</option>
+              <option *ngFor="let g of groups" [ngValue]="g.id">
+                {{ g.name }}
+              </option>
             </select>
           </div>
   
           <!-- Buttons -->
           <div class="mt-4">
-            <button class="btn btn-primary w-100"  [disabled]="isLoading">
+            <button class="btn btn-primary w-100"  [disabled]="isLoading" (click)="add()">
               @if(isLoading){
                 <i class="fas fa-spinner fa-spin me-2"></i>Processing...
               } @else {
@@ -133,7 +134,7 @@
               }
             </button>
   
-            <button class="btn btn-secondary w-100 mt-3" [disabled]="isLoading">
+            <button class="btn btn-secondary w-100 mt-3" [disabled]="isLoading" (click)="clearForm()">
               <i class="fas fa-times me-2"></i> Clear
             </button>
           </div>

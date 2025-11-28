@@ -252,10 +252,9 @@ export class CallNodesComponent {
       this.resetForm();
     }
 
-
-
     
   edit(item:any){
+    this.openModal();
 
   }
 

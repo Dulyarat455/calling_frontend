@@ -5,8 +5,9 @@
         class="btn btn-primary me-2"
         data-bs-toggle="modal"
         data-bs-target="#modalRegister"
+        (click)="openModal()"
       >
-        <i class="fa fa-user-plus me-2"></i>Add Groups
+        <i class="fa fa-user-plus me-2"></i>Add Section
       </button>
       <button
         class="btn btn-success me-2"
@@ -71,6 +72,56 @@
   </div>
 
 <app-my-modal modalId="modalSection" (closeRequest)="myModal.close()">
+  <div class="login-container" style="margin-top: 25px;margin-bottom: 25px;">
+    <div class="login-card" style="padding-bottom: 20px;">
+      <div class="card-header text-center">
+        <h5 class="mb-0 fw-bold">
+          <i class="fas fas fa-cogs me-2"></i>
+          Add Section
+        </h5>
+      </div>
 
+      <div class="card-body">
+
+        <!-- Title -->
+        <div class="section-title mt-2 mb-3">
+          <span class="line"></span>
+          <span>Add Section name</span>
+          <span class="line"></span>
+        </div>
+
+        <!-- Input -->
+        <div class="input-group mb-4">
+          <span class="input-group-text">
+            <i class="fas fa-tag"></i>
+          </span>
+          <input
+            type="text"
+            class="form-control"
+            placeholder="Section Name"
+            [(ngModel)]="name"
+            [disabled]="isLoading"
+          />
+        </div>
+
+
+        <!-- Buttons -->
+        <div class="mt-4">
+          <button class="btn btn-primary w-100"  [disabled]="isLoading" (click)="add()">
+            @if(isLoading){
+              <i class="fas fa-spinner fa-spin me-2"></i>Processing...
+            } @else {
+              <i class="fas fa-save me-2"></i> Save Section
+            }
+          </button>
+
+          <button class="btn btn-secondary w-100 mt-3" [disabled]="isLoading" (click)="clearForm()">
+            <i class="fas fa-times me-2"></i> Clear
+          </button>
+        </div>
+
+      </div>
+    </div>
+  </div>
 
 </app-my-modal>

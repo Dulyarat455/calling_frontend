@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-
+import { CommonModule } from '@angular/common';
 import { ViewChild } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
@@ -21,11 +21,19 @@ type MachineRow = {
 
 };
 
+type GroupRow = {
+  id: number;
+  name: string;
+  State: string;
+  createdAt: string;
+  updateAt: string;
+};
+
 
 @Component({
   selector: 'app-machines',
   standalone: true,
-  imports: [FormsModule,RouterModule,MyModal],
+  imports: [FormsModule,RouterModule,MyModal,CommonModule],
   templateUrl: './machines.component.html',
   styleUrl: './machines.component.css'
 })
@@ -35,11 +43,16 @@ export class MachinesComponent {
 
   constructor(private http: HttpClient, private router: Router) {}
 
-  machines: MachineRow[] = []
+  code: string = '';
+  machines: MachineRow[] = [];
   isLoading = false;
 
+  groups: GroupRow[] = [];
+  selectedGroupId: number | null = null;
+
   ngOnInit() {
-    this.fetchData();
+    this.fetchMachine();
+    this.fetchGroup();
   }
 
   openModal(){
@@ -47,7 +60,7 @@ export class MachinesComponent {
   }
 
 
-  fetchData() {
+  fetchMachine() {
     this.http.get(config.apiServer + '/api/machine/list').subscribe({
       next: (res: any) => {
       this.machines = (res.results || []).map((r: any) => ({
@@ -58,8 +71,6 @@ export class MachinesComponent {
           state: r.State,
           groupName: r.Groups?.name ?? '',
         }))
-        console.log("machine page : ", res.results);
-
 
       },
       error: (err) => {
@@ -70,6 +81,73 @@ export class MachinesComponent {
         });
       },
     });
+  }
+
+
+  fetchGroup(){
+    this.http.get(config.apiServer + '/api/group/list').subscribe({
+      next: (res: any) => {
+        this.groups = res.results || [];
+      },
+      error: (err) => {
+        Swal.fire({
+          title: 'Error',
+          text: err.message,
+          icon: 'error',
+        });
+      },
+    });
+  }
+
+  add(){
+     // 1) validate 
+            if (!this.code || this.selectedGroupId == null ) {
+              Swal.fire({
+                title: 'ตรวจสอบข้อมูล',
+                text: 'โปรดกรอกข้อมูลให้ครบถ้วน',
+                icon: 'error',
+              });
+              return;
+            }
+    
+            this.isLoading = true;
+
+            const payload = {
+              role: "admin",
+              code: this.code,
+              groupId: this.selectedGroupId
+            }
+
+            this.http.post(config.apiServer + '/api/machine/add', payload).subscribe({
+              next: (res: any) => {
+                this.isLoading = false;
+                   Swal.fire({
+                        title: 'Add Machine Success',
+                        text: 'Machine ถูกเพิ่มเข้าฐานข้อมูลเรียบร้อย',
+                        icon: 'success',
+                        timer: 1500,
+                        showConfirmButton: true,
+                    })
+                    this.myModal.close();
+                    this.fetchMachine();
+                    this.clearForm();
+                
+              }, error: (err) => {
+                this.isLoading = false;
+               
+                Swal.fire({
+                  title: 'ไม่สามารถบันทึกได้',
+                  text: err.error?.message,
+                  icon: 'error',
+                });   
+
+              }
+            })
+  }
+
+  clearForm(){
+    this.code = '';
+    this.selectedGroupId = null;
   }
 
 

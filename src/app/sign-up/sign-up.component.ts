@@ -8,14 +8,8 @@ import { MyModal } from '../my-modal/my-modal.component';
 
 import Swal from 'sweetalert2';
 import config from '../../config';
+import { group } from '@angular/animations';
 
-type UserRow = {
-  empNo: string;
-  name: string;
-  rfid: string;
-  level: string;
-  section: string;
-};
 
 type GroupRow = {
   id: number;
@@ -41,6 +35,23 @@ type SubSectionRow = {
   updateAt: string;
 };
 
+type UsersRow = {
+  id: number;
+  name: string;
+  password: string;
+  empNo: string;
+  role: string;
+  rfId: number;
+  status: string;
+  accountState: string;
+  groupId: number;
+  groupName: string;
+  sectionId: number;
+  sectionName: string;
+  subSectionId: number;
+  subSectionName: string;
+}
+
 
 @Component({
   selector: 'app-sign-up',
@@ -61,82 +72,18 @@ export class SignUpComponent {
   rfId: string = '';
   isLoading = false;
   searchEmpNo: string = '';
+  isEditMode = false;
+  editingUserId: number | null = null;
+
 
   groups: GroupRow[] = [];
   sections: SectionRow[] = [];
   subSections: SubSectionRow[] = [];
+  users: UsersRow[] = [];
   selectedGroupId: number | null = null;
   selectedSectionId: number | null = null;
   selectedSubSectionId: number | null = null;
 
-
-  // group: string = '';
-  // subGroup: string = '';
-  // searchEmpNo:string = '';
-
-
- 
-
-
-  users: UserRow[] = [
-    {
-      empNo: 'LE519',
-      name: 'สมชาย ใจดี',
-      rfid: '9900112233',
-      level: 'Admin',
-      section: 'Store PC',
-    },
-    {
-      empNo: 'LM101',
-      name: 'วิศรุต ลามิเนต',
-      rfid: '9900112244',
-      level: 'Leader',
-      section: 'Lamination',
-    },
-    {
-      empNo: 'ST203',
-      name: 'กิตติพงษ์ สเตเตอร์',
-      rfid: '9900112255',
-      level: 'User',
-      section: 'Stator',
-    },
-    {
-      empNo: 'RT305',
-      name: 'จิรายุส โรเตอร์',
-      rfid: '9900112266',
-      level: 'User',
-      section: 'Rotor',
-    },
-    {
-      empNo: 'PR411',
-      name: 'สุพจน์ เพรสไลน์',
-      rfid: '9900112277',
-      level: 'User',
-      section: 'Press Line',
-    },
-    {
-      empNo: 'STO501',
-      name: 'วราภรณ์ สโตร์',
-      rfid: '9900112288',
-      level: 'Store',
-      section: 'Store Incoming',
-    },
-    {
-      empNo: 'QA612',
-      name: 'ธนกฤต คิวซี',
-      rfid: '9900112299',
-      level: 'User',
-      section: 'QA',
-    },
-    {
-      empNo: 'PD720',
-      name: 'สุรีย์พร ผลิต',
-      rfid: '9900112200',
-      level: 'Supervisor',
-      section: 'Production',
-    },
-  ];
-  
 
   constructor(private http: HttpClient, private router: Router) {}
 
@@ -145,6 +92,7 @@ export class SignUpComponent {
   ngOnInit() {
    this.fetchGroup();
    this.fetchSection();
+   this.fetchDataUser();
    
  }
 
@@ -170,12 +118,29 @@ export class SignUpComponent {
   }
 
 
+  fetchDataUser(){
+    this.http.get(config.apiServer + '/api/user/list').subscribe({
+      next: (res: any) => {
+        this.users = res.results || [];
+        
+      },
+      
+      error: (err) => {
+        Swal.fire({
+          title: 'Error',
+          text: err.message,
+          icon: 'error',
+        });
+      },
+    })
+
+  }
 
   fetchGroup(){
     this.http.get(config.apiServer + '/api/group/list').subscribe({
       next: (res: any) => {
         this.groups = res.results || [];
-        // console.log('groups : ', this.groups);
+     
       },
       error: (err) => {
         Swal.fire({
@@ -232,6 +197,37 @@ export class SignUpComponent {
    }
 
 
+   fetchSectionByGroup(){
+      // ถ้าไม่ได้เลือก section ไม่ต้องยิง API
+      if (!this.selectedGroupId) {
+        this.sections = [];
+        this.selectedSectionId = null;
+        return;
+      } 
+
+    this.http
+    .post(config.apiServer + '/api/section/filterByGroup', {
+        groupId: this.selectedGroupId
+    })
+    .subscribe({
+      next: (res: any) => {
+        // backend ส่ง { results: [...] }
+        this.sections = res.results || [];
+        this.selectedSectionId = null; // เลือกใหม่ทุกครั้งที่เปลี่ยน section
+      },
+      error: (err) => {
+        Swal.fire({
+          title: 'Error',
+          text: err.message || 'Cannot load Section',
+          icon: 'error',
+        });
+      },
+    });
+
+
+   }
+
+
     // Handle RFID input
     onRFIDInput(event: any) {
       const value = event.target.value;
@@ -260,6 +256,8 @@ export class SignUpComponent {
       this.clearForm();
       // เรียกใช้ฟังก์ชัน open() ของ child component
       this.myModal.open();
+      this.isEditMode = false;
+      this.editingUserId = null;
     }
 
   addMember() {
@@ -273,8 +271,6 @@ export class SignUpComponent {
       });
       return;
     }
-
-   
 
     this.isLoading = true;
 
@@ -336,6 +332,77 @@ export class SignUpComponent {
       },
     });
   }
+
+  onEditClick(item: UsersRow) {
+    // เข้าโหมด edit
+    this.isEditMode = true;
+    this.editingUserId = item.id;
+  
+    // เติมฟิลด์พื้นฐาน
+    this.name = item.name;
+    this.empNo = item.empNo;
+    this.password = item.password;            // ปกติไม่ preload password
+    this.role = item.role;
+    this.rfId = String(item.rfId ?? '');
+  
+    // group / section / subSection จาก row
+    this.selectedGroupId = item.groupId || null;
+    this.selectedSectionId = null;
+    this.selectedSubSectionId = null;
+  
+    // 1) โหลด Section ตาม group ของ user ก่อน
+    this.http
+      .post(config.apiServer + '/api/section/filterByGroup', {
+        groupId: item.groupId,
+      })
+      .subscribe({
+        next: (res: any) => {
+          this.sections = res.results || [];
+  
+          // set section ที่ user เคยอยู่
+          this.selectedSectionId = item.sectionId || null;
+  
+          if (!this.selectedSectionId) {
+            // ถ้า user ไม่มี section ก็เปิด modal ได้เลย
+            this.myModal.open();
+            return;
+          }
+  
+          // 2) โหลด SubSection ตาม section ของ user
+          this.http
+            .post(config.apiServer + '/api/subsection/filterBySection', {
+              sectionId: this.selectedSectionId,
+            })
+            .subscribe({
+              next: (res2: any) => {
+                this.subSections = res2.results || [];
+                this.selectedSubSectionId = item.subSectionId || null;
+  
+                // ทุกอย่างพร้อมแล้ว → เปิด modal
+                this.myModal.open();
+  
+                // โฟกัส RFID ถ้าต้องการ
+                setTimeout(() => this.focusRFIDInput(), 100);
+              },
+              error: (err) => {
+                Swal.fire({
+                  title: 'Error',
+                  text: err.message || 'Cannot load Subsection',
+                  icon: 'error',
+                });
+              },
+            });
+        },
+        error: (err) => {
+          Swal.fire({
+            title: 'Error',
+            text: err.message || 'Cannot load Section',
+            icon: 'error',
+          });
+        },
+      });
+  }
+  
 
   remove(item: any){
 

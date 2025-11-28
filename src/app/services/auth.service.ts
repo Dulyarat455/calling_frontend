@@ -42,6 +42,10 @@ export class AuthService {
     localStorage.setItem('calling_id', userData.id);
     localStorage.setItem('calling_empNo', userData.empNo);
     localStorage.setItem('calling_role',userData.role);
+    localStorage.setItem('calling_group',userData.groupName);
+    localStorage.setItem('calling_groupId',userData.groupId);
+
+    // set calling_group ********
     this.authStatus.next(true);
     this.refreshComponents.next(true);
   }
@@ -51,6 +55,9 @@ export class AuthService {
     localStorage.removeItem('calling_name');
     localStorage.removeItem('calling_id');
     localStorage.removeItem('calling_empNo');
+    localStorage.removeItem('calling_role');
+    localStorage.removeItem('calling_group');
+    localStorage.removeItem('calling_groupId');
     this.authStatus.next(false);
     window.location.href = '/ScrapPress';
     // this.refreshComponents.next(true); // แจ้ง components ให้ refresh

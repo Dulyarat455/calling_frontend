@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-
+import { CommonModule } from '@angular/common';
 import { ViewChild } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
@@ -19,10 +19,19 @@ type subSectionRow = {
   sectionId: number;
 };
 
+type SectionRow = {
+  id: number;
+  name: string;
+  State: string;
+  createdAt: string;
+  updateAt: string;
+};
+
+
 @Component({
   selector: 'app-sub-section',
   standalone: true,
-  imports: [FormsModule,RouterModule,MyModal],
+  imports: [FormsModule,RouterModule,MyModal,CommonModule],
   templateUrl: './sub-section.component.html',
   styleUrl: './sub-section.component.css'
 })
@@ -34,9 +43,14 @@ export class SubSectionComponent {
     subSections: subSectionRow[] = []
     isLoading = false;
 
+    name: string = '';
+    sections: SectionRow[] = [];
+    selectedSectionId: number | null = null;
+
+
     ngOnInit() {
       this.fetchData();
-      
+      this.fetchSection();
     }
   
     openModal() {
@@ -68,6 +82,74 @@ export class SubSectionComponent {
         },
       });
 
+    }
+
+    fetchSection(){
+      this.http.get(config.apiServer + '/api/section/list').subscribe({
+        next: (res: any) => {
+          this.sections = res.results || [];
+          
+        },
+        error: (err) => {
+          Swal.fire({
+            title: 'Error',
+            text: err.message,
+            icon: 'error',
+          });
+        },
+      });
+    }
+
+    add(){
+      // 1) validate 
+      if (!this.name || this.selectedSectionId == null) {
+        Swal.fire({
+          title: 'ตรวจสอบข้อมูล',
+          text: 'โปรดกรอกข้อมูลให้ครบถ้วน',
+          icon: 'error',
+        });
+        return;
+    }
+
+    this.isLoading = true;
+
+    const payload = {
+      role: "admin",
+      name: this.name,
+      sectionId: this.selectedSectionId
+    }
+
+    this.http.post(config.apiServer + '/api/subsection/add', payload).subscribe({
+      next: (res: any) => {
+        this.isLoading = false;
+           Swal.fire({
+                title: 'Add SubSection Success',
+                text: 'SubSection ถูกเพิ่มเข้าฐานข้อมูลเรียบร้อย',
+                icon: 'success',
+                timer: 1500,
+                showConfirmButton: true,
+            })
+            this.myModal.close();
+            this.fetchData();
+            this.clearForm();
+        
+      }, error: (err) => {
+        this.isLoading = false;
+       
+        Swal.fire({
+          title: 'ไม่สามารถบันทึกได้',
+          text: err.error?.message,
+          icon: 'error',
+        });   
+
+      }
+    })
+
+    }
+
+    clearForm(){
+      this.name = ''
+      this.selectedSectionId = null
     }
 
     edit(item:any){

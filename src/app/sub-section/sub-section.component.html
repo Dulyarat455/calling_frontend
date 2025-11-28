@@ -100,15 +100,32 @@
             <input
               type="text"
               class="form-control"
-              placeholder="Group Name"
-           
+              placeholder="Subsection Name"
+              [(ngModel)]="name"
               [disabled]="isLoading"
             />
+          </div>
+
+
+          <div class="input-group mb-3">
+            <span class="input-group-text">
+              <i class="fas fa-user-cog"></i>
+            </span>
+            <select
+              class="form-select text-center"
+              [(ngModel)]="selectedSectionId"
+              [disabled]="isLoading"
+            >
+              <option [ngValue]="null" disabled> --------------- Section  -----------------</option>
+              <option *ngFor="let s of sections" [ngValue]="s.id">
+                {{ s.name }}
+              </option>
+            </select>
           </div>
   
           <!-- Buttons -->
           <div class="mt-4">
-            <button class="btn btn-primary w-100"  [disabled]="isLoading">
+            <button class="btn btn-primary w-100"  [disabled]="isLoading" (click)="add()">
               @if(isLoading){
                 <i class="fas fa-spinner fa-spin me-2"></i>Processing...
               } @else {
@@ -116,7 +133,7 @@
               }
             </button>
   
-            <button class="btn btn-secondary w-100 mt-3" [disabled]="isLoading">
+            <button class="btn btn-secondary w-100 mt-3" [disabled]="isLoading" (click)="clearForm()">
               <i class="fas fa-times me-2"></i> Clear
             </button>
           </div>
