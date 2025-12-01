@@ -68,4 +68,13 @@
      
   </div>
 
-  <app-modal-template #foodTypeModal (saved)="onSaved($event)"></app-modal-template>
+  <app-modal-template 
+  #foodTypeModal 
+  [groups] = "groups"
+  [machines] = "machines"
+  (groupSelected)="onGroupSelected($event)"
+  (machineSelected)="onMachineSelected($event)"
+  
+  (saved)="onSaved($event)">
+
+  </app-modal-template>

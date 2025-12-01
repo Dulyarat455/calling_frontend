@@ -1,6 +1,12 @@
 import { Component, EventEmitter, Input, Output, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ModalTemplateComponent } from '../modal-template/modal-template.component';
+import { HttpClient } from '@angular/common/http';
+import { Router} from '@angular/router';
+
+
+import Swal from 'sweetalert2';
+import config from '../../config';
 
 
 export type Status = 'wait' | 'pending';
@@ -9,6 +15,8 @@ export interface RowItem {
   station: string;
   status: Status;
 }
+
+
 export interface LaminationSection {
   title?: string;   // ชื่อหัวการ์ด (แถบสีดำ)
   header?: string;  // ชื่อแถบเขียว ("Lamination")
@@ -18,6 +26,39 @@ export interface LaminationSection {
   left: RowItem[];
   right: RowItem[];
 }
+
+type GroupRow = {
+  id: number;
+  name: string;
+  State: string;
+  createdAt: string;
+  updateAt: string;
+};
+
+type MachineRow = {
+  id: number;
+  code: string;
+  createdAt: number;
+  state: string;
+  groupId: number;
+  groupName: string;
+  isActive:number;
+
+};
+
+type CallNodeRow ={
+  id:number;
+  code: string;
+  sectionId: number;
+  sectionName: string;
+  groupId: number;
+  groupName: string;
+  subSectionId: number;
+  subSectionName: string;
+  isActive: number;
+  state: string;
+}
+
 
 @Component({
   selector: 'app-lamination-panel',
@@ -32,14 +73,137 @@ export class LaminationPanelComponent {
 
   @ViewChild('foodTypeModal') modal!: ModalTemplateComponent;
 
-  openModal() {
-    this.modal.open({ group: 'Lamination' });
+  constructor(private http: HttpClient, private router: Router) {}
+
+  machines: MachineRow[] = [];
+  groups: GroupRow[] = [];
+  callNode: CallNodeRow[] = []; 
+
+  selectedGroupId: number | null = null;
+  selectedMachineId: number | null = null;
+  selectedCallNode: number | null = null;
+
+
+  ngOnInit() {
+    this.fetchGroup();
+    this.fetchMachine();
   }
+
+
+  
+  
+  fetchGroup(){
+    this.http.get(config.apiServer + '/api/group/list').subscribe({
+      next: (res: any) => {
+        this.groups = res.results || [];
+     
+      },
+      error: (err) => {
+        Swal.fire({
+          title: 'Error',
+          text: err.message,
+          icon: 'error',
+        });
+      },
+    });
+  }
+
+  fetchMachine(){
+    this.http.get(config.apiServer + '/api/machine/list').subscribe({
+      next: (res: any) => {
+      this.machines = (res.results || []).map((r: any) => ({
+          id: r.id,
+          code: r.code ,
+          groupId: r.groupId,
+          isActive: r.isActive,
+          state: r.State,
+          groupName: r.Groups?.name ?? '',
+        }))
+
+      },
+      error: (err) => {
+        Swal.fire({
+          title: 'Error',
+          text: err.message,
+          icon: 'error',
+        });
+      },
+    }); 
+  }
+
+  fetchMachineByGroup(){
+
+    if (!this.selectedGroupId) {
+      this.machines = [];
+      this.selectedMachineId = null;
+      return;
+    }
+
+    this.http
+      .post(config.apiServer + '/api/machine/filterByGroup', {
+        groupId: this.selectedGroupId,
+      })
+      .subscribe({
+        next: (res: any) => {
+          this.machines = (res.results || []).map((r: any) => ({
+            id: r.id,
+            code: r.code ,
+            groupId: r.groupId,
+            isActive: r.isActive,
+            state: r.State,
+            groupName: r.Groups?.name ?? '',
+          }))
+          this.selectedMachineId = null; // เลือกใหม่ทุกครั้งที่เปลี่ยน Group
+        },
+        error: (err) => {
+          Swal.fire({
+            title: 'Error',
+            text: err.message || 'Cannot load Machines',
+            icon: 'error',
+          });
+        },
+      });
+  }
+  fetchCallNode(){
+    this.http
+    .post(config.apiServer + '/api/callnode/filterByGroup', {
+      groupId: this.selectedGroupId,
+    })
+    .subscribe({
+      next: (res: any) => {
+        this.machines = (res.results || []).map((r: any) => ({
+          // id: r.id,
+          // code: r.code ,
+          // groupId: r.groupId,
+          // isActive: r.isActive,
+          // state: r.State,
+          // groupName: r.Groups?.name ?? '',
+        }))
+        this.selectedMachineId = null; // เลือกใหม่ทุกครั้งที่เปลี่ยน Group
+      },
+      error: (err) => {
+        Swal.fire({
+          title: 'Error',
+          text: err.message || 'Cannot load Node',
+          icon: 'error',
+        });
+      },
+    });
+  }
+
+
+  openModal(item?: RowItem) {
+    // const preset = item
+    // ? { group: 'Lamination', machine: item.station }  // เอาชื่อ station ไปเติมในช่อง Machine
+    // : { group: 'Lamination' };
+    const preset = item ? { machine: item.station } : {};
+    this.modal.open(preset);
+  }
+
 
   onSaved(data: any) {
     console.log('บันทึกข้อมูลแล้ว:', data);
   }
-
 
   // แปลง section ให้กลายเป็นลิสต์คอลัมน์เดียวเสมอ (ใหม่/เก่าใช้ร่วมกัน)
   columns(): RowItem[][] {
@@ -56,7 +220,20 @@ export class LaminationPanelComponent {
 
   onUpdate(item: RowItem) {
     this.updateRow.emit(item);
+    this.openModal(item);
   }
+
+  onMachineSelected(machineId: number) {
+    this.selectedMachineId = machineId;
+    console.log('Selected machine:', machineId);
+  }
+
+  onGroupSelected(groupId: number) {
+    this.selectedGroupId = groupId;
+    this.fetchMachineByGroup();
+    console.log("Selected group:", groupId);
+  }
+  
 
   trackCol = (i: number, _c: RowItem[]) => i;                       // คอลัมน์
   trackRow = (_: number, r: RowItem) => `${r.time}-${r.station}`;   // แถว

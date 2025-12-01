@@ -14,9 +14,20 @@ import { GeneralStatorPanelComponent,Group } from '../general-stator-panel/gener
 export class DashboardComponent {
   token: string | undefined = '';
   check: number | undefined = 0;
+  roleDashboard: string | undefined = '';
+  groupDashboard: string | undefined = '';
+  groupDashboardId: number | null = null;
+
+
   ngOnInit() {
     this.token = localStorage.getItem('calling_token')!;
-    
+    this.roleDashboard = localStorage.getItem('calling_role')!;
+    this.groupDashboard = localStorage.getItem('calling_group')!;
+
+    //get groupId 
+    const raw = localStorage.getItem('calling_groupId');
+    const parsed = Number(raw);
+    this.groupDashboardId = raw && !Number.isNaN(parsed) ? parsed : null;
   }
 
   //part for lam

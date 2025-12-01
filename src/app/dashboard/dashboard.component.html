@@ -57,7 +57,7 @@
       </div> <!-- card-body -->
     </div> <!-- card -->
   }
-  @if(check === 0){
+  @if(groupDashboard === "Lamination"){
     
     <!-- Lamination -->
     <div class="min-vh-100 py-4" style="background:#eaf6f9;">
@@ -79,7 +79,7 @@
       </div>
     </div>
 }
-@if( check === 1){ 
+@if( groupDashboard === "General" || groupDashboard === "Stator"){ 
   <app-general-stator-panel [groups]="groups"></app-general-stator-panel>
 }
 

@@ -5,6 +5,8 @@ import { FormsModule } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
 import { Router,RouterModule } from '@angular/router';
 import { MyModal } from '../my-modal/my-modal.component';
+
+
 import Swal from 'sweetalert2';
 import config from '../../config';
 import { group, state } from '@angular/animations';

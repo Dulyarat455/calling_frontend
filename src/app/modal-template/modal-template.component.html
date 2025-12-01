@@ -19,24 +19,29 @@
   
         <!-- เนื้อหาโมดัล -->
         <div style="font-family:'Kanit',sans-serif; background:#f6fbf8; border-radius:12px; padding:16px;">
-
+        
           <!-- Group -->
           <div style="display:grid; grid-template-columns:160px 1fr; align-items:center; gap:10px; margin-bottom:14px;">
             <label style="font-weight:700; color:#111; text-align:right;">Group</label>
-            <select [(ngModel)]="model.group"
+            <select [(ngModel)]="model.group" (change)="onGroupChange($event)"
               style="background:#c8f7c5; border:2px solid transparent; border-radius:10px; padding:.6rem .9rem; font-weight:600; width:100%;">
-              <option value="Lamination">Lamination</option>
-              <option value="Stator">Stator</option>
-              <option value="Rotor">Rotor</option>
-              <option value="General">General</option>
+              <option value="" disabled selected>-- Select Group --</option>
+              <option *ngFor="let g of groups" [value]="g.id">
+                {{g.name}}
+              </option>
             </select>
           </div>
       
           <!-- Machine -->
           <div style="display:grid; grid-template-columns:160px 1fr; align-items:center; gap:10px; margin-bottom:14px;">
             <label style="font-weight:700; color:#111; text-align:right;">Machine</label>
-            <input type="text" [(ngModel)]="model.machine" placeholder="เช่น A6 R / M12 / Press-01"
-              style="background:#c8f7c5; border:2px solid transparent; border-radius:10px; padding:.6rem .9rem; font-weight:600; width:100%;">
+            <select [(ngModel)]="model.machine" (change)="onMachineChange($event)" [disabled]="!model.group"
+            style="background:#c8f7c5; border:2px solid transparent; border-radius:10px; padding:.6rem .9rem; font-weight:600; width:100%;">
+              <option value="" disabled selected>-- Select Machine --</option>
+              <option *ngFor="let m of machines" [value]="m.id">
+                {{ m.code }}
+              </option>
+            </select>
           </div>
       
           <!-- Call From -->

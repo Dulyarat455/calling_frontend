@@ -1,4 +1,4 @@
-import { Component,ViewChild,EventEmitter, Output } from '@angular/core';
+import { Component,ViewChild,EventEmitter, Output, Input } from '@angular/core';
 import {MyModal } from '../my-modal/my-modal.component';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
@@ -21,7 +21,11 @@ export type NameForm = {
 
 export class ModalTemplateComponent {
   @ViewChild(MyModal) myModal!: MyModal;
-  
+
+  // รับ input จาก parent
+  @Input() groups: { id: number; name: string }[] = [];
+  @Input() machines: { id: number; code: string }[] = [];
+
    // --- state มาตรฐาน ---
    model: NameForm = this.defaultModel();
    isSaving = false;
@@ -30,8 +34,12 @@ export class ModalTemplateComponent {
   @Output() saved = new EventEmitter<NameForm>();
   @Output() cleared = new EventEmitter<void>();
 
+  @Output() groupSelected = new EventEmitter<number>();
+  @Output() machineSelected = new EventEmitter<number>();
+
+
   private defaultModel(): NameForm {
-    return { group: 'Lamination', machine: '', callFrom: 'Lam_Outgoing', callTo: 'PD' };
+    return { group: '', machine: '', callFrom: 'Lam_Outgoing', callTo: 'PD' };
   }
 
    // เรียกจากข้างนอกได้ (ผ่าน parent อื่น)
@@ -42,6 +50,18 @@ export class ModalTemplateComponent {
         this.myModal?.open();
   }
 
+  onMachineChange(event: any) {
+    const selectedId = Number(event.target.value);
+    this.machineSelected.emit(selectedId);
+  }
+
+  onGroupChange(ev: any) {
+    const id = Number(ev.target.value);
+    this.groupSelected.emit(id);
+  }
+
+
+  
   close() {
     this.myModal?.close();
   }
