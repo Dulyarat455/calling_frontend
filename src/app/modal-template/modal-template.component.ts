@@ -25,6 +25,7 @@ export class ModalTemplateComponent {
   // รับ input จาก parent
   @Input() groups: { id: number; name: string }[] = [];
   @Input() machines: { id: number; code: string }[] = [];
+  @Input() callNodes: { id:number; code: string }[] = [];
 
    // --- state มาตรฐาน ---
    model: NameForm = this.defaultModel();
@@ -36,10 +37,11 @@ export class ModalTemplateComponent {
 
   @Output() groupSelected = new EventEmitter<number>();
   @Output() machineSelected = new EventEmitter<number>();
+  @Output() callNodeSelected = new EventEmitter<number>();
 
 
   private defaultModel(): NameForm {
-    return { group: '', machine: '', callFrom: 'Lam_Outgoing', callTo: 'PD' };
+    return { group: '', machine: '', callFrom: '', callTo: '' };
   }
 
    // เรียกจากข้างนอกได้ (ผ่าน parent อื่น)
@@ -58,6 +60,11 @@ export class ModalTemplateComponent {
   onGroupChange(ev: any) {
     const id = Number(ev.target.value);
     this.groupSelected.emit(id);
+  }
+
+  onCallNodeChange(event: any){
+    const selectedId = Number(event.target.value);
+    this.callNodeSelected.emit(selectedId);
   }
 
 
@@ -90,8 +97,6 @@ export class ModalTemplateComponent {
       this.isSaving = false;
     }
   }
-
-
 
 
 }

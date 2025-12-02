@@ -8,8 +8,6 @@
   
       <div class="card-body p-4">
 
-
-
         <!-- แถบหัว + สรุป -->
         <div class="d-flex align-items-center justify-content-between mb-4">
           <!-- กรอบเขียว -->
@@ -34,8 +32,6 @@
           </button>
         </div>
         
-      
-  
         <!-- ✅ ลูปคอลัมน์แบบรวม -->
         <div class="row g-3">
           <div class="col-md-6" *ngFor="let col of columns(); trackBy: trackCol; index as i">
@@ -72,8 +68,10 @@
   #foodTypeModal 
   [groups] = "groups"
   [machines] = "machines"
+  [callNodes]= "callNodes"
   (groupSelected)="onGroupSelected($event)"
   (machineSelected)="onMachineSelected($event)"
+  (callNodeSelected)="onCallNodeSelected($event)"
   
   (saved)="onSaved($event)">
 

@@ -77,11 +77,11 @@ export class LaminationPanelComponent {
 
   machines: MachineRow[] = [];
   groups: GroupRow[] = [];
-  callNode: CallNodeRow[] = []; 
+  callNodes: CallNodeRow[] = []; 
 
   selectedGroupId: number | null = null;
   selectedMachineId: number | null = null;
-  selectedCallNode: number | null = null;
+  selectedCallNodeId: number | null = null;
 
 
   ngOnInit() {
@@ -164,6 +164,7 @@ export class LaminationPanelComponent {
         },
       });
   }
+
   fetchCallNode(){
     this.http
     .post(config.apiServer + '/api/callnode/filterByGroup', {
@@ -171,15 +172,8 @@ export class LaminationPanelComponent {
     })
     .subscribe({
       next: (res: any) => {
-        this.machines = (res.results || []).map((r: any) => ({
-          // id: r.id,
-          // code: r.code ,
-          // groupId: r.groupId,
-          // isActive: r.isActive,
-          // state: r.State,
-          // groupName: r.Groups?.name ?? '',
-        }))
-        this.selectedMachineId = null; // เลือกใหม่ทุกครั้งที่เปลี่ยน Group
+        this.callNodes = res.results || [];
+        this.selectedCallNodeId = null; // เลือกใหม่ทุกครั้งที่เปลี่ยน Group
       },
       error: (err) => {
         Swal.fire({
@@ -228,9 +222,15 @@ export class LaminationPanelComponent {
     console.log('Selected machine:', machineId);
   }
 
+  onCallNodeSelected(callNodeId: number) {
+    this.selectedCallNodeId = callNodeId;
+    console.log("selected callNode:",callNodeId);
+  }
+
   onGroupSelected(groupId: number) {
     this.selectedGroupId = groupId;
     this.fetchMachineByGroup();
+    this.fetchCallNode();
     console.log("Selected group:", groupId);
   }
   

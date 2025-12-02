@@ -49,10 +49,10 @@
             <label style="font-weight:700; color:#111; text-align:right;">Call From</label>
             <select [(ngModel)]="model.callFrom"
               style="background:#c8f7c5; border:2px solid transparent; border-radius:10px; padding:.6rem .9rem; font-weight:600; width:100%;">
-              <option value="Lam_Outgoing">Lam_Outgoing</option>
-              <option value="Store_PC">Store_PC</option>
-              <option value="PD">PD</option>
-              <option value="QA">QA</option>
+              <option value="" disabled selected>-- Select Node --</option>
+              <option *ngFor="let c of callNodes" [value]="c.id">
+                {{ c.code }}
+              </option>
             </select>
           </div>
       
@@ -61,10 +61,10 @@
             <label style="font-weight:700; color:#111; text-align:right;">Call To</label>
             <select [(ngModel)]="model.callTo"
               style="background:#c8f7c5; border:2px solid transparent; border-radius:10px; padding:.6rem .9rem; font-weight:600; width:100%;">
-              <option value="PD">PD</option>
-              <option value="Store_PC">Store_PC</option>
-              <option value="QA">QA</option>
-              <option value="Repair">Repair</option>
+              <option value="" disabled selected>-- Select Node --</option>
+              <option *ngFor="let c of callNodes" [value]="c.id">
+                {{ c.code }}
+              </option>
             </select>
           </div>
       
