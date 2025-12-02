@@ -5,6 +5,7 @@ import { CommonModule } from '@angular/common';
 
 
 export type NameForm = {
+  createBy: string;
   group: string;
   machine: string;
   callFrom: string;
@@ -26,6 +27,9 @@ export class ModalTemplateComponent {
   @Input() groups: { id: number; name: string }[] = [];
   @Input() machines: { id: number; code: string }[] = [];
   @Input() callNodes: { id:number; code: string }[] = [];
+  @Input() userName: string = "";
+  @Input() modalName: string = "";
+  @Input() userId : number | null = null;
 
    // --- state มาตรฐาน ---
    model: NameForm = this.defaultModel();
@@ -41,12 +45,12 @@ export class ModalTemplateComponent {
 
 
   private defaultModel(): NameForm {
-    return { group: '', machine: '', callFrom: '', callTo: '' };
+    return { createBy: '', group: '', machine: '', callFrom: '', callTo: '' };
   }
 
    // เรียกจากข้างนอกได้ (ผ่าน parent อื่น)
   open(data?: Partial<NameForm>) {
-        this.model = { ...this.defaultModel(), ...(data ?? {}) };
+        this.model = { ...this.defaultModel(), createBy: this.userName ,...(data ?? {}) };
         this.errorMsg = '';
         // ระวัง: MyModal พร้อมใช้หลัง AfterViewInit เท่านั้น → เรียกจากปุ่ม/เหตุการณ์หลังหน้าเรนเดอร์แล้วจะปลอดภัย
         this.myModal?.open();
@@ -67,12 +71,9 @@ export class ModalTemplateComponent {
     this.callNodeSelected.emit(selectedId);
   }
 
-
-  
   close() {
     this.myModal?.close();
   }
-
 
   clear() {
     this.model = this.defaultModel();

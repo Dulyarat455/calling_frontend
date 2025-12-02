@@ -29,7 +29,7 @@ export interface Group {
 export class GeneralStatorPanelComponent {
   /** ใส่ได้ 1–2 คอลัมน์ (เช่น General และ stator) */
   @Input() groups: Group[] = [];
-  @ViewChild('foodTypeModal') modal!: ModalTemplateComponent;
+  @ViewChild('assignJobModal') modal!: ModalTemplateComponent;
 
   openModal() {
     this.modal.open();

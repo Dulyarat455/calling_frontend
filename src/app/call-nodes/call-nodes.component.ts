@@ -79,8 +79,7 @@ export class CallNodesComponent {
 
     
     ngOnInit() {
-       this.fetchGroup();
-      this.fetchSection();
+      this.fetchGroup();
       this.fetchCallNode();
     }
 
@@ -114,6 +113,37 @@ export class CallNodesComponent {
       });
       
     }
+
+    fetchSectionByGroup(){
+        // ถ้าไม่ได้เลือก Group ไม่ต้องยิง API
+        if (!this.selectedGroupId) {
+          this.sections = [];
+          this.selectedSectionId = null;
+          return;
+        }
+
+        this.http
+        .post(config.apiServer + '/api/section/filterByGroup', {
+          groupId: this.selectedGroupId,
+        })
+        .subscribe({
+          next: (res: any) => {
+            // backend ส่ง { results: [...] }
+            this.sections = res.results || [];
+            this.selectedSectionId = null; // เลือกใหม่ทุกครั้งที่เปลี่ยน section
+          },
+          error: (err) => {
+            Swal.fire({
+              title: 'Error',
+              text: err.message || 'Cannot load Section',
+              icon: 'error',
+            });
+          },
+        });
+
+    }
+
+
 
     fetchGroup(){
       this.http.get(config.apiServer + '/api/group/list').subscribe({
@@ -180,7 +210,7 @@ export class CallNodesComponent {
 
       const code = this.codeName?.trim();
 
-      if (!code || !this.selectedGroupId || !this.selectedSectionId || !this.selectedSubSectionId) {
+      if (!code || this.selectedGroupId == null || this.selectedSectionId == null || this.selectedSubSectionId == null) {
         Swal.fire({
           title: 'ตรวจสอบข้อมูล',
           text: 'กรุณากรอก Code และเลือก Group, Section, Subsection ให้ครบ',

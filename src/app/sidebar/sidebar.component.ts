@@ -25,9 +25,12 @@ export class SidebarComponent {
     });
   } // เพิ่ม Router ใน constructor
   name: string = '';
-  level: string = '';
   empNo: string = '';
   role: string = '';
+  groupName: string = '';
+  sectionName: string = '';
+  subSectionName: string = '';
+
 
   ngOnInit() {
     this.authService.refreshComponents$.subscribe(() => {
@@ -36,6 +39,10 @@ export class SidebarComponent {
     this.name = localStorage.getItem('calling_name')!;
     this.empNo = localStorage.getItem('calling_empNo')!;
     this.role = localStorage.getItem('calling_role')!;
+    this.groupName = localStorage.getItem('calling_group')!;
+    this.sectionName = localStorage.getItem('calling_section')!;
+    this.subSectionName = localStorage.getItem('calling_subSection')!;
+
     if (!this.name) {
       // เปลี่ยนเส้นทางไปที่หน้า LoginPage ก่อน
       this.router.navigate(['/']).then(() => {
@@ -49,7 +56,7 @@ export class SidebarComponent {
         });
       });
     }
-    this.getLevelFromToken();
+    // this.getLevelFromToken();
   }
 
   async signout() {
@@ -74,6 +81,9 @@ export class SidebarComponent {
       // window.location.href = '/ScrapPress';
     }
   }
+
+
+
   // getLevelFromToken() {
   //   const token = localStorage.getItem('angular_token');
   //   const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
@@ -86,14 +96,22 @@ export class SidebarComponent {
   //       this.level = res.level;
   //     });
   // }
-  getLevelFromToken() {
-    this.authService.getUserLevel().subscribe((res: any) => {
-      this.level = res.level;
-    });
-  }
+
+
+
+
+  // getLevelFromToken() {
+  //   this.authService.getUserLevel().subscribe((res: any) => {
+  //     this.level = res.level;
+  //   });
+  // }
   loadUserData() {
-    this.name = localStorage.getItem('calling_name') || '';
-    this.empNo = localStorage.getItem('calling_empNo') || '';
+    this.name = localStorage.getItem('calling_name')!;
+    this.empNo = localStorage.getItem('calling_empNo')!;
+    this.role = localStorage.getItem('calling_role')!;
+    this.groupName = localStorage.getItem('calling_group')!;
+    this.sectionName = localStorage.getItem('calling_section')!;
+    this.subSectionName = localStorage.getItem('calling_subSection')!;
 
     if (!this.name) {
       this.router.navigate(['/']).then(() => {
@@ -107,6 +125,6 @@ export class SidebarComponent {
       return;
     }
 
-    this.getLevelFromToken();
+    // this.getLevelFromToken();
   }
 }

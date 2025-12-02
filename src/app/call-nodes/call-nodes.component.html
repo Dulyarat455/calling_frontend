@@ -116,6 +116,7 @@
             <select
               class="form-select text-center"
               [(ngModel)]="selectedGroupId"
+              (change)="fetchSectionByGroup()"
               [disabled]="isLoading"
             >
               <option [ngValue]="null" disabled> --------------- Group  -----------------</option>
@@ -134,7 +135,7 @@
               class="form-select text-center"
               [(ngModel)]="selectedSectionId"
               (change)="fetchSubSectionBySection()"
-              [disabled]="isLoading"
+              [disabled]="isLoading || !selectedGroupId"
             >
               <option [ngValue]="null" disabled> --------------- Section  -----------------</option>
               <option *ngFor="let s of sections" [ngValue]="s.id">

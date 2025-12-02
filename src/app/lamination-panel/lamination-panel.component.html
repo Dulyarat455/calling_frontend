@@ -65,10 +65,13 @@
   </div>
 
   <app-modal-template 
-  #foodTypeModal 
+  #assignJobModal 
+  [modalName]="modalName"
   [groups] = "groups"
   [machines] = "machines"
   [callNodes]= "callNodes"
+  [userId]="userId"
+  [userName]="userName"
   (groupSelected)="onGroupSelected($event)"
   (machineSelected)="onMachineSelected($event)"
   (callNodeSelected)="onCallNodeSelected($event)"

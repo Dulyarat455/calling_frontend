@@ -71,10 +71,12 @@ export class LaminationPanelComponent {
   @Input() section!: LaminationSection;
   @Output() updateRow = new EventEmitter<RowItem>();
 
-  @ViewChild('foodTypeModal') modal!: ModalTemplateComponent;
+  @ViewChild('assignJobModal') modal!: ModalTemplateComponent;
 
   constructor(private http: HttpClient, private router: Router) {}
-
+  modalName: string = "Lamination AssignJob"
+  userName: string = "";
+  userId: number | null = null; 
   machines: MachineRow[] = [];
   groups: GroupRow[] = [];
   callNodes: CallNodeRow[] = []; 
@@ -87,11 +89,11 @@ export class LaminationPanelComponent {
   ngOnInit() {
     this.fetchGroup();
     this.fetchMachine();
+    this.userName = localStorage.getItem('calling_name')!;
+    this.userId = parseInt(localStorage.getItem('calling_id')!);
   }
 
 
-  
-  
   fetchGroup(){
     this.http.get(config.apiServer + '/api/group/list').subscribe({
       next: (res: any) => {

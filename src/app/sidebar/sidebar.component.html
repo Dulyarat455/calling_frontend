@@ -19,25 +19,35 @@
   <div class="sidebar">
     <!-- User Panel -->
     @if (name != undefined) {
-    <div class="user-panel mt-3 pb-3 mb-3">
-      <div class="d-flex align-items-center p-3 mb-3 bg-dark rounded">
-        <div class="image">
+      <div class="user-panel mt-3 pb-3 mb-3">
+        <div class="d-flex flex-column align-items-center p-3 mb-3 bg-dark rounded">
+          <!-- รูปโปรไฟล์ -->
           <img
             src="dist/img/employee.png"
-            class="img-circle elevation-2"
+            class="img-circle elevation-2 mb-2"
             alt="User Image"
-            style="width: 45px; height: 45px; object-fit: cover"
+            style="width: 60px; height: 60px; object-fit: cover"
           />
+      
+          <!-- รหัสพนักงาน -->
+          <h5 class="text-white mb-2">{{ empNo }}</h5>
+
+           <!-- ✅ เส้นคั่น -->
+          <div class="divider"></div>
+      
+          <!-- badge เรียงเป็นแนวนอนใต้รูป -->
+          <div class="badge-box">
+            <span class="info-badge">{{groupName}}</span>
+            <span class="info-badge">{{sectionName}}</span>
+            <span class="info-badge">{{subSectionName}}</span>
+          </div>
         </div>
-        <div class="info ms-3">
-          <h5 class="text-white mb-1">{{ empNo }}</h5>
-          <small class="text-light opacity-75">{{ level }}</small>
-        </div>
+      
+        <button class="btn btn-danger w-100" (click)="signout()">
+          <i class="fas fa-sign-out-alt me-2"></i>Sign Out
+        </button>
       </div>
-      <button class="btn btn-danger w-100" (click)="signout()">
-        <i class="fas fa-sign-out-alt me-2"></i>Sign Out
-      </button>
-    </div>
+      
     }
 
     <!-- Menu -->
@@ -128,7 +138,17 @@
                 routerLinkActive="active"
               >
                 <i class="fas fa-thumbtack nav-icon"></i>
-                <p class="ms-2">Map Position</p>
+                <p class="ms-2">Map Positions</p>
+              </a>
+            </li>
+            <li class="nav-item">
+              <a
+                routerLink="/flowJob"
+                class="nav-link"
+                routerLinkActive="active"
+              >
+                <i class="fas fa-thumbtack nav-icon"></i>
+                <p class="ms-2">Map FlowJobs</p>
               </a>
             </li>
            
@@ -178,7 +198,7 @@
 
 
         <!-- Admin Menu -->
-        @if (level == 'Admin') {
+        @if (1) {
         <li class="nav-item">
           <h6
             class="sidebar-heading d-flex justify-content-between align-items-center px-3 mb-1 text-light"

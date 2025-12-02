@@ -1,5 +1,5 @@
 
-<app-my-modal modalId="modalFoodType" modalSize="modal-md" (closeRequest)="myModal.close()">
+<app-my-modal modalId="modalAssignJob" modalSize="modal-md" (closeRequest)="myModal.close()">
         
   
          <!-- ส่วนหัว -->
@@ -14,12 +14,39 @@
             border-top-left-radius:8px;
             border-top-right-radius:8px;
           ">
-          Name Pop-up 
+          {{modalName}} 
         </div>
   
         <!-- เนื้อหาโมดัล -->
         <div style="font-family:'Kanit',sans-serif; background:#f6fbf8; border-radius:12px; padding:16px;">
-        
+          
+            <!-- Create By -->
+            <div
+            style="
+              display:grid;
+              grid-template-columns:160px 1fr;
+              align-items:center;
+              gap:10px;
+              margin-bottom:14px;
+            ">
+            <label style="font-weight:700; color:#111; text-align:right;">
+              Create By
+            </label>
+            <input
+              type="text"
+              [(ngModel)]="model.createBy"
+              disabled
+              style="
+                background:#e2e8f0;
+                border:2px solid transparent;
+                border-radius:10px;
+                padding:.6rem .9rem;
+                font-weight:600;
+                width:100%;
+              "
+            />
+          </div>
+
           <!-- Group -->
           <div style="display:grid; grid-template-columns:160px 1fr; align-items:center; gap:10px; margin-bottom:14px;">
             <label style="font-weight:700; color:#111; text-align:right;">Group</label>
@@ -47,7 +74,7 @@
           <!-- Call From -->
           <div style="display:grid; grid-template-columns:160px 1fr; align-items:center; gap:10px; margin-bottom:14px;">
             <label style="font-weight:700; color:#111; text-align:right;">Call From</label>
-            <select [(ngModel)]="model.callFrom"
+            <select [(ngModel)]="model.callFrom" [disabled]="!model.group"
               style="background:#c8f7c5; border:2px solid transparent; border-radius:10px; padding:.6rem .9rem; font-weight:600; width:100%;">
               <option value="" disabled selected>-- Select Node --</option>
               <option *ngFor="let c of callNodes" [value]="c.id">
@@ -59,7 +86,7 @@
           <!-- Call To -->
           <div style="display:grid; grid-template-columns:160px 1fr; align-items:center; gap:10px;">
             <label style="font-weight:700; color:#111; text-align:right;">Call To</label>
-            <select [(ngModel)]="model.callTo"
+            <select [(ngModel)]="model.callTo" [disabled]="!model.group"
               style="background:#c8f7c5; border:2px solid transparent; border-radius:10px; padding:.6rem .9rem; font-weight:600; width:100%;">
               <option value="" disabled selected>-- Select Node --</option>
               <option *ngFor="let c of callNodes" [value]="c.id">
@@ -67,6 +94,34 @@
               </option>
             </select>
           </div>
+
+          <!-- Create By -->
+          <div
+          style="
+            display:grid;
+            grid-template-columns:160px 1fr;
+            align-items:center;
+            gap:10px;
+            margin-bottom:14px;
+            margin-top:14px;
+          ">
+          <label style="font-weight:700; color:#111; text-align:right;">
+            Remark
+          </label>
+          <input
+            type="text"
+           
+            
+            style="
+              background:#e2e8f0;
+              border:2px solid transparent;
+              border-radius:10px;
+              padding:.6rem .9rem;
+              font-weight:600;
+              width:100%;
+            "
+          />
+        </div>
       
           <!-- Error -->
           <div *ngIf="errorMsg"
