@@ -6,9 +6,9 @@ import { CommonModule } from '@angular/common';
 
 export type NameForm = {
   createBy: string;
-  group: string;
+  group: number | null;
   machine: string;
-  callFrom: string;
+  callFrom: number | null;
   callTo: string;
 };
 
@@ -29,7 +29,9 @@ export class ModalTemplateComponent {
   @Input() callNodes: { id:number; code: string }[] = [];
   @Input() userName: string = "";
   @Input() modalName: string = "";
-  @Input() userId : number | null = null;
+  @Input() userId: number | null = null;
+  @Input() userCallNodeId: number | null = null;
+  @Input() userGroupId: number | null = null;
 
    // --- state มาตรฐาน ---
    model: NameForm = this.defaultModel();
@@ -45,12 +47,12 @@ export class ModalTemplateComponent {
 
 
   private defaultModel(): NameForm {
-    return { createBy: '', group: '', machine: '', callFrom: '', callTo: '' };
+    return { createBy: '', group: null , machine: '', callFrom: null, callTo: '' };
   }
 
    // เรียกจากข้างนอกได้ (ผ่าน parent อื่น)
   open(data?: Partial<NameForm>) {
-        this.model = { ...this.defaultModel(), createBy: this.userName ,...(data ?? {}) };
+        this.model = { ...this.defaultModel(), createBy: this.userName, group: this.userGroupId, callFrom: this.userCallNodeId ,...(data ?? {}) };
         this.errorMsg = '';
         // ระวัง: MyModal พร้อมใช้หลัง AfterViewInit เท่านั้น → เรียกจากปุ่ม/เหตุการณ์หลังหน้าเรนเดอร์แล้วจะปลอดภัย
         this.myModal?.open();

@@ -30,7 +30,7 @@
               margin-bottom:14px;
             ">
             <label style="font-weight:700; color:#111; text-align:right;">
-              Create By
+              Create By*
             </label>
             <input
               type="text"
@@ -49,8 +49,8 @@
 
           <!-- Group -->
           <div style="display:grid; grid-template-columns:160px 1fr; align-items:center; gap:10px; margin-bottom:14px;">
-            <label style="font-weight:700; color:#111; text-align:right;">Group</label>
-            <select [(ngModel)]="model.group" (change)="onGroupChange($event)"
+            <label style="font-weight:700; color:#111; text-align:right;">Group*</label>
+            <select [(ngModel)]="model.group" (change)="onGroupChange($event)" disabled
               style="background:#c8f7c5; border:2px solid transparent; border-radius:10px; padding:.6rem .9rem; font-weight:600; width:100%;">
               <option value="" disabled selected>-- Select Group --</option>
               <option *ngFor="let g of groups" [value]="g.id">
@@ -61,8 +61,8 @@
       
           <!-- Machine -->
           <div style="display:grid; grid-template-columns:160px 1fr; align-items:center; gap:10px; margin-bottom:14px;">
-            <label style="font-weight:700; color:#111; text-align:right;">Machine</label>
-            <select [(ngModel)]="model.machine" (change)="onMachineChange($event)" [disabled]="!model.group"
+            <label style="font-weight:700; color:#111; text-align:right;">Machine*</label>
+            <select [(ngModel)]="model.machine" (change)="onMachineChange($event)" 
             style="background:#c8f7c5; border:2px solid transparent; border-radius:10px; padding:.6rem .9rem; font-weight:600; width:100%;">
               <option value="" disabled selected>-- Select Machine --</option>
               <option *ngFor="let m of machines" [value]="m.id">
@@ -73,8 +73,8 @@
       
           <!-- Call From -->
           <div style="display:grid; grid-template-columns:160px 1fr; align-items:center; gap:10px; margin-bottom:14px;">
-            <label style="font-weight:700; color:#111; text-align:right;">Call From</label>
-            <select [(ngModel)]="model.callFrom" [disabled]="!model.group"
+            <label style="font-weight:700; color:#111; text-align:right;">Call From*</label>
+            <select [(ngModel)]="model.callFrom" disabled
               style="background:#c8f7c5; border:2px solid transparent; border-radius:10px; padding:.6rem .9rem; font-weight:600; width:100%;">
               <option value="" disabled selected>-- Select Node --</option>
               <option *ngFor="let c of callNodes" [value]="c.id">
@@ -85,7 +85,7 @@
       
           <!-- Call To -->
           <div style="display:grid; grid-template-columns:160px 1fr; align-items:center; gap:10px;">
-            <label style="font-weight:700; color:#111; text-align:right;">Call To</label>
+            <label style="font-weight:700; color:#111; text-align:right;">Call To*</label>
             <select [(ngModel)]="model.callTo" [disabled]="!model.group"
               style="background:#c8f7c5; border:2px solid transparent; border-radius:10px; padding:.6rem .9rem; font-weight:600; width:100%;">
               <option value="" disabled selected>-- Select Node --</option>
@@ -110,8 +110,6 @@
           </label>
           <input
             type="text"
-           
-            
             style="
               background:#e2e8f0;
               border:2px solid transparent;

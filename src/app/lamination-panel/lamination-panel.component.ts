@@ -74,9 +74,17 @@ export class LaminationPanelComponent {
   @ViewChild('assignJobModal') modal!: ModalTemplateComponent;
 
   constructor(private http: HttpClient, private router: Router) {}
+  //user current
   modalName: string = "Lamination AssignJob"
   userName: string = "";
   userId: number | null = null; 
+  sectionId: number | null = null;
+  sectionName: string = "";
+  subSectionId: number | null = null;
+  subSectionName: string = "";
+  groupId: number | null = null;
+  valueUserCallNodeId: number | null = null;
+  //at modal form
   machines: MachineRow[] = [];
   groups: GroupRow[] = [];
   callNodes: CallNodeRow[] = []; 
@@ -87,10 +95,17 @@ export class LaminationPanelComponent {
 
 
   ngOnInit() {
-    this.fetchGroup();
-    this.fetchMachine();
     this.userName = localStorage.getItem('calling_name')!;
     this.userId = parseInt(localStorage.getItem('calling_id')!);
+    this.sectionId = parseInt(localStorage.getItem("calling_sectionId")!);
+    this.sectionName = localStorage.getItem("calling_section")!;
+    this.subSectionId = parseInt(localStorage.getItem("calling_subSectionId")!);
+    this.subSectionName = localStorage.getItem("calling_subSection")!;
+    this.groupId = parseInt(localStorage.getItem("calling_groupId")!);
+    this.fetchGroup();
+    this.fetchMachine();
+    this.fetchCallNodeFollowUser();
+    this.fetchCallNodeByGroup();
   }
 
 
@@ -135,15 +150,15 @@ export class LaminationPanelComponent {
 
   fetchMachineByGroup(){
 
-    if (!this.selectedGroupId) {
-      this.machines = [];
-      this.selectedMachineId = null;
-      return;
-    }
+    // if (!this.selectedGroupId) {
+    //   this.machines = [];
+    //   this.selectedMachineId = null;
+    //   return;
+    // }
 
     this.http
       .post(config.apiServer + '/api/machine/filterByGroup', {
-        groupId: this.selectedGroupId,
+        groupId: this.groupId,
       })
       .subscribe({
         next: (res: any) => {
@@ -167,15 +182,37 @@ export class LaminationPanelComponent {
       });
   }
 
-  fetchCallNode(){
+  fetchCallNodeByGroup(){
     this.http
     .post(config.apiServer + '/api/callnode/filterByGroup', {
-      groupId: this.selectedGroupId,
+      groupId: this.groupId,
     })
     .subscribe({
       next: (res: any) => {
         this.callNodes = res.results || [];
         this.selectedCallNodeId = null; // เลือกใหม่ทุกครั้งที่เปลี่ยน Group
+      },
+      error: (err) => {
+        Swal.fire({
+          title: 'Error',
+          text: err.message || 'Cannot load Node',
+          icon: 'error',
+        });
+      },
+    });
+  }
+
+  fetchCallNodeFollowUser(){
+    this.http
+    .post(config.apiServer + '/api/callnode/filterTriParam', {
+      groupId: this.groupId,
+      sectionId: this.sectionId,
+      subSectionId: this.subSectionId
+    })
+    .subscribe({
+      next: (res: any) => {
+      this.valueUserCallNodeId = res.row.id;
+      // console.log("fromcallnodefollowUser", res.row.id);
       },
       error: (err) => {
         Swal.fire({
@@ -232,7 +269,7 @@ export class LaminationPanelComponent {
   onGroupSelected(groupId: number) {
     this.selectedGroupId = groupId;
     this.fetchMachineByGroup();
-    this.fetchCallNode();
+    
     console.log("Selected group:", groupId);
   }
   
