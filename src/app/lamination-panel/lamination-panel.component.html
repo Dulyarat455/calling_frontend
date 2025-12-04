@@ -67,16 +67,20 @@
   <app-modal-template 
   #assignJobModal 
   [modalName]="modalName"
+  [empNo]="empNo"
   [userCallNodeId]="valueUserCallNodeId"
   [userGroupId]="groupId"
   [groups] = "groups"
   [machines] = "machines"
   [callNodes]= "callNodes"
+  [filterByGroupFromNodecallNodes]="filterByGroupFromNodecallNodes"
   [userId]="userId"
   [userName]="userName"
-  (groupSelected)="onGroupSelected($event)"
-  (machineSelected)="onMachineSelected($event)"
-  (callNodeSelected)="onCallNodeSelected($event)"
+  [isLoading]="isLoading"
+  
+  (machineSelectedId)="onMachineSelected($event)"
+  (callNodeToSelectedId)="onCallNodeToSelected($event)"
+  (remarkValue)="onRemarkValue($event)"
   
   (saved)="onSaved($event)">
 

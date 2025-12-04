@@ -47,10 +47,37 @@
             />
           </div>
 
+
+          <div
+          style="
+            display:grid;
+            grid-template-columns:160px 1fr;
+            align-items:center;
+            gap:10px;
+            margin-bottom:14px;
+          ">
+          <label style="font-weight:700; color:#111; text-align:right;">
+            EmpNo*
+          </label>
+          <input
+            type="text"
+            [(ngModel)]="model.empNo"
+            disabled
+            style="
+              background:#e2e8f0;
+              border:2px solid transparent;
+              border-radius:10px;
+              padding:.6rem .9rem;
+              font-weight:600;
+              width:100%;
+            "
+          />
+        </div>
+
           <!-- Group -->
           <div style="display:grid; grid-template-columns:160px 1fr; align-items:center; gap:10px; margin-bottom:14px;">
             <label style="font-weight:700; color:#111; text-align:right;">Group*</label>
-            <select [(ngModel)]="model.group" (change)="onGroupChange($event)" disabled
+            <select [(ngModel)]="model.group"  disabled
               style="background:#c8f7c5; border:2px solid transparent; border-radius:10px; padding:.6rem .9rem; font-weight:600; width:100%;">
               <option value="" disabled selected>-- Select Group --</option>
               <option *ngFor="let g of groups" [value]="g.id">
@@ -86,30 +113,35 @@
           <!-- Call To -->
           <div style="display:grid; grid-template-columns:160px 1fr; align-items:center; gap:10px;">
             <label style="font-weight:700; color:#111; text-align:right;">Call To*</label>
-            <select [(ngModel)]="model.callTo" [disabled]="!model.group"
+            <select [(ngModel)]="model.callTo" (change)="onCallNodeToChange($event)"
               style="background:#c8f7c5; border:2px solid transparent; border-radius:10px; padding:.6rem .9rem; font-weight:600; width:100%;">
               <option value="" disabled selected>-- Select Node --</option>
-              <option *ngFor="let c of callNodes" [value]="c.id">
-                {{ c.code }}
+              <option *ngFor="let f of filterByGroupFromNodecallNodes" [value]="f.id">
+                {{ f.code }}
               </option>
             </select>
           </div>
 
-          <!-- Create By -->
+          <!-- Remark such as description -->
           <div
           style="
             display:grid;
             grid-template-columns:160px 1fr;
-            align-items:center;
+            align-items:flex-start;
             gap:10px;
             margin-bottom:14px;
             margin-top:14px;
-          ">
-          <label style="font-weight:700; color:#111; text-align:right;">
+          "
+          >
+          <label style="font-weight:700; color:#111; text-align:right; padding-top:6px;">
             Remark
           </label>
-          <input
-            type="text"
+        
+          <textarea
+            autoGrow
+            [minHeight]="60"
+            placeholder="Description / บันทึกเพิ่มเติม..."
+            (input)="onRemarkChange($event)"
             style="
               background:#e2e8f0;
               border:2px solid transparent;
@@ -117,9 +149,12 @@
               padding:.6rem .9rem;
               font-weight:600;
               width:100%;
+              overflow:hidden;   /* ไม่ให้แสดง scrollbar */
+              resize:none;        /* ไม่ต้องลาก */
             "
-          />
+          ></textarea>
         </div>
+        
       
           <!-- Error -->
           <div *ngIf="errorMsg"
@@ -129,13 +164,13 @@
       
           <!-- ปุ่มล่าง -->
           <div style="margin-top:18px; display:flex; justify-content:flex-end; gap:10px; background:#f1f5f9; padding-top:10px; border-top:1px solid #ddd;">
-            <button class="btn btn-outline-secondary" (click)="clear()" [disabled]="isSaving"
+            <button class="btn btn-outline-secondary" (click)="clear()" [disabled]="isLoading"
               style="border:2px solid #ccc; border-radius:10px; padding:.5rem 1.2rem; font-weight:700; min-width:120px;">
               <i class="fa fa-eraser me-1"></i>Clear
             </button>
             <button class="btn btn-primary" (click)="save()" [disabled]="!canSave"
               style="background:#1678ff; border:none; border-radius:10px; padding:.5rem 1.2rem; font-weight:700; min-width:120px;">
-              <i class="fa fa-check me-1"></i>{{ isSaving ? 'กำลังบันทึก…' : 'บันทึก' }}
+              <i class="fa fa-check me-1"></i>{{ isLoading ? 'กำลังบันทึก…' : 'บันทึก' }}
             </button>
           </div>
         </div>
