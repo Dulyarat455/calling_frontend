@@ -39,5 +39,17 @@
 }
 
 
+.lam-preview-scroll {
+  max-height: 180px;    /* ปรับให้พอดีกับ ~3 แถว */
+  overflow-y: auto;
+  padding-right: 4px;   /* กัน scrollbar ทับเนื้อหา */
+}
+
+.lam-preview-scroll .list-group-item {
+  min-height: 56px;     /* ให้แต่ละแถวสูงเท่าๆ กัน ดูเรียบร้อย */
+}
+
+
+
 
  

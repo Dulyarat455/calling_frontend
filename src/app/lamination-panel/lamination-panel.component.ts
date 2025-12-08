@@ -14,6 +14,7 @@ export interface RowItem {
   time: string;
   station: string;
   status: Status;
+  date: string; 
 }
 
 

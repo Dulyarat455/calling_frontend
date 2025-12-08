@@ -1,87 +1,129 @@
-<div class="mb-5 position-relative panel-wrap">
- 
-    <div class="card border-0" style="border-radius:12px;background:#e3e3e3;">
-      <div class="card-header text-white fw-semibold"
-           style="background:#2f2f30;border-top-left-radius:12px;border-top-right-radius:12px;">
-        {{ section.title || 'Parts wait move by Store PC' }}
+<div class="min-vh-100 py-4" style="background: #eaf6f9">
+  <div class="container-lg">
+    <div class="card shadow-lg border-0" style="border-radius: 14px">
+      <div
+        class="card-header text-white d-flex align-items-center gap-2"
+        style="
+          background: #36393c;
+          border-top-left-radius: 14px;
+          border-top-right-radius: 14px;
+        "
+      >
+        <i class="fas fa-chart-line fs-4"></i>
+        <h4 class="mb-0 fw-bold">Dashboard</h4>
       </div>
-  
+
       <div class="card-body p-4">
-
-        <!-- แถบหัว + สรุป -->
-        <div class="d-flex align-items-center justify-content-between mb-4">
-          <!-- กรอบเขียว -->
-          <div class="flex-grow-1 d-flex justify-content-between align-items-center p-3 rounded-3"
-               style="background:#79f2a2;">
-            <span class="fw-semibold fs-5">{{ section.header || 'Lamination' }}</span>
-        
-            <div class="d-flex gap-4">
-              <span class="summary-chip">wait : {{ section.waitCount }}</span>
-              <span class="summary-chip">pending : {{ section.pendingCount }}</span>
-            </div>
-          </div>
-        
-          <!-- ปุ่มอยู่นอกกรอบ แต่บรรทัดเดียวกัน -->
-          <button
-            class="btn btn-primary  ms-3"
-            data-bs-toggle="modal"
-            data-bs-target="#modalRegister"
-            (click)="openModal()"
+        <div class="mb-5 position-relative panel-wrap">
+          <div
+            class="card border-0"
+            style="border-radius: 12px; background: #e3e3e3"
           >
-            <i class="fa fa-file-alt me-1"></i>  Add Job
-          </button>
-        </div>
-        
-        <!-- ✅ ลูปคอลัมน์แบบรวม -->
-        <div class="row g-3">
-          <div class="col-md-6" *ngFor="let col of columns(); trackBy: trackCol; index as i">
-            <div class="list-group rounded-3 overflow-hidden">
-              <a *ngFor="let item of col; trackBy: trackRow"
-                 class="list-group-item list-group-item-action d-flex align-items-center justify-content-between"
-                 [ngClass]="rowClass(item)">
-                <div class="d-flex align-items-center gap-3">
-                  <span class="mono kanit kanit-bold">{{ item.time }}</span>
-                  <span class="fw-semibold">{{ item.station }}</span>
-                </div>
-  
-                <div class="d-flex align-items-center gap-2">
-                  <span class="status-chip" [ngClass]="item.status">{{ item.status }}</span>
-                  <!-- ปุ่มคนละสีซ้าย/ขวาได้ตาม index -->
-                  <button class="btn btn-sm fw-semibold btn-primary"
-                  (click)="onUpdate(item); openModal()">
-                        Update 
-                  </button>
-                </div>
-              </a>
+            <div
+              class="card-header text-white fw-semibold"
+              style="
+                background: #2f2f30;
+                border-top-left-radius: 12px;
+                border-top-right-radius: 12px;
+              "
+            >
+              {{ section.title || "Parts wait move by Store PC" }}
             </div>
-            
+
+            <div class="card-body p-4">
+              <!-- แถบหัว + สรุป -->
+              <div
+                class="d-flex align-items-center justify-content-between mb-4"
+              >
+                <!-- กรอบเขียว -->
+                <div
+                  class="flex-grow-1 d-flex justify-content-between align-items-center p-3 rounded-3"
+                  style="background: #79f2a2"
+                >
+                  <span class="fw-semibold fs-5">{{
+                    section.header || "Lamination"
+                  }}</span>
+
+                  <div class="d-flex gap-4">
+                    <span class="summary-chip"
+                      >wait : {{ section.waitCount }}</span
+                    >
+                    <span class="summary-chip"
+                      >pending : {{ section.pendingCount }}</span
+                    >
+                  </div>
+                </div>
+
+                <!-- ปุ่มอยู่นอกกรอบ แต่บรรทัดเดียวกัน -->
+                <button
+                  class="btn btn-primary ms-3"
+                  data-bs-toggle="modal"
+                  data-bs-target="#modalRegister"
+                  (click)="openModal()"
+                >
+                  <i class="fa fa-file-alt me-1"></i> Add Job
+                </button>
+              </div>
+
+              <!-- ✅ ลูปคอลัมน์แบบรวม -->
+              <div class="row g-3">
+                <div
+                  class="col-md-6"
+                  *ngFor="let col of columns(); trackBy: trackCol; index as i"
+                >
+                  <div class="list-group rounded-3 overflow-hidden">
+                    <a
+                      *ngFor="let item of col; trackBy: trackRow"
+                      class="list-group-item list-group-item-action d-flex align-items-center justify-content-between"
+                      [ngClass]="rowClass(item)"
+                    >
+                      <div class="d-flex align-items-center gap-3">
+                        <span class="mono kanit kanit-bold">{{
+                          item.time
+                        }}</span>
+                        <span class="fw-semibold">{{ item.station }}</span>
+                      </div>
+
+                      <div class="d-flex align-items-center gap-2">
+                        <span class="status-chip" [ngClass]="item.status">{{
+                          item.status
+                        }}</span>
+                        <!-- ปุ่มคนละสีซ้าย/ขวาได้ตาม index -->
+                        <button
+                          class="btn btn-sm fw-semibold btn-primary"
+                          (click)="onUpdate(item); openModal()"
+                        >
+                          Update
+                        </button>
+                      </div>
+                    </a>
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
-        
       </div>
-      
     </div>
-     
   </div>
+</div>
 
-  <app-modal-template 
-  #assignJobModal 
+<app-modal-template
+  #assignJobModal
   [modalName]="modalName"
   [empNo]="empNo"
   [userCallNodeId]="valueUserCallNodeId"
   [userGroupId]="groupId"
-  [groups] = "groups"
-  [machines] = "machines"
-  [callNodes]= "callNodes"
+  [groups]="groups"
+  [machines]="machines"
+  [callNodes]="callNodes"
   [filterByGroupFromNodecallNodes]="filterByGroupFromNodecallNodes"
   [userId]="userId"
   [userName]="userName"
   [isLoading]="isLoading"
-  
   (machineSelectedId)="onMachineSelected($event)"
   (callNodeToSelectedId)="onCallNodeToSelected($event)"
   (remarkValue)="onRemarkValue($event)"
-  
-  (saved)="onSaved($event)">
-
-  </app-modal-template>
+  (saved)="onSaved($event)"
+>
+</app-modal-template>

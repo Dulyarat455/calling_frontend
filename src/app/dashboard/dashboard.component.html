@@ -19,13 +19,55 @@
                style="background-color:#2c2c2c; border-top-left-radius:10px; border-top-right-radius:10px;">
             Parts wait move by Store PC
           </div>
+
           <div class="card-body">
+            <!-- แถวสรุป Lamination -->
             <div class="d-flex justify-content-between align-items-center p-3 rounded" 
                  style="background:#79f2a2;">
               <span class="fw-semibold">Lamination</span>
-              <span class="fw-semibold">12</span>
+        
+              <div class="d-flex align-items-center gap-3">
+                <span class="fw-semibold">12</span>
+                <button
+                  class="btn btn-sm btn-outline-dark"
+                  (click)="toggleLamPreview()">
+                  {{ showLamPreview ? 'Hide detail' : 'View detail' }}
+                </button>
+              </div>
+            </div>
+        
+            <!-- ✅ ดรอปดาวน์แสดง 3 แถวล่าสุด -->
+            <div *ngIf="showLamPreview" class="mt-3">
+              <!-- กล่องที่ *จำกัดความสูง* และมี scrollbar -->
+              <div class="lam-preview-scroll">
+                <div class="list-group rounded-3 overflow-hidden">
+                  <div
+                    class="list-group-item d-flex align-items-center justify-content-between"
+                    *ngFor="let item of laminationPreview"
+                  >
+                    <div class="d-flex align-items-center gap-3">
+                      <span class="mono fw-semibold">{{ item.date }}</span>
+                      <span class="mono fw-semibold">{{ item.time }}</span>
+                      <span class="fw-semibold">{{ item.station }}</span>
+                    </div>
+            
+                    <span
+                      class="badge rounded-pill px-3 py-2 text-capitalize"
+                      [ngClass]="
+                        item.status === 'wait'
+                          ? 'bg-success'
+                          : 'bg-warning text-dark'
+                      "
+                    >
+                      {{ item.status }}
+                    </span>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
+
+
         </div>
 
         <!-- Dashboard 2 -->
@@ -40,16 +82,90 @@
                 <div class="d-flex justify-content-between align-items-center p-3 rounded" 
                      style="background:#d4f787;">
                   <span class="fw-semibold">General</span>
-                  <span class="fw-semibold">8</span>
+                  <div class="d-flex align-items-center gap-3">
+                    <span class="fw-semibold">8</span>
+                    <button
+                      class="btn btn-sm btn-outline-dark"
+                      (click)="toggleGenPreview()">
+                      {{ showGenPreview ? 'Hide detail' : 'View detail' }}
+                    </button>
+                  </div>
                 </div>
+
+                 <!-- preview General -->
+                  <div *ngIf="showGenPreview" class="mt-2">
+                    <div class="lam-preview-scroll">
+                      <div class="list-group rounded-3 overflow-hidden">
+                        <div
+                          class="list-group-item d-flex align-items-center justify-content-between"
+                          *ngFor="let item of generalPreview"
+                        >
+                          <div class="d-flex align-items-center gap-3">
+                            <span class="mono fw-semibold">{{ item.date }}</span>
+                            <span class="mono fw-semibold">{{ item.time }}</span>
+                            <span class="fw-semibold">{{ item.station }}</span>
+                          </div>
+                          <span
+                            class="badge rounded-pill px-3 py-2 text-capitalize"
+                            [ngClass]="
+                              item.status === 'wait'
+                                ? 'bg-success'
+                                : 'bg-warning text-dark'
+                            ">
+                            {{ item.status }}
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
               </div>
+
+
+
               <div class="col-md-6">
                 <div class="d-flex justify-content-between align-items-center p-3 rounded" 
                      style="background:#9feefc;">
                   <span class="fw-semibold">stator</span>
-                  <span class="fw-semibold">5</span>
+                  <div class="d-flex align-items-center gap-3">
+                    <span class="fw-semibold">5</span>
+                    <button
+                      class="btn btn-sm btn-outline-dark"
+                      (click)="toggleStaPreview()">
+                      {{ showStaPreview ? 'Hide detail' : 'View detail' }}
+                    </button>
+                  </div>
                 </div>
+
+                   <!-- preview Stator -->
+                <div *ngIf="showStaPreview" class="mt-2">
+                  <div class="lam-preview-scroll">
+                    <div class="list-group rounded-3 overflow-hidden">
+                      <div
+                        class="list-group-item d-flex align-items-center justify-content-between"
+                        *ngFor="let item of statorPreview"
+                      >
+                        <div class="d-flex align-items-center gap-3">
+                          <span class="mono fw-semibold">{{ item.date }}</span>
+                          <span class="mono fw-semibold">{{ item.time }}</span>
+                          <span class="fw-semibold">{{ item.station }}</span>
+                        </div>
+                        <span
+                          class="badge rounded-pill px-3 py-2 text-capitalize"
+                          [ngClass]="
+                            item.status === 'wait'
+                              ? 'bg-success'
+                              : 'bg-warning text-dark'
+                          ">
+                          {{ item.status }}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                  </div>
+
               </div>
+
             </div>
           </div>
         </div>
@@ -58,33 +174,13 @@
     </div> <!-- card -->
   }
   @if(groupDashboard === "Lamination"){
-    
-    <!-- Lamination -->
-    <div class="min-vh-100 py-4" style="background:#eaf6f9;">
-      <div class="container-lg">
-        <div class="card shadow-lg border-0" style="border-radius:14px;">
-          <div class="card-header text-white d-flex align-items-center gap-2"
-               style="background:#36393c;border-top-left-radius:14px;border-top-right-radius:14px;">
-            <i class="fas fa-chart-line fs-4"></i>
-            <h4 class="mb-0 fw-bold">Dashboard</h4>
-          </div>
-    
-          <div class="card-body p-4">
-            <app-lamination-panel
-              [section]="section1"
-              (updateRow)="onUpdateRow($event)">
-            </app-lamination-panel>
-          </div>
-        </div>
-      </div>
-    </div>
-}
-@if( groupDashboard === "General" || groupDashboard === "Stator"){ 
-  <app-general-stator-panel [groups]="groups"></app-general-stator-panel>
-}
-
-
-
+      <!-- Lamination -->
+    <app-lamination-panel  [section]="section1" (updateRow)="onUpdateRow($event)"></app-lamination-panel>                
+  }
+  @if( groupDashboard === "General" || groupDashboard === "Stator"){ 
+      <!-- General & Stator -->
+    <app-general-stator-panel [groups]="groups"></app-general-stator-panel>
+  }
 
   </div> <!-- container -->
 </div>
