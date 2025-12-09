@@ -48,6 +48,9 @@ export class AuthService {
     localStorage.setItem('calling_sectionId',userData.sectionId);
     localStorage.setItem('calling_subSection',userData.subSectionName);
     localStorage.setItem('calling_subSectionId',userData.subSectionId);
+    localStorage.setItem('calling_callNodeId',userData.callNodeId);
+    localStorage.setItem('calling_callNodeCode',userData.callNodeCode);
+    
 
     // set calling_group ********
     this.authStatus.next(true);
@@ -66,6 +69,8 @@ export class AuthService {
     localStorage.removeItem('calling_sectionId');
     localStorage.removeItem('calling_subSection');
     localStorage.removeItem('calling_subSectionId');
+    localStorage.removeItem('calling_callNodeId');
+    localStorage.removeItem('calling_callNodeCode');
     
     this.authStatus.next(false);
     window.location.href = '/ScrapPress';

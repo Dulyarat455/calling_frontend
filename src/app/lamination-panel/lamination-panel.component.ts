@@ -12,9 +12,22 @@ import config from '../../config';
 export type Status = 'wait' | 'pending';
 export interface RowItem {
   time: string;
-  station: string;
   status: Status;
   date: string; 
+  //addnew
+  jobId:number;
+  createByUserId: number;
+  createByUserName: string;
+  createByUserEmpNo: string;
+  remark: string;
+  machineId: number;
+  machineName: string;
+  groupId: number;
+  groupName: string;
+  fromNodeId: number;
+  fromNodeName: string;
+  toNodeId: number;
+  toNodeName: string;
 }
 
 
@@ -23,11 +36,11 @@ export interface LaminationSection {
   header?: string;  // ชื่อแถบเขียว ("Lamination")
   waitCount: number;
   pendingCount: number;
-  columns?: RowItem[][];  // ✅ โครงสร้างใหม่แบบรวมคอลัมน์
-  left: RowItem[];
-  right: RowItem[];
+  Rows: RowItem[]
 }
 
+
+//at modal form
 type GroupRow = {
   id: number;
   name: string;
@@ -87,6 +100,7 @@ export class LaminationPanelComponent {
   groupId: number | null = null;
   groupName: string = "";
   valueUserCallNodeId: number | null = null;
+  valueUserCallNodeName: string = "";
   //at modal form
   machines: MachineRow[] = [];
   groups: GroupRow[] = [];
@@ -110,12 +124,13 @@ export class LaminationPanelComponent {
     this.subSectionName = localStorage.getItem("calling_subSection")!;
     this.groupId = parseInt(localStorage.getItem("calling_groupId")!);
     this.groupName = localStorage.getItem("calling_group")!;
+    this.valueUserCallNodeName = localStorage.getItem("calling_callNodeCode")!;
 
     this.fetchGroup();
     this.fetchMachineByGroup();
     this.fetchCallNodeByGroup();
     this.fetchCallNodeFollowUser();
-    
+
   }
 
 
@@ -134,29 +149,6 @@ export class LaminationPanelComponent {
       },
     });
   }
-
-  // fetchMachine(){
-  //   this.http.get(config.apiServer + '/api/machine/list').subscribe({
-  //     next: (res: any) => {
-  //     this.machines = (res.results || []).map((r: any) => ({
-  //         id: r.id,
-  //         code: r.code ,
-  //         groupId: r.groupId,
-  //         isActive: r.isActive,
-  //         state: r.State,
-  //         groupName: r.Groups?.name ?? '',
-  //       }))
-
-  //     },
-  //     error: (err) => {
-  //       Swal.fire({
-  //         title: 'Error',
-  //         text: err.message,
-  //         icon: 'error',
-  //       });
-  //     },
-  //   }); 
-  // }
 
   fetchMachineByGroup(){
     this.http
@@ -249,13 +241,13 @@ export class LaminationPanelComponent {
 
 
   openModal(item?: RowItem) {
-    // const preset = item
-    // ? { group: 'Lamination', machine: item.station }  // เอาชื่อ station ไปเติมในช่อง Machine
-    // : { group: 'Lamination' };
-    const preset = item ? { machine: item.station } : {};
-    this.modal.open(preset);
+   
+    // const preset = item ? { machine: item.machineName } : {};
+    // console.log("check preset: ",preset)
+    this.modal.open();
   }
 
+  
 
   onSaved(data: any) {
      if(this.isLoading) return ;
@@ -330,25 +322,9 @@ export class LaminationPanelComponent {
 
   }
 
-
-
-
-  // แปลง section ให้กลายเป็นลิสต์คอลัมน์เดียวเสมอ (ใหม่/เก่าใช้ร่วมกัน)
-  columns(): RowItem[][] {
-    if (this.section?.columns?.length) return this.section.columns!;
-    return [this.section?.left ?? [], this.section?.right ?? []];
-  }
-
-  rowClass(item: RowItem) {
-    return {
-      'row-wait': item.status === 'wait',
-      'row-pending': item.status === 'pending',
-    };
-  }
-
   onUpdate(item: RowItem) {
-    this.updateRow.emit(item);
     this.openModal(item);
+    this.updateRow.emit(item);
   }
 
   onMachineSelected(machineId: number) {
@@ -373,7 +349,4 @@ export class LaminationPanelComponent {
   //   console.log("Selected group:", groupId);
   // }
   
-
-  trackCol = (i: number, _c: RowItem[]) => i;                       // คอลัมน์
-  trackRow = (_: number, r: RowItem) => `${r.time}-${r.station}`;   // แถว
 }

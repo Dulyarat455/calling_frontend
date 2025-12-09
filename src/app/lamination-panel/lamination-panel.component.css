@@ -60,10 +60,6 @@
     }
   }
   
-
-  
-  
-
   .kanit {
     font-family: "Kanit", sans-serif !important;
     font-weight: 500; 
@@ -72,3 +68,36 @@
 
   .kanit-light { font-weight: 300; }
   .kanit-bold { font-weight: 700; }
+
+
+
+  /* ความสูงประมาณ 5 แถว (ถ้า 1 แถว ~56px) */
+  .lam-preview-scroll {
+    max-height: 300px;   /* ลองปรับ 280–320px ตามที่ชอบ */
+    overflow-y: auto;
+    padding-right: 4px;   /* กัน scrollbar ทับตัวหนังสือ */
+  }
+
+  /* ให้แต่ละแถวสูงเท่า ๆ กัน ดูเรียบร้อย */
+  .lam-preview-scroll .list-group-item {
+    min-height: 56px;
+  }
+
+
+  .list-group-item {
+    background-color: #ffffff !important;
+    border-bottom: 1px solid #e0e0e0 !important;
+  }
+
+
+  .node-tag {
+    background: #e6f7ff;        /* ฟ้าอ่อน สุภาพ เข้ากับ UI */
+    color: #0366d6;             /* น้ำเงินอ่อน */
+    padding: 4px 10px;
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: 0.9rem;
+    white-space: nowrap;
+    display: inline-block;
+    border: 1px solid #cde8ff;  /* เพิ่มความเรียบร้อย */
+  }

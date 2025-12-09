@@ -8,6 +8,14 @@ import { Router} from '@angular/router';
 import Swal from 'sweetalert2';
 import config from '../../config';
 
+export type Status = 'wait' | 'pending';
+type CheckTest = {
+  time: string;
+  station: string;
+  status: Status;
+  date: string
+}
+
 
 type States = {
   id: number;
@@ -97,16 +105,13 @@ export class DashboardComponent {
   // };
 
 
-
-
   section1 = {
     waitCount: 0,
     pendingCount: 0,
-    left: [] as RowItem[],
-    right: [] as RowItem[],
+    Rows: [] as RowItem[]
+    // left: [] as RowItem[],
+    // right: [] as RowItem[],
   };
-
-
 
 
 
@@ -143,31 +148,42 @@ export class DashboardComponent {
             day: '2-digit',
           })
         : '',
-        station: job.machineName,   // ใช้ชื่อเครื่องเป็น station
+        machineName: job.machineName,   // ใช้ชื่อเครื่องเป็น station
         status,
+        //add new
+        jobId: job.id,
+        createByUserId: job.createByUserId,
+        createByUserName: job.createByUserName,
+        createByUserEmpNo: job.createByUserEmpNo,
+        remark: job.remark,
+        machineId: job.machineId,
+        groupId: job.groupId,
+        groupName: job.groupName,
+        fromNodeId: job.fromNodeId,
+        fromNodeName: job.fromNodeName,
+        toNodeId: job.toNodeId,
+        toNodeName: job.toNodeName,
       };
     });
   
     // 2) นับยอด wait / pending
     const waitCount = allRows.filter(r => r.status === 'wait').length;
     const pendingCount = allRows.filter(r => r.status === 'pending').length;
+
   
     // 3) แบ่งซ้าย-ขวา (ครึ่งหน้า/ครึ่งหลัง)
-    const mid = Math.ceil(allRows.length / 2);
-    const left = allRows.slice(0, mid);
-    const right = allRows.slice(mid);
+    // const mid = Math.ceil(allRows.length / 2);
+    // const left = allRows.slice(0, mid);
+    // const right = allRows.slice(mid);
   
     // 4) อัปเดต section1 ที่ UI ใช้อยู่
     this.section1 = {
       waitCount,
       pendingCount,
-      left,
-      right,
+      Rows:allRows
     };
   }
   
-
-
 
   onUpdateRow(row: RowItem) {
     // TODO: เปิด modal / เรียก API / เปลี่ยนสถานะ ฯลฯ
@@ -205,26 +221,26 @@ export class DashboardComponent {
 
 
   
-  get laminationPreview(): RowItem[] {
-    const merged: RowItem[] = [
-      ...this.section1.left,
-      ...this.section1.right,
-    ];
-    // เอา 3 แถวท้ายสุด (คิดว่าเป็นเวลาล่าสุด)
-    // return merged.slice(-3);
-    return merged;
-  }
+  // get laminationPreview(): RowItem[] {
+  //   const merged: RowItem[] = [
+  //     ...this.section1.left,
+  //     ...this.section1.right,
+  //   ];
+  //   // เอา 3 แถวท้ายสุด (คิดว่าเป็นเวลาล่าสุด)
+  //   // return merged.slice(-3);
+  //   return merged;
+  // }
 
 
   // General
-  get generalPreview(): RowItem[] {
+  get generalPreview(): CheckTest[] {
     const g = this.groups.find(gr => gr.key === 'general');
     if (!g) return [];
     return g.rows
   }
 
   // Stator
-  get statorPreview(): RowItem[] {
+  get statorPreview(): CheckTest[] {
     const g = this.groups.find(gr => gr.key === 'stator');
     if (!g) return [];
     return g.rows

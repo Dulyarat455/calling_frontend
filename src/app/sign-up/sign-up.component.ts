@@ -311,7 +311,8 @@ export class SignUpComponent {
           timer: 1500,
           showConfirmButton: true,
         })
-
+        
+        this.fetchDataUser();
         this.myModal.close();
         this.clearForm();
       },

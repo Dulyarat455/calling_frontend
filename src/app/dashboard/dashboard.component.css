@@ -50,6 +50,18 @@
 }
 
 
+.node-tag {
+  background: #e6f7ff;        /* ฟ้าอ่อน สุภาพ เข้ากับ UI */
+  color: #0366d6;             /* น้ำเงินอ่อน */
+  padding: 4px 10px;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 0.9rem;
+  white-space: nowrap;
+  display: inline-block;
+  border: 1px solid #cde8ff;  /* เพิ่มความเรียบร้อย */
+}
+
 
 
  
