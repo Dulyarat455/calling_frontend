@@ -1,12 +1,14 @@
-import { Component, EventEmitter, Input, Output, ViewChild } from '@angular/core';
+import { Component, EventEmitter, Input, Output, ViewChild, ElementRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { LaminationPanelComponent,RowItem } from '../lamination-panel/lamination-panel.component';
 import { GeneralStatorPanelComponent,Group } from '../general-stator-panel/general-stator-panel.component';
 import { HttpClient } from '@angular/common/http';
 import { Router} from '@angular/router';
+import { Subscription } from 'rxjs';
 
 import Swal from 'sweetalert2';
 import config from '../../config';
+import { CallSocketService } from '../services/call-socket.service';
 
 export type Status = 'wait' | 'pending';
 type CheckTest = {
@@ -57,6 +59,7 @@ export class DashboardComponent {
   roleDashboard: string | undefined = '';
   groupDashboard: string | undefined = '';
   groupDashboardId: number | null = null;
+  userCallNodeId: number | null = null;
 
   jobLaminations: JobRow[] = [];
   jobGenerals: JobRow[] = [];
@@ -66,12 +69,36 @@ export class DashboardComponent {
   showGenPreview = true;
   showStaPreview = true;
 
-  constructor(private http: HttpClient, private router: Router) {}
+  wsSub?: Subscription;
+
+  checkLamNotifyWait: number = 0;
+  checkLamNotifyPending: number = 0;
+
+  checkUnAuthorizedLamNotifyWait: number = 0;
+  checkUnAuthorizedLamNotifyPending: number = 0;
+
+  checkUnAuthorizedGenNotifyWait: number = 0;
+  checkUnAuthorizedGenNotifyPending: number = 0;
+
+  checkUnAuthorizedStaNotifyWait: number = 0;
+  checkUnAuthorizedStaNotifyPending: number = 0;
+
+
+  constructor(
+    private http: HttpClient, 
+    private router: Router,
+    private callSocket: CallSocketService,
+  ) {}
+
+  @ViewChild('lamScroll') lamScroll?: ElementRef<HTMLDivElement>;
 
   ngOnInit() {
+    this.checkLamNotifyWait = 0
+    this.checkLamNotifyPending = 0
     this.token = localStorage.getItem('calling_token')!;
     this.roleDashboard = localStorage.getItem('calling_role')!;
     this.groupDashboard = localStorage.getItem('calling_group')!;
+    this.userCallNodeId = Number(localStorage.getItem('calling_callNodeId')!);
 
     //get groupId 
     const raw = localStorage.getItem('calling_groupId');
@@ -82,7 +109,68 @@ export class DashboardComponent {
     this.fetchJobByGen();
     this.fetchJobByLam();
     this.fetchJobBySta();
+
+
+    // ✅ ฟัง event จาก websocket
+    this.wsSub = this.callSocket.onJobChanged().subscribe((payload: any) => {
+    console.log('job:changed payload =', payload);
+
+    const job = payload?.job;
+    const afterCreatetoNodeId = job.toNodeId; 
+
+    if(!job) {return;}
+
+    // สมมติ backend ส่ง payload แบบ { type, job } มา
+    // และ job.groupId คือ group ที่เกี่ยวข้อง
+    const groupId = payload?.job?.groupId;
+
+    // ถ้าอยาก reload แค่ Lamination groupId = 3
+    if (groupId === 3) {
+      this.fetchJobByLam();
+    }
+    //update notify wait เมื่อมี request ใหม่เข้ามา
+    if(this.userCallNodeId === afterCreatetoNodeId){
+      this.checkLamNotifyWait = 1;
+    }
+    //update notify wait ของ dashboard unAuthorized
+    this.checkUnAuthorizedLamNotifyWait = 1;
+
+  });
+
   }
+
+
+  private clearLamNotify() {
+    this.checkLamNotifyWait = 0;
+    this.checkUnAuthorizedLamNotifyWait = 0;
+  }
+
+
+  onLamScroll() {
+    const el = this.lamScroll?.nativeElement;
+    if (!el) return;
+  
+    const atBottom =
+      el.scrollTop + el.clientHeight >= el.scrollHeight - 1;
+  
+    if (atBottom) {
+      this.clearLamNotify();
+    }
+  }
+
+  onLamClick() {
+    const el = this.lamScroll?.nativeElement;
+    if (!el) return;
+  
+    // ถ้าไม่มี scrollbar (รายการน้อย → เห็นครบทุกแถวในจอเดียว)
+    const noScroll = el.scrollHeight <= el.clientHeight + 1;
+  
+    if (noScroll) {
+      this.clearLamNotify();
+    }
+  }
+  
+  
 
   // part for lam
   // section1 = {
@@ -109,8 +197,6 @@ export class DashboardComponent {
     waitCount: 0,
     pendingCount: 0,
     Rows: [] as RowItem[]
-    // left: [] as RowItem[],
-    // right: [] as RowItem[],
   };
 
 
@@ -166,17 +252,11 @@ export class DashboardComponent {
       };
     });
   
-    // 2) นับยอด wait / pending
+    //  นับยอด wait / pending
     const waitCount = allRows.filter(r => r.status === 'wait').length;
     const pendingCount = allRows.filter(r => r.status === 'pending').length;
 
-  
-    // 3) แบ่งซ้าย-ขวา (ครึ่งหน้า/ครึ่งหลัง)
-    // const mid = Math.ceil(allRows.length / 2);
-    // const left = allRows.slice(0, mid);
-    // const right = allRows.slice(mid);
-  
-    // 4) อัปเดต section1 ที่ UI ใช้อยู่
+    //  อัปเดต section1 ที่ UI ใช้อยู่
     this.section1 = {
       waitCount,
       pendingCount,
@@ -332,5 +412,9 @@ export class DashboardComponent {
     //cancel
   }
 
+
+  ngOnDestroy() {
+    this.wsSub?.unsubscribe();
+  }
 
 }

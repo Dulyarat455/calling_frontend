@@ -83,6 +83,8 @@ type CallNodeRow ={
 })
 export class LaminationPanelComponent {
   @Input() section!: LaminationSection;
+  @Input() checkNotifyWait: number = 1; //add new 
+  @Input() checkNotifyPending: number = 1;
   @Output() updateRow = new EventEmitter<RowItem>();
 
   @ViewChild('assignJobModal') modal!: ModalTemplateComponent;

@@ -64,4 +64,43 @@
 
 
 
+/* สำหรับ notify */
+
+  /* ไอคอนกระพริบ */
+  .blink {
+    animation: blinkAnim 1s infinite;
+  }
+  
+  @keyframes blinkAnim {
+    0% { opacity: 1; }
+    50% { opacity: 0.2; }
+    100% { opacity: 1; }
+  }
+  
+  /* summary ปกติ */
+  .summary-chip {
+    background: #f2f2f2;
+    color: #222;
+    padding: 0.25rem 0.75rem;
+    border-radius: 999px;
+    font-weight: 600;
+  }
+  
+  /* เมื่อมี notify → highlight */
+  .summary-chip.notify {
+    background: #ffb3b3 !important;    /* สีชมพูเตือน */
+    color: #a10000 !important;
+    border: 1px solid #a10000;
+  }
+  
+  
+  .pending-notify {
+    background: #ffe0b2 !important;
+    color: #b35400 !important;
+    border: 1px solid #b35400;
+  }
+  
+
+
+
  

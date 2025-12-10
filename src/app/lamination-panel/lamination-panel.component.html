@@ -45,11 +45,24 @@
                   }}</span>
 
                   <div class="d-flex gap-4">
-                    <span class="summary-chip"
-                      >wait : {{ section.waitCount }}</span
-                    >
-                    <span class="summary-chip"
-                      >pending : {{ section.pendingCount }}</span
+                    <span 
+                      class="summary-chip"
+                      [ngClass]="{ 'notify': checkNotifyWait === 1 }"
+                      >
+                        <ng-container *ngIf="checkNotifyWait === 1">
+                          <i class="fas fa-bell blink me-1"></i>
+                        </ng-container>
+                        wait : {{ section.waitCount }}
+                    </span>
+                    <span 
+                    class="summary-chip"
+                    [ngClass]="{ 'pending-notify': checkNotifyPending === 1 }"
+                  >
+                  <ng-container *ngIf="checkNotifyPending === 1">
+                    <i class="fas fa-bell blink me-1"></i>
+                  </ng-container>
+                  pending : {{ section.pendingCount }}
+                  </span
                     >
                   </div>
                 </div>

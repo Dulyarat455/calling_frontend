@@ -26,20 +26,43 @@
                  style="background:#79f2a2;">
               <span class="fw-semibold">Lamination</span>
         
-              <div class="d-flex align-items-center gap-3">
-                <span class="fw-semibold">12</span>
-                <button
-                  class="btn btn-sm btn-outline-dark"
-                  (click)="toggleLamPreview()">
-                  {{ showLamPreview ? 'Hide detail' : 'View detail' }}
-                </button>
+            
+              <div class="d-flex gap-4">
+                <span 
+                  class="summary-chip"
+                  [ngClass]="{ 'notify': checkUnAuthorizedLamNotifyWait === 1 }"
+                  >
+                    <ng-container *ngIf="checkUnAuthorizedLamNotifyWait === 1">
+                      <i class="fas fa-bell blink me-1"></i>
+                    </ng-container>
+                    wait : {{ section1.waitCount }}  
+                </span>
+                <span 
+                class="summary-chip"
+                [ngClass]="{ 'pending-notify': checkUnAuthorizedLamNotifyPending === 1 }"
+              >
+              <ng-container *ngIf="checkUnAuthorizedLamNotifyPending === 1">
+                <i class="fas fa-bell blink me-1"></i>
+              </ng-container>
+              pending : {{ section1.pendingCount }}
+              </span
+                >
+              <button
+                class="btn btn-sm btn-outline-dark"
+                (click)="toggleLamPreview()">
+                {{ showLamPreview ? 'Hide detail' : 'View detail' }}
+             </button> 
               </div>
             </div>
         
            
             <div *ngIf="showLamPreview" class="mt-3">
               <!-- กล่องที่ *จำกัดความสูง* และมี scrollbar -->
-              <div class="lam-preview-scroll">
+              <div class="lam-preview-scroll"
+              #lamScroll
+              (scroll)="onLamScroll()"
+              (click)="onLamClick()"
+              >
                 <div class="list-group rounded-3 overflow-hidden">
                   <div
                     class="list-group-item d-flex align-items-center justify-content-between"
@@ -87,9 +110,28 @@
                 <div class="d-flex justify-content-between align-items-center p-3 rounded" 
                      style="background:#d4f787;">
                   <span class="fw-semibold">General</span>
-                  <div class="d-flex align-items-center gap-3">
-                    <span class="fw-semibold">8</span>
-                    <button
+
+                  <div class="d-flex gap-2">
+                      <span 
+                        class="summary-chip"
+                        [ngClass]="{ 'notify': checkUnAuthorizedGenNotifyWait=== 1 }"
+                        >
+                          <ng-container *ngIf=" checkUnAuthorizedGenNotifyWait === 1">
+                            <i class="fas fa-bell blink me-1"></i>
+                          </ng-container>
+                          wait : {{ 4 }}  
+                      </span>
+                      <span 
+                      class="summary-chip"
+                      [ngClass]="{ 'pending-notify': checkUnAuthorizedGenNotifyPending === 1 }"
+                    >
+                    <ng-container *ngIf="checkUnAuthorizedGenNotifyPending === 1">
+                      <i class="fas fa-bell blink me-1"></i>
+                    </ng-container>
+                    pending : {{ 1 }}
+                    </span
+                      >
+                      <button
                       class="btn btn-sm btn-outline-dark"
                       (click)="toggleGenPreview()">
                       {{ showGenPreview ? 'Hide detail' : 'View detail' }}
@@ -130,14 +172,35 @@
                 <div class="d-flex justify-content-between align-items-center p-3 rounded" 
                      style="background:#9feefc;">
                   <span class="fw-semibold">Stator</span>
-                  <div class="d-flex align-items-center gap-3">
-                    <span class="fw-semibold">5</span>
+                  
+                  <div class="d-flex gap-2">
+                    <span 
+                      class="summary-chip"
+                      [ngClass]="{ 'notify': checkUnAuthorizedStaNotifyWait === 1 }"
+                      >
+                        <ng-container *ngIf="checkUnAuthorizedStaNotifyWait === 1">
+                          <i class="fas fa-bell blink me-1"></i>
+                        </ng-container>
+                        wait : {{ 1 }}  
+                    </span>
+                    <span 
+                    class="summary-chip"
+                    [ngClass]="{ 'pending-notify': checkUnAuthorizedStaNotifyPending === 1 }"
+                  >
+                  <ng-container *ngIf="checkUnAuthorizedStaNotifyPending === 1">
+                    <i class="fas fa-bell blink me-1"></i>
+                  </ng-container>
+                  pending : {{ 1 }}
+                  </span
+                    >
                     <button
-                      class="btn btn-sm btn-outline-dark"
-                      (click)="toggleStaPreview()">
-                      {{ showStaPreview ? 'Hide detail' : 'View detail' }}
-                    </button>
-                  </div>
+                    class="btn btn-sm btn-outline-dark"
+                    (click)="toggleStaPreview()">
+                    {{ showStaPreview ? 'Hide detail' : 'View detail' }}
+                  </button>
+                </div>
+
+
                 </div>
 
                    <!-- preview Stator -->
@@ -179,7 +242,7 @@
   }
   @if(groupDashboard === "Lamination"){
       <!-- Lamination -->
-    <app-lamination-panel  [section]="section1" (updateRow)="onUpdateRow($event)"></app-lamination-panel>                
+    <app-lamination-panel  [section]="section1" [checkNotifyWait]="checkLamNotifyWait"  [checkNotifyPending]="checkLamNotifyPending" (updateRow)="onUpdateRow($event)"></app-lamination-panel>                
   }
   @if( groupDashboard === "General" || groupDashboard === "Stator"){ 
       <!-- General & Stator -->
