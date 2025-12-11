@@ -35,7 +35,7 @@
                     <ng-container *ngIf="checkUnAuthorizedLamNotifyWait === 1">
                       <i class="fas fa-bell blink me-1"></i>
                     </ng-container>
-                    wait : {{ section1.waitCount }}  
+                    wait : {{ buildLamination.waitCount }}  
                 </span>
                 <span 
                 class="summary-chip"
@@ -44,7 +44,7 @@
               <ng-container *ngIf="checkUnAuthorizedLamNotifyPending === 1">
                 <i class="fas fa-bell blink me-1"></i>
               </ng-container>
-              pending : {{ section1.pendingCount }}
+              pending : {{ buildLamination.pendingCount }}
               </span
                 >
               <button
@@ -66,7 +66,7 @@
                 <div class="list-group rounded-3 overflow-hidden">
                   <div
                     class="list-group-item d-flex align-items-center justify-content-between"
-                    *ngFor="let item of section1.Rows"
+                    *ngFor="let item of buildLamination.Rows"
                   >
                     <div class="d-flex align-items-center gap-3">
                       <span class="mono fw-semibold">{{ item.date }}</span>
@@ -145,13 +145,15 @@
                       <div class="list-group rounded-3 overflow-hidden">
                         <div
                           class="list-group-item d-flex align-items-center justify-content-between"
-                          *ngFor="let item of generalPreview"
+                          *ngFor="let item of generalGroup.rows"
                         >
                           <div class="d-flex align-items-center gap-3">
                             <span class="mono fw-semibold">{{ item.date }}</span>
                             <span class="mono fw-semibold">{{ item.time }}</span>
                             <span class="fw-semibold">{{ item.station }}</span>
                           </div>
+                          <div class="d-flex align-items-center gap-2"> 
+                          <span class="node-tag" >{{ item.toNodeName }}</span>
                           <span
                             class="badge rounded-pill px-3 py-2 text-capitalize"
                             [ngClass]="
@@ -161,6 +163,7 @@
                             ">
                             {{ item.status }}
                           </span>
+                        </div>
                         </div>
                       </div>
                     </div>
@@ -209,7 +212,7 @@
                     <div class="list-group rounded-3 overflow-hidden">
                       <div
                         class="list-group-item d-flex align-items-center justify-content-between"
-                        *ngFor="let item of statorPreview"
+                        *ngFor="let item of statorGroup.rows"
                       >
                         <div class="d-flex align-items-center gap-3">
                           <span class="mono fw-semibold">{{ item.date }}</span>
@@ -217,6 +220,8 @@
                           <span class="fw-semibold">{{ item.station }}</span>
                           
                         </div>
+                        <div class="d-flex align-items-center gap-2"> 
+                        <span class="node-tag" >{{ item.toNodeName }}</span>
                         <span
                           class="badge rounded-pill px-3 py-2 text-capitalize"
                           [ngClass]="
@@ -226,6 +231,8 @@
                           ">
                           {{ item.status }}
                         </span>
+                      </div>
+                      
                       </div>
                     </div>
                   </div>
@@ -242,11 +249,11 @@
   }
   @if(groupDashboard === "Lamination"){
       <!-- Lamination -->
-    <app-lamination-panel  [section]="section1" [checkNotifyWait]="checkLamNotifyWait"  [checkNotifyPending]="checkLamNotifyPending" (updateRow)="onUpdateRow($event)"></app-lamination-panel>                
+    <app-lamination-panel  [laminationData]="buildLamination" [checkNotifyWait]="checkLamNotifyWait"  [checkNotifyPending]="checkLamNotifyPending" (updateRow)="onUpdateRow($event)"></app-lamination-panel>                
   }
   @if( groupDashboard === "General" || groupDashboard === "Stator"){ 
       <!-- General & Stator -->
-    <app-general-stator-panel [groups]="groups"></app-general-stator-panel>
+    <app-general-stator-panel [general]="generalGroup" [stator]="statorGroup" ></app-general-stator-panel>
   }
 
   </div> <!-- container -->

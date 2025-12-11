@@ -1,56 +1,165 @@
 <!-- การ์ดครอบทั้งบล็อค -->
 <div class="card shadow border-0 mb-4" style="border-radius: 12px">
-    <div
-      class="card-header text-white fw-semibold"
-      style="background: #2f2f30; border-top-left-radius: 12px; border-top-right-radius: 12px"
-    >
-      Parts wait move by Store PC
-    </div>
-  
-    <div class="card-body" style="background: #e3e3e3">
-      <div class="row g-4">
-        <div class="col-md-6" *ngFor="let g of groups">
-          <!-- หัวคอลัมน์ + summary -->
-          <div
-            class="p-3 rounded-3 mb-3 head-block"
-            [ngClass]="{ 'head-green': g.base === 'green', 'head-blue': g.base === 'blue' }"
-          >
-            <div class="d-flex justify-content-between align-items-center">
-              <span class="fw-semibold">{{ g.title }}</span>
-              <div class="d-flex gap-3">
-                <span class="summary-chip">wait : {{ g.waitCount }}</span>
-                <span class="summary-chip">pending : {{ g.pendingCount }}</span>
-              </div>
+  <div
+    class="card-header text-white fw-semibold"
+    style="background: #2f2f30; border-top-left-radius: 12px; border-top-right-radius: 12px"
+  >
+    Parts wait move by Store PC
+  </div>
+
+  <div class="card-body" style="background: #e3e3e3">
+    <div class="row g-4">
+
+      <!-- =============== LEFT : GENERAL =============== -->
+      <div class="col-md-6" *ngIf="general">
+        <div class="d-flex align-items-center">
+        <!-- หัวคอลัมน์ + summary -->
+        <div
+          class="p-3 rounded-3 mb-3 head-block flex-grow-1"
+          style="background-color: #d4f787"
+        >
+          <div class="d-flex justify-content-between align-items-center">
+            <span class="fw-semibold">{{ general.title }}</span>
+            <div class="d-flex gap-3">
+              <span class="summary-chip">wait : {{ general.waitCount }}</span>
+              <span class="summary-chip">pending : {{ general.pendingCount }}</span>
             </div>
-
-
-            
           </div>
-  
-          <!-- ตารางแถว -->
+        </div>
+
+        <button
+        class="btn btn-primary ms-3 mb-3"
+        (click)="openModal()"
+      >
+        <i class="fa fa-file-alt me-1"></i> Add Job
+      </button>
+      </div>
+      <div class="mb-1">
+        <span>
+          <i class="fas fa-phone-volume ml-4"> : To Calling</i>
+          <i class="fas fa-user-circle  ml-4"> : Owner Job</i>
+        </span>
+      </div>
+
+
+        <!-- ตารางแถว General (ล็อคความสูง + scroll) -->
+        <div class="lam-preview-scroll">
           <div class="list-group rounded-3 overflow-hidden">
             <a
-              *ngFor="let r of g.rows; trackBy: trackByRow"
+              *ngFor="let r of general.rows"
               class="list-group-item list-group-item-action d-flex align-items-center justify-content-between"
-              [ngClass]="rowClass(g, r)"
+            >
+              <div class="d-flex align-items-center gap-3">
+                <!-- ถ้าอยากโชว์ date ด้วย เติม r.date ตรงนี้ได้ -->
+                <span class="mono kanit kanit-bold">{{ r.time }}</span>
+                <span class="fw-semibold">{{ r.station }}</span>
+              </div>
+
+              <div class="d-flex align-items-center gap-2">
+                @if (r.station !== "A3") {
+                <i class="fas fa-user-circle text-primary"></i>
+                }
+                <span class="node-tag" >{{ r.toNodeName }}</span>
+                <span
+                  class="status-chip badge rounded-pill px-3 py-2 text-capitalize"
+                  [ngClass]="
+                    r.status === 'wait'
+                      ? 'bg-success'
+                      : 'bg-warning text-dark'
+                  "
+                >
+                  {{ r.status }}
+                </span>
+                <!-- <button 
+                class="btn btn-sm d-flex align-items-center gap-1 fw-semibold" 
+                style="background:#f5d820; color:rgb(10, 8, 8); border-radius:8px; box-shadow:0 2px 4px rgba(0,0,0,0.15);"
+               
+                >
+                <i class="fas fa-edit"></i>
+                Update
+              </button> -->
+              </div>
+            </a>
+          </div>
+        </div>
+      </div>
+
+      <!-- =============== RIGHT : STATOR =============== -->
+      <div class="col-md-6" *ngIf="stator">
+        <div class="d-flex align-items-center">
+      
+            <!-- หัวคอลัมน์ + summary -->
+            <div
+              class="p-3 rounded-3 mb-3 head-block flex-grow-1"
+              style="background-color: #9feefc"
+            >
+              <div class="d-flex justify-content-between align-items-center">
+                <span class="fw-semibold">{{ stator.title }}</span>
+                <div class="d-flex gap-3">
+                  <span class="summary-chip">wait : {{ stator.waitCount }}</span>
+                  <span class="summary-chip">pending : {{ stator.pendingCount }}</span>
+                </div>
+              </div>
+            </div>
+            <!-- ปุ่มอยู่นอกกรอบ แต่บรรทัดเดียวกัน -->
+            <button
+            class="btn btn-primary ms-3 mb-3"
+            (click)="openModal()"
+          >
+            <i class="fa fa-file-alt me-1"></i> Add Job
+          </button>
+
+      </div>
+      <div class="mb-1">
+        <span>
+          <i class="fas fa-phone-volume ml-4"> : To Calling</i>
+          <i class="fas fa-user-circle  ml-4"> : Owner Job</i>
+        </span>
+      </div>
+        <!-- ตารางแถว Stator (ล็อคความสูง + scroll) -->
+        <div class="lam-preview-scroll">
+          <div class="list-group rounded-3 overflow-hidden">
+            <a
+              *ngFor="let r of stator.rows"
+              class="list-group-item list-group-item-action d-flex align-items-center justify-content-between"
             >
               <div class="d-flex align-items-center gap-3">
                 <span class="mono kanit kanit-bold">{{ r.time }}</span>
                 <span class="fw-semibold">{{ r.station }}</span>
               </div>
+
+
+              
               <div class="d-flex align-items-center gap-2">
-                <span class="status-chip" [ngClass]="r.status">{{ r.status }}</span>
-                <button class="btn btn-sm btn-success fw-semibold" (click)="openModal()">Update</button>
+               
+                <span class="node-tag" >{{ r.toNodeName }}</span>
+                <span
+                  class="status-chip badge rounded-pill px-3 py-2 text-capitalize"
+                  [ngClass]="
+                    r.status === 'wait'
+                      ? 'bg-success'
+                      : 'bg-warning text-dark'
+                  "
+                >
+                  {{ r.status }}
+                </span>
+                   <!-- <button 
+                class="btn btn-sm d-flex align-items-center gap-1 fw-semibold" 
+                style="background:#f5d820; color:rgb(10, 8, 8); border-radius:8px; box-shadow:0 2px 4px rgba(0,0,0,0.15);"
+               
+                >
+                <i class="fas fa-edit"></i>
+                Update
+              </button> -->
+                
               </div>
             </a>
-  
-            <!-- ช่องว่างด้านล่างของคอลัมน์ (เอาไว้ให้เหมือนแบบ) -->
-            <div class="filler" *ngIf="g.rows.length < 5"></div>
           </div>
         </div>
       </div>
+
     </div>
   </div>
-  
+</div>
 
-  <app-modal-template #assignJobModal (saved)="onSaved($event)"></app-modal-template>
+<app-modal-template #assignJobModal (saved)="onSaved($event)"></app-modal-template>

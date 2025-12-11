@@ -27,7 +27,7 @@
                 border-top-right-radius: 12px;
               "
             >
-              {{ section.title || "Parts wait move by Store PC" }}
+              {{ laminationData.title || "Parts wait move by Store PC" }}
             </div>
 
             <div class="card-body p-4">
@@ -41,7 +41,7 @@
                   style="background: #79f2a2"
                 >
                   <span class="fw-semibold fs-5">{{
-                    section.header || "Lamination"
+                    laminationData.header || "Lamination"
                   }}</span>
 
                   <div class="d-flex gap-4">
@@ -52,7 +52,7 @@
                         <ng-container *ngIf="checkNotifyWait === 1">
                           <i class="fas fa-bell blink me-1"></i>
                         </ng-container>
-                        wait : {{ section.waitCount }}
+                        wait : {{ laminationData.waitCount }}
                     </span>
                     <span 
                     class="summary-chip"
@@ -61,7 +61,7 @@
                   <ng-container *ngIf="checkNotifyPending === 1">
                     <i class="fas fa-bell blink me-1"></i>
                   </ng-container>
-                  pending : {{ section.pendingCount }}
+                  pending : {{ laminationData.pendingCount }}
                   </span
                     >
                   </div>
@@ -88,7 +88,7 @@
                   <div class="list-group rounded-3 overflow-hidden">
                     <div
                       class="list-group-item d-flex align-items-center justify-content-between"
-                      *ngFor="let item of section.Rows"
+                      *ngFor="let item of laminationData.Rows"
                     >
                       <div class="d-flex align-items-center gap-3">
                         <span class="mono fw-semibold">{{ item.date }}</span>

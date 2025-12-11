@@ -31,7 +31,7 @@ export interface RowItem {
 }
 
 
-export interface LaminationSection {
+export interface LaminationGroup {
   title?: string;   // ชื่อหัวการ์ด (แถบสีดำ)
   header?: string;  // ชื่อแถบเขียว ("Lamination")
   waitCount: number;
@@ -82,7 +82,7 @@ type CallNodeRow ={
   styleUrl: './lamination-panel.component.css'
 })
 export class LaminationPanelComponent {
-  @Input() section!: LaminationSection;
+  @Input() laminationData!: LaminationGroup;
   @Input() checkNotifyWait: number = 1; //add new 
   @Input() checkNotifyPending: number = 1;
   @Output() updateRow = new EventEmitter<RowItem>();

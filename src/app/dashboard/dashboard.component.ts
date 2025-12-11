@@ -1,7 +1,7 @@
 import { Component, EventEmitter, Input, Output, ViewChild, ElementRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { LaminationPanelComponent,RowItem } from '../lamination-panel/lamination-panel.component';
-import { GeneralStatorPanelComponent,Group } from '../general-stator-panel/general-stator-panel.component';
+import { GeneralStatorPanelComponent,GroupPanel, RowItem as GSRowItem,  } from '../general-stator-panel/general-stator-panel.component';
 import { HttpClient } from '@angular/common/http';
 import { Router} from '@angular/router';
 import { Subscription } from 'rxjs';
@@ -92,6 +92,57 @@ export class DashboardComponent {
 
   @ViewChild('lamScroll') lamScroll?: ElementRef<HTMLDivElement>;
 
+
+  buildLamination = {
+    waitCount: 0,
+    pendingCount: 0,
+    Rows: [] as RowItem[]
+  };
+
+  buildGeneral = {
+    waitCount: 0,
+    pendingCount: 0,
+    Rows: [] as RowItem[]
+  }
+
+  buildStator = {
+    waitCount: 0,
+    pendingCount: 0,
+    Rows: [] as RowItem[]
+  }
+
+
+
+  // general stator
+  // ✅ General panel (dummy)
+  generalGroup: GroupPanel = {
+    title: 'General',
+    waitCount: 7,
+    pendingCount: 1,
+    rows: <GSRowItem[]>[
+      { time: '07:10', station: 'D2', status: 'wait', date: '05/12/2025',toNodeName: 'PC_STORE_GEN'},
+      { time: '07:25', station: 'A5', status: 'pending', date: '05/12/2025',toNodeName: 'PC_STORE_GEN' },
+      { time: '08:23', station: 'A3', status: 'wait', date: '05/12/2025', toNodeName: 'PC_STORE_GEN' },
+      { time: '08:38', station: 'D3', status: 'wait', date: '05/12/2025', toNodeName: 'PC_STORE_GEN' },
+      { time: '09:15', station: 'A1', status: 'wait', date: '05/12/2025', toNodeName: 'PC_STORE_GEN' },
+      { time: '09:15', station: 'A1', status: 'wait', date: '05/12/2025', toNodeName: 'PC_STORE_GEN' },
+      { time: '09:15', station: 'A1', status: 'wait', date: '05/12/2025', toNodeName: 'PC_STORE_GEN' },
+    ],
+  };
+
+  // ✅ Stator panel (dummy)
+  statorGroup: GroupPanel = {
+    title: 'Stator',
+    waitCount: 1,
+    pendingCount: 1,
+    rows: <GSRowItem[]>[
+      { time: '09:20', station: 'B1', status: 'pending', date: '05/12/2025',toNodeName: 'PD_STA' },
+      { time: '09:25', station: 'C5', status: 'wait', date: '05/12/2025',toNodeName: 'PC_STORE_STA' },
+    ],
+  };
+
+
+
   ngOnInit() {
     this.checkLamNotifyWait = 0
     this.checkLamNotifyPending = 0
@@ -139,7 +190,6 @@ export class DashboardComponent {
 
   }
 
-
   private clearLamNotify() {
     this.checkLamNotifyWait = 0;
     this.checkUnAuthorizedLamNotifyWait = 0;
@@ -171,35 +221,7 @@ export class DashboardComponent {
   }
   
   
-
-  // part for lam
-  // section1 = {
-  //   waitCount: 8,
-  //   pendingCount: 2,
-  //   left: <RowItem[]>[
-  //     { time: '7:10', station: 'C10', status: 'wait' },
-  //     { time: '7:25', station: 'A6 R', status: 'pending' },
-  //     { time: '8:23', station: 'A8 S', status: 'wait' },
-  //     { time: '8:38', station: 'B12 S', status: 'wait' },
-  //     { time: '9:15', station: 'C13', status: 'wait' },
-  //   ],
-  //   right: <RowItem[]>[
-  //     { time: '9:20', station: 'C11', status: 'wait' },
-  //     { time: '9:25', station: 'B11 S', status: 'wait' },
-  //     { time: '9:30', station: 'B11 S', status: 'wait' },
-  //     { time: '9:40', station: 'B11 S', status: 'pending' },
-  //     { time: '9:50', station: 'B11 S', status: 'wait' },
-  //   ]
-  // };
-
-
-  section1 = {
-    waitCount: 0,
-    pendingCount: 0,
-    Rows: [] as RowItem[]
-  };
-
-
+ 
 
   private buildLamSectionFromJobs() {
     // 1) แปลง JobRow -> RowItem[]
@@ -251,17 +273,82 @@ export class DashboardComponent {
         toNodeName: job.toNodeName,
       };
     });
-  
     //  นับยอด wait / pending
     const waitCount = allRows.filter(r => r.status === 'wait').length;
     const pendingCount = allRows.filter(r => r.status === 'pending').length;
 
     //  อัปเดต section1 ที่ UI ใช้อยู่
-    this.section1 = {
+    this.buildLamination = {
       waitCount,
       pendingCount,
       Rows:allRows
     };
+  }
+
+
+  private  buildGenStaFromJobs(groupType: string){
+      let rowTemp = []
+      if(groupType === "General"){
+        rowTemp = this.jobGenerals
+      }
+      if(groupType === "Stator"){
+        rowTemp = this.jobLaminations
+      }
+
+
+      const allRows: RowItem[] = this.jobLaminations.map(job => {
+        // เอา state ล่าสุดของ job นี้ (สมมติ backend sort date desc มาแล้ว ถ้าไม่มั่นใจค่อย sort เอง)
+        const latestState = job.states && job.states.length > 0
+          ? job.states[0]
+          : null;
+    
+        // เวลา: แปลงจาก ISO string เป็น HH:mm
+        const timeStr = latestState
+          ? new Date(latestState.date).toLocaleTimeString('th-TH', {
+              hour: '2-digit',
+              minute: '2-digit',
+              hour12: false,
+            })
+          : '';
+    
+        // สเตตัส: map จาก stateJobName -> 'wait' | 'pending'
+        // (ปรับตามจริง เช่น "Done" ทีหลังได้)
+        let status: 'wait' | 'pending' = 'wait';
+        if (latestState && latestState.stateJobName.toLowerCase() === 'pending') {
+          status = 'pending';
+        }
+    
+        return {
+          time: timeStr,
+          date: latestState
+          ? new Date(latestState.date).toLocaleDateString('th-TH', {
+              year: 'numeric',
+              month: '2-digit',
+              day: '2-digit',
+            })
+          : '',
+          machineName: job.machineName,   // ใช้ชื่อเครื่องเป็น station
+          status,
+          //add new
+          jobId: job.id,
+          createByUserId: job.createByUserId,
+          createByUserName: job.createByUserName,
+          createByUserEmpNo: job.createByUserEmpNo,
+          remark: job.remark,
+          machineId: job.machineId,
+          groupId: job.groupId,
+          groupName: job.groupName,
+          fromNodeId: job.fromNodeId,
+          fromNodeName: job.fromNodeName,
+          toNodeId: job.toNodeId,
+          toNodeName: job.toNodeName,
+        };
+      });
+
+       //  นับยอด wait / pending
+    const waitCount = allRows.filter(r => r.status === 'wait').length;
+    const pendingCount = allRows.filter(r => r.status === 'pending').length;
+    
   }
   
 
@@ -270,61 +357,6 @@ export class DashboardComponent {
     console.log('Update clicked:', row);
   }
 
-// general stator
-  groups: Group[] = [
-    {
-      key: 'general',
-      title: 'General',
-      base: 'green',
-      waitCount: 8,
-      pendingCount: 2,
-      rows: [
-        { time: '7:10', station: 'D2', status: 'wait', date:'04/12/2025' },
-        { time: '7:25', station: 'A5', status: 'pending', date:'04/12/2025' },
-        { time: '8:23', station: 'A3', status: 'wait', date:'04/12/2025'},
-        { time: '8:38', station: 'D3', status: 'wait', date:'04/12/2025'},
-        { time: '9:15', station: 'A1', status: 'wait', date:'04/12/2025' },
-      ],
-    },
-    {
-      key: 'stator',
-      title: 'stator',
-      base: 'blue',
-      waitCount: 1,
-      pendingCount: 1,
-      rows: [
-        { time: '9:20', station: 'B1', status: 'pending',date:'04/12/2025' },
-        { time: '9:25', station: 'C5', status: 'wait', date:'04/12/2025' },
-      ],
-    },
-  ];
-
-
-  
-  // get laminationPreview(): RowItem[] {
-  //   const merged: RowItem[] = [
-  //     ...this.section1.left,
-  //     ...this.section1.right,
-  //   ];
-  //   // เอา 3 แถวท้ายสุด (คิดว่าเป็นเวลาล่าสุด)
-  //   // return merged.slice(-3);
-  //   return merged;
-  // }
-
-
-  // General
-  get generalPreview(): CheckTest[] {
-    const g = this.groups.find(gr => gr.key === 'general');
-    if (!g) return [];
-    return g.rows
-  }
-
-  // Stator
-  get statorPreview(): CheckTest[] {
-    const g = this.groups.find(gr => gr.key === 'stator');
-    if (!g) return [];
-    return g.rows
-  }
 
 
   toggleLamPreview() {
@@ -339,8 +371,6 @@ export class DashboardComponent {
   toggleStaPreview() {
     this.showStaPreview = !this.showStaPreview;
   }
-
-
 
 
   fetchJobByLam(){
@@ -371,6 +401,7 @@ export class DashboardComponent {
     .subscribe({
       next: (res: any) => {
         this.jobGenerals = res.results || [];
+        this.buildGenStaFromJobs("General");
       },
       error: (err) => {
         Swal.fire({
@@ -390,6 +421,7 @@ export class DashboardComponent {
     .subscribe({
       next: (res: any) => {
         this.jobStators = res.results || [];
+        this.buildGenStaFromJobs("Stator");
       },
       error: (err) => {
         Swal.fire({

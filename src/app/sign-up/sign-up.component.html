@@ -181,7 +181,7 @@
                   <select
                     class="form-select text-center"
                     [(ngModel)]="selectedSectionId"
-                    (change)="fetchSubSectionBySection()"
+                    (change)="fetchSubSectionByGroupSection()"
                     [disabled]="isLoading || !selectedGroupId"
                   >
                     <option [ngValue]="null" disabled> --------------- Section  -----------------</option>

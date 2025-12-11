@@ -168,17 +168,19 @@ export class SignUpComponent {
     });
   }
 
-   fetchSubSectionBySection(){
+   fetchSubSectionByGroupSection(){
        // ถ้าไม่ได้เลือก section ไม่ต้องยิง API
-       if (!this.selectedSectionId) {
+       if (!this.selectedSectionId && !this.selectedGroupId) {
         this.subSections = [];
         this.selectedSubSectionId = null;
+        this.selectedGroupId = null;
         return;
       }
 
       this.http
-      .post(config.apiServer + '/api/subsection/filterBySection', {
+      .post(config.apiServer + '/api/subsection/filterByGroupSubSection', {
         sectionId: this.selectedSectionId,
+        groupId: this.selectedGroupId
       })
       .subscribe({
         next: (res: any) => {
