@@ -14,6 +14,7 @@ export type NameForm = {
   callTo: string;
   empNo: String;
   Remark: String; 
+  priority: 'urgent' | 'normal';
 };
 
 type GroupRow = {
@@ -87,10 +88,11 @@ export class ModalTemplateComponent {
   @Output() machineSelectedId = new EventEmitter<number>();
   @Output() callNodeToSelectedId = new EventEmitter<number>();
   @Output() remarkValue = new EventEmitter<string>();
+  @Output() priorityValue = new EventEmitter<string>();
 
 
   private defaultModel(): NameForm {
-    return { createBy: '',empNo: '', group: null , machine: '', callFrom: null, callTo: '', Remark:'' };
+    return { createBy: '',empNo: '', group: null , machine: '', callFrom: null, callTo: '', Remark:'', priority: 'normal', };
   }
 
    // เรียกจากข้างนอกได้ (ผ่าน parent อื่น)
@@ -98,18 +100,22 @@ export class ModalTemplateComponent {
         this.model = { ...this.defaultModel(), createBy: this.userName, empNo: this.empNo, group: this.userGroupId, callFrom: this.userCallNodeId ,...(data ?? {}) };
         this.errorMsg = '';
         // ระวัง: MyModal พร้อมใช้หลัง AfterViewInit เท่านั้น → เรียกจากปุ่ม/เหตุการณ์หลังหน้าเรนเดอร์แล้วจะปลอดภัย
+
+        // ✅ ส่งค่า priority เริ่มต้น (normal) ไปก่อน
+        this.priorityValue.emit(this.model.priority);
         this.myModal?.open();
+  }
+
+
+  togglePriority(p: 'urgent' | 'normal') {
+    this.model.priority = p; // เลือกได้ทีละอันเสมอ
+    this.priorityValue.emit(p); //ส่งค่า
   }
 
   onMachineChange(event: any) {
     const selectedId = Number(event.target.value);
     this.machineSelectedId.emit(selectedId);
   }
-
-  // onGroupChange(ev: any) {
-  //   const id = Number(ev.target.value);
-  //   this.groupSelected.emit(id);
-  // }
 
   onCallNodeToChange(event: any){
     const selectedId = Number(event.target.value);
@@ -121,9 +127,7 @@ export class ModalTemplateComponent {
     this.remarkValue.emit(value);
     console.log("at OnRemarkChange at modal-template");
   }
-
  
-
   close() {
     this.myModal?.close();
   }
@@ -138,6 +142,7 @@ export class ModalTemplateComponent {
     !!this.model.machine && 
     !!this.model.callFrom && 
     !!this.model.callTo && 
+    !!this.model.priority &&
     !this.isLoading;
   }
 

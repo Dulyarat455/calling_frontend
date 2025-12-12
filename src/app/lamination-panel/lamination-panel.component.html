@@ -94,8 +94,15 @@
                         <span class="mono fw-semibold">{{ item.date }}</span>
                         <span class="mono fw-semibold">{{ item.time }}</span>
                         <span class="fw-semibold">{{ item.machineName }}</span>
+                        
+                        @if (item.priority === "urgent") {
+                          <span class="urgent-badge">
+                            <i class="fas fa-fire"></i>
+                          </span>
+                        }
                       </div>
                       <div class="d-flex align-items-center gap-2"> 
+
                         @if (userId === item.createByUserId) {
                           <i class="fas fa-user-circle text-primary"></i>
                         }
@@ -154,6 +161,7 @@
   (machineSelectedId)="onMachineSelected($event)"
   (callNodeToSelectedId)="onCallNodeToSelected($event)"
   (remarkValue)="onRemarkValue($event)"
+  (priorityValue)="onPriorityValue($event)"
   (saved)="onSaved($event)"
 >
 </app-modal-template>

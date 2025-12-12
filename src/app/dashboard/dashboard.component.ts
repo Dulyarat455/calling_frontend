@@ -11,12 +11,6 @@ import config from '../../config';
 import { CallSocketService } from '../services/call-socket.service';
 
 export type Status = 'wait' | 'pending';
-type CheckTest = {
-  time: string;
-  station: string;
-  status: Status;
-  date: string
-}
 
 
 type States = {
@@ -43,6 +37,7 @@ type JobRow = {
   toNodeId: number;
   toNodeName: string;
   states: States[];
+  priority: string;
 };
 
 
@@ -271,6 +266,7 @@ export class DashboardComponent {
         fromNodeName: job.fromNodeName,
         toNodeId: job.toNodeId,
         toNodeName: job.toNodeName,
+        priority: job.priority
       };
     });
     //  นับยอด wait / pending
@@ -342,6 +338,7 @@ export class DashboardComponent {
           fromNodeName: job.fromNodeName,
           toNodeId: job.toNodeId,
           toNodeName: job.toNodeName,
+          priority: job.priority
         };
       });
 

@@ -1,7 +1,7 @@
 
 <app-my-modal modalId="modalAssignJob" modalSize="modal-md" (closeRequest)="myModal.close()">
         
-  
+       
          <!-- ส่วนหัว -->
         <div
           style="
@@ -78,7 +78,7 @@
           <div style="display:grid; grid-template-columns:160px 1fr; align-items:center; gap:10px; margin-bottom:14px;">
             <label style="font-weight:700; color:#111; text-align:right;">Group*</label>
             <select [(ngModel)]="model.group"  disabled
-              style="background:#c8f7c5; border:2px solid transparent; border-radius:10px; padding:.6rem .9rem; font-weight:600; width:100%;">
+              style="background:#e2e8f0; border:2px solid transparent; border-radius:10px; padding:.6rem .9rem; font-weight:600; width:100%;">
               <option value="" disabled selected>-- Select Group --</option>
               <option *ngFor="let g of groups" [value]="g.id">
                 {{g.name}}
@@ -102,7 +102,7 @@
           <div style="display:grid; grid-template-columns:160px 1fr; align-items:center; gap:10px; margin-bottom:14px;">
             <label style="font-weight:700; color:#111; text-align:right;">Call From*</label>
             <select [(ngModel)]="model.callFrom" disabled
-              style="background:#c8f7c5; border:2px solid transparent; border-radius:10px; padding:.6rem .9rem; font-weight:600; width:100%;">
+              style="background:#e2e8f0; border:2px solid transparent; border-radius:10px; padding:.6rem .9rem; font-weight:600; width:100%;">
               <option value="" disabled selected>-- Select Node --</option>
               <option *ngFor="let c of callNodes" [value]="c.id">
                 {{ c.code }}
@@ -121,6 +121,72 @@
               </option>
             </select>
           </div>
+
+          <!-- Priority (Urgent / Normal) -->
+              <div
+              style="
+                display:grid;
+                grid-template-columns:160px 1fr;
+                align-items:center;
+                gap:10px;
+                margin-top:14px;
+              "
+              >
+              <label style="font-weight:700; color:#111; text-align:right;">
+                Priority*
+              </label>
+
+              <!-- กล่อง toggle -->
+              <div style="display:flex; gap:12px;">
+                
+                <!-- NORMAL -->
+                <div
+                  (click)="togglePriority('normal')"
+                  style="
+                    flex:1;
+                    cursor:pointer;
+                    text-align:center;
+                    padding:12px 0;
+                    border-radius:12px;
+                    font-weight:700;
+                    transition:.2s;
+                  "
+                  [ngStyle]="{
+                    background: model.priority === 'normal' ? '#c8f7c5' : '#e2e8f0',
+                    border: model.priority === 'normal'
+                      ? '2px solid #22c55e'
+                      : '2px solid transparent',
+                    color: '#111'
+                  }"
+                >
+                  Normal
+                </div>
+
+                <!-- URGENT -->
+                <div
+                  (click)="togglePriority('urgent')"
+                  style="
+                    flex:1;
+                    cursor:pointer;
+                    text-align:center;
+                    padding:12px 0;
+                    border-radius:12px;
+                    font-weight:700;
+                    transition:.2s;
+                  "
+                  [ngStyle]="{
+                    background: model.priority === 'urgent' ? '#ffe1e1' : '#e2e8f0',
+                    border: model.priority === 'urgent'
+                      ? '2px solid #ef4444'
+                      : '2px solid transparent',
+                    color: model.priority === 'urgent' ? '#b91c1c' : '#111'
+                  }"
+                >
+                  Urgent
+                </div>
+
+              </div>
+              </div>
 
           <!-- Remark such as description -->
           <div

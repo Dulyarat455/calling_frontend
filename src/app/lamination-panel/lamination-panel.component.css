@@ -137,3 +137,23 @@
   color: #b35400 !important;
   border: 1px solid #b35400;
 }
+
+/* icon urgent */
+
+.urgent-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  width: 22px;
+  height: 22px;
+
+  background: #fff3cd;        /* เหลืองอ่อน */
+  border: 1.5px solid #ffc107; /* เหลืองเข้ม */
+  border-radius: 6px;          /* สี่เหลี่ยมมน */
+
+  color: #dc3545;              /* สีแดงของไฟ */
+  font-size: 12px;
+
+  box-shadow: 0 0 6px rgba(255, 193, 7, 0.6); /* glow เบาๆ */
+}

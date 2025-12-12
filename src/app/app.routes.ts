@@ -11,6 +11,7 @@ import { SectionsComponent } from './sections/sections.component';
 import { CallNodesComponent } from './call-nodes/call-nodes.component';
 import { SubSectionComponent } from './sub-section/sub-section.component';
 import { FlowJobComponent } from './flow-job/flow-job.component';
+import { ReportComponent } from './report/report.component';
 
 
 export const routes: Routes = [
@@ -58,6 +59,10 @@ export const routes: Routes = [
   {
     path: 'flowJob',
     component: FlowJobComponent
+  },
+  {
+    path: 'report',
+    component: ReportComponent
   },
   {
     path: '404',

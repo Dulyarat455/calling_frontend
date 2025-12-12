@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, Output, ViewChild } from '@angular/core';
+import { Component, EventEmitter, Input, Output, ViewChild, SimpleChanges } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ModalTemplateComponent } from '../modal-template/modal-template.component';
 import { HttpClient } from '@angular/common/http';
@@ -28,6 +28,7 @@ export interface RowItem {
   fromNodeName: string;
   toNodeId: number;
   toNodeName: string;
+  priority: string;
 }
 
 
@@ -113,6 +114,7 @@ export class LaminationPanelComponent {
   selectedMachineId: number | null = null;
   selectedToCallNodeId: number | null = null;
   remarkJobValue: string = "";
+  priorityValue: string = "";
   isLoading = false;
 
 
@@ -276,7 +278,8 @@ export class LaminationPanelComponent {
         fromNodeId: this.valueUserCallNodeId,
         toNodeId: this.selectedToCallNodeId,
         userId: this.userId,
-        remark: this.remarkJobValue
+        remark: this.remarkJobValue,
+        priority: this.priorityValue,
       };
 
       this.isLoading = true;
@@ -344,11 +347,63 @@ export class LaminationPanelComponent {
      console.log("input remark:", remarkValue); 
   }
 
-  // onGroupSelected(groupId: number) {
-  //   this.selectedGroupId = groupId;
-  //   this.fetchMachineByGroup();
-    
-  //   console.log("Selected group:", groupId);
-  // }
+  onPriorityValue(priorityValue: string){
+     this.priorityValue = priorityValue;
+     console.log(priorityValue);
+  }
   
+
+  private toMs(dateStr?: string, timeStr?: string): number {
+    if (!dateStr) return 0;
+  
+    // รองรับทั้ง dd/MM/yyyy และ dd-MM-yyyy
+    const normalized = dateStr.replace(/-/g, '/').trim();
+    const parts = normalized.split('/'); // [dd, MM, yyyy] หรือ [yyyy, MM, dd] ก็ได้
+    let d: number, m: number, y: number;
+  
+    if (parts[0].length === 4) {
+      // yyyy/MM/dd
+      y = Number(parts[0]);
+      m = Number(parts[1]);
+      d = Number(parts[2]);
+    } else {
+      // dd/MM/yyyy
+      d = Number(parts[0]);
+      m = Number(parts[1]);
+      y = Number(parts[2]);
+    }
+  
+    const [hh, mm] = (timeStr || '00:00').split(':').map(Number);
+    const dt = new Date(y, (m || 1) - 1, d || 1, hh || 0, mm || 0, 0);
+  
+    return isNaN(dt.getTime()) ? 0 : dt.getTime();
+  }
+  
+  sortLaminationRows() {
+    if (!this.laminationData?.Rows) return;
+  
+    this.laminationData.Rows = [...this.laminationData.Rows].sort((a, b) => {
+      const aUrgent = (a.priority || '').toLowerCase() === 'urgent';
+      const bUrgent = (b.priority || '').toLowerCase() === 'urgent';
+  
+      // 1) urgent มาก่อน
+      if (aUrgent !== bUrgent) return aUrgent ? -1 : 1;
+  
+      // 2) ภายในกลุ่มเดียวกัน เรียงตาม date/time (สร้างก่อนอยู่บน)
+      const aMs = this.toMs(a.date, a.time);
+      const bMs = this.toMs(b.date, b.time);
+  
+      return aMs - bMs; // เก่าก่อน
+    });
+  }
+
+  ngOnChanges(changes: SimpleChanges) {
+    if (changes['laminationData']?.currentValue) {
+      this.sortLaminationRows();
+    }
+  }
+  
+  
+
+
 }
