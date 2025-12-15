@@ -1,7 +1,6 @@
 
 <app-my-modal modalId="modalAssignJob" modalSize="modal-md" (closeRequest)="myModal.close()">
-        
-       
+  @if (checkEvent === 'create') {    
          <!-- ส่วนหัว -->
         <div
           style="
@@ -240,4 +239,76 @@
             </button>
           </div>
         </div>
+  }
+  @else {
+
+    <!-- ✅ หน้า Detail (อ่านอย่างเดียว) -->
+    <div style="background:#2f3337;color:white;text-align:center;font-weight:600;font-size:18px;padding:8px 0;border-top-left-radius:8px;border-top-right-radius:8px;">
+      {{ modalName }} - Detail
+    </div>
+
+    <div style="font-family:'Kanit',sans-serif; background:#f6fbf8; border-radius:12px; padding:16px;">
+
+      <!-- แถว helper -->
+      <div style="display:grid;grid-template-columns:160px 1fr;gap:10px;margin-bottom:12px;align-items:center;">
+        <div style="font-weight:700;color:#111;text-align:right;">Create By</div>
+        <div style="background:#e2e8f0;border-radius:10px;padding:.6rem .9rem;font-weight:600;">
+          {{ detail?.createByUserName || '-' }} ({{ detail?.createByUserEmpNo || '-' }})
+        </div>
+      </div>
+
+      <div style="display:grid;grid-template-columns:160px 1fr;gap:10px;margin-bottom:12px;align-items:center;">
+        <div style="font-weight:700;color:#111;text-align:right;">Group</div>
+        <div style="background:#e2e8f0;border-radius:10px;padding:.6rem .9rem;font-weight:600;">
+          {{ detail?.groupName || '-' }}
+        </div>
+      </div>
+
+      <div style="display:grid;grid-template-columns:160px 1fr;gap:10px;margin-bottom:12px;align-items:center;">
+        <div style="font-weight:700;color:#111;text-align:right;">Machine</div>
+        <div style="background:#e2e8f0;border-radius:10px;padding:.6rem .9rem;font-weight:600;">
+          {{ detail?.machineName || '-' }}
+        </div>
+      </div>
+
+      <div style="display:grid;grid-template-columns:160px 1fr;gap:10px;margin-bottom:12px;align-items:center;">
+        <div style="font-weight:700;color:#111;text-align:right;">Call From</div>
+        <div style="background:#e2e8f0;border-radius:10px;padding:.6rem .9rem;font-weight:600;">
+          {{ detail?.fromNodeName || '-' }}
+        </div>
+      </div>
+
+      <div style="display:grid;grid-template-columns:160px 1fr;gap:10px;margin-bottom:12px;align-items:center;">
+        <div style="font-weight:700;color:#111;text-align:right;">Call To</div>
+        <div style="background:#e2e8f0;border-radius:10px;padding:.6rem .9rem;font-weight:600;">
+          {{ detail?.toNodeName || '-' }}
+        </div>
+      </div>
+
+      <div style="display:grid;grid-template-columns:160px 1fr;gap:10px;margin-bottom:12px;align-items:flex-start;">
+        <div style="font-weight:700;color:#111;text-align:right;padding-top:6px;">Remark</div>
+        <div style="background:#e2e8f0;border-radius:10px;padding:.6rem .9rem;font-weight:600;white-space:pre-wrap;">
+          {{ detail?.remark || '-' }}
+        </div>
+      </div>
+
+      <div style="display:grid;grid-template-columns:160px 1fr;gap:10px;margin-bottom:12px;align-items:center;">
+        <div style="font-weight:700;color:#111;text-align:right;">Priority</div>
+        <div style="background:#e2e8f0;border-radius:10px;padding:.6rem .9rem;font-weight:700;">
+          {{ detail?.priority || '-' }}
+        </div>
+      </div>
+
+      <!-- ปุ่มล่าง detail -->
+      <div style="margin-top:18px; display:flex; justify-content:flex-end; gap:10px; background:#f1f5f9; padding-top:10px; border-top:1px solid #ddd;">
+        <button class="btn btn-outline-secondary" (click)="close()"
+          style="border:2px solid #ccc; border-radius:10px; padding:.5rem 1.2rem; font-weight:700; min-width:120px;">
+          <i class="fa fa-times me-1"></i> Close
+        </button>
+      </div>
+
+    </div>
+  }
+
+
 </app-my-modal>

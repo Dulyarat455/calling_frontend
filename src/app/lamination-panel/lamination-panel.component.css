@@ -157,3 +157,146 @@
 
   box-shadow: 0 0 6px rgba(255, 193, 7, 0.6); /* glow เบาๆ */
 }
+
+
+
+/* for remark */
+
+.remark-text {
+  background: #e6f7ee;        /* เขียวอ่อน */
+  color: #1f7a4d;             /* เขียวเข้ม */
+  padding: 0.25rem 0.6rem;
+  border-radius: 6px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+
+
+.remark-wrap{
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+}
+
+.remark-pill{
+  background: #e6f7ee;
+  color: #1f7a4d;
+  border: none;
+  border-radius: 8px;
+  padding: 0.35rem 0.55rem;
+  cursor: pointer;
+  font-size: 0.9rem;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.12);
+  transition: all 0.15s ease;
+}
+
+.remark-pill:hover {
+  background: #79f2a2;   /* เขียว dashboard */
+  color: #1a1a1a;
+  transform: translateY(-1px);
+}
+
+.remark-tooltip{
+  position: absolute;
+  top: 50%;
+
+  /* ✅ เปลี่ยนจากขวา → ซ้าย เพื่อให้ tooltip ไปอยู่ฝั่งขวาของปุ่ม */
+  left: calc(100% + 10px);
+  right: auto;
+
+  transform: translateY(-50%) translateX(0);
+
+  background: rgba(20, 26, 32, 0.95);
+  color: #eaf6f9;
+  padding: 0.5rem 0.75rem;
+  border-radius: 10px;
+  font-size: 0.85rem;
+  font-weight: 600;
+
+  white-space: nowrap;
+  max-width: 320px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+
+  z-index: 2000;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.22);
+
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transition: opacity 0.15s ease, transform 0.15s ease, visibility 0.15s ease;
+}
+
+/* ลูกศรเล็กๆให้ดูเนียน */
+.remark-tooltip::before{
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: -6px;
+  right: auto;
+  transform: translateY(-50%);
+  width: 0;
+  height: 0;
+  border-top: 6px solid transparent;
+  border-bottom: 6px solid transparent;
+  border-right: 6px solid rgba(20, 26, 32, 0.95);
+  border-left: 0;
+}
+
+
+.remark-wrap:hover .remark-tooltip{
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(-50%) translateX(6px);
+}
+
+
+
+
+
+.detail-icon-btn {
+  background: #f7f6f1;
+  color: #3172f6;
+  border: none;
+  border-radius: 10px;
+  width: 36px;
+  height: 36px;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  box-shadow: 0 2px 4px rgba(0,0,0,0.15);
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.detail-icon-btn i {
+  font-size: 16px;
+}
+
+
+.detail-icon-btn:active {
+  transform: translateY(0);
+}
+
+
+
+
+/* WAIT = Accept */
+.status-wait {
+  background: #f5d820;              /* เหลือง */
+  color: rgb(10, 8, 8);
+  font-weight: 600;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.15);
+}
+
+/* PENDING = เขียว + ดำ */
+.status-pending {
+  background: #79f2a2;              /* เขียว dashboard */
+  color: #111;                      /* ดำอ่านง่าย */
+  font-weight: 600;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.12);
+}

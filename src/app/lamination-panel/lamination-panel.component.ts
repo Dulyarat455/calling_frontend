@@ -1,10 +1,10 @@
-import { Component, EventEmitter, Input, Output, ViewChild, SimpleChanges } from '@angular/core';
+import { Component, EventEmitter, Input, Output, ViewChild, SimpleChanges, ElementRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ModalTemplateComponent } from '../modal-template/modal-template.component';
 import { HttpClient } from '@angular/common/http';
 import { Router} from '@angular/router';
 
-
+// import { AlertRequestComponent } from '../alert-request/alert-request.component';
 import Swal from 'sweetalert2';
 import config from '../../config';
 
@@ -84,11 +84,13 @@ type CallNodeRow ={
 })
 export class LaminationPanelComponent {
   @Input() laminationData!: LaminationGroup;
-  @Input() checkNotifyWait: number = 1; //add new 
-  @Input() checkNotifyPending: number = 1;
+  @Input() checkNotifyWait: number = 0;
+  @Input() checkNotifyPending: number = 0;
   @Output() updateRow = new EventEmitter<RowItem>();
+  @Output() notifyWaitCleared = new EventEmitter<void>();
 
   @ViewChild('assignJobModal') modal!: ModalTemplateComponent;
+  @ViewChild('lamScrolPanel') lamScroll?: ElementRef<HTMLDivElement>;
 
   constructor(private http: HttpClient, private router: Router) {}
   //user current
@@ -134,8 +136,42 @@ export class LaminationPanelComponent {
     this.fetchMachineByGroup();
     this.fetchCallNodeByGroup();
     this.fetchCallNodeFollowUser();
-
+    
   }
+
+  // length for limit remark
+  readonly REMARK_MAX_LENGTH = 18;
+
+  isLongRemark(remark?: string | null): boolean {
+    return (remark ?? '').length > this.REMARK_MAX_LENGTH;
+  }
+
+
+  onLamScroll() {
+    const el = this.lamScroll?.nativeElement;
+    if (!el) return;
+  
+    const atBottom =  el.scrollTop + el.clientHeight >= el.scrollHeight - 1;
+    
+  
+    if (atBottom) {
+      this.notifyWaitCleared.emit(); // ✅ ให้ parent เคลียร์
+    }
+  }
+
+  onLamClick() {
+    const el = this.lamScroll?.nativeElement;
+    if (!el) return;
+  
+    // ถ้าไม่มี scrollbar (รายการน้อย → เห็นครบทุกแถวในจอเดียว)
+    const noScroll = el.scrollHeight <= el.clientHeight + 1;
+  
+    if (noScroll) {
+      this.notifyWaitCleared.emit(); // ✅ ให้ parent เคลียร์
+    }
+  }
+
+ 
 
 
   fetchGroup(){
@@ -245,13 +281,9 @@ export class LaminationPanelComponent {
 
 
   openModal(item?: RowItem) {
-   
-    // const preset = item ? { machine: item.machineName } : {};
-    // console.log("check preset: ",preset)
-    this.modal.open();
+    this.modal.open('create');
   }
 
-  
 
   onSaved(data: any) {
      if(this.isLoading) return ;
@@ -332,6 +364,20 @@ export class LaminationPanelComponent {
     this.updateRow.emit(item);
   }
 
+  onDetail(item: RowItem) {
+    this.modal.open('detail', undefined, {
+      createByUserName: item.createByUserName,
+      createByUserEmpNo: item.createByUserEmpNo,
+      groupName: item.groupName,
+      machineName: item.machineName,
+      fromNodeName: item.fromNodeName,
+      toNodeName: item.toNodeName,
+      remark: item.remark,
+      priority: item.priority as any,
+    });
+  }
+  
+
   onMachineSelected(machineId: number) {
     this.selectedMachineId = machineId;
     console.log('Selected machine:', machineId);
@@ -398,12 +444,14 @@ export class LaminationPanelComponent {
   }
 
   ngOnChanges(changes: SimpleChanges) {
+
     if (changes['laminationData']?.currentValue) {
       this.sortLaminationRows();
     }
+
+
   }
   
   
-
 
 }

@@ -1,0 +1,25 @@
+<app-my-modal modalId="modalAlertRequest" modalSize="modal-sm" (closeRequest)="myModal.close()">
+
+     <!-- กล่อง UI -->
+  <div class="ar-card">
+   
+    <!-- ไอคอนแจ้งเตือน -->
+    <div class="ar-icon bell-shake">
+      <i class="fas fa-bell"></i>
+    </div>
+
+    <!-- ข้อความ -->
+    <div class="ar-title">
+      New Request<span class="ar-bang">!</span>
+    </div>
+    <div class="ar-subtitle">Calling</div>
+
+    <!-- ปุ่ม -->
+    <div class="ar-actions">
+      <button class="ar-btn-accept" type="button" (click)="accept()">
+        Accept
+      </button>
+    </div>
+  </div>
+
+</app-my-modal>

@@ -6,6 +6,8 @@ import { HttpClient } from '@angular/common/http';
 import { Router} from '@angular/router';
 import { Subscription } from 'rxjs';
 
+
+import { AlertRequestComponent } from '../alert-request/alert-request.component';
 import Swal from 'sweetalert2';
 import config from '../../config';
 import { CallSocketService } from '../services/call-socket.service';
@@ -44,7 +46,7 @@ type JobRow = {
 @Component({
   selector: 'app-dashboard',
   standalone: true,
-  imports: [CommonModule,LaminationPanelComponent,GeneralStatorPanelComponent],
+  imports: [CommonModule,LaminationPanelComponent,GeneralStatorPanelComponent,AlertRequestComponent],
   templateUrl: './dashboard.component.html',
   styleUrl: './dashboard.component.css'
 })
@@ -86,7 +88,7 @@ export class DashboardComponent {
   ) {}
 
   @ViewChild('lamScroll') lamScroll?: ElementRef<HTMLDivElement>;
-
+  @ViewChild('alertRequestModal') modalAlert!: AlertRequestComponent;
 
   buildLamination = {
     waitCount: 0,
@@ -175,8 +177,12 @@ export class DashboardComponent {
       this.fetchJobByLam();
     }
     //update notify wait เมื่อมี request ใหม่เข้ามา
+    // check node ตัวเองกับ node ใน job ใหม่
     if(this.userCallNodeId === afterCreatetoNodeId){
       this.checkLamNotifyWait = 1;
+      //call alert modal | new request
+      this.openModalAlert();
+       
     }
     //update notify wait ของ dashboard unAuthorized
     this.checkUnAuthorizedLamNotifyWait = 1;
@@ -184,6 +190,13 @@ export class DashboardComponent {
   });
 
   }
+
+
+
+  openModalAlert(){
+    this.modalAlert?.open()
+  }
+  
 
   private clearLamNotify() {
     this.checkLamNotifyWait = 0;

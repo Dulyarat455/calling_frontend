@@ -5,6 +5,22 @@ import { CommonModule } from '@angular/common';
 
 import { AutoGrowDirective } from './auto-grow.directive';
 
+//***************** */
+export type ModalMode = 'create' | 'detail';
+
+export type JobDetail = {
+  createByUserName?: string;
+  createByUserEmpNo?: string;
+  groupName?: string;
+  machineName?: string;
+  fromNodeName?: string;
+  toNodeName?: string;
+  remark?: string;
+  priority?: 'urgent' | 'normal' | string;
+};
+
+//***************** */
+
 
 export type NameForm = {
   createBy: string;
@@ -75,7 +91,10 @@ export class ModalTemplateComponent {
   @Input() userCallNodeId: number | null = null;
   @Input() userGroupId: number | null = null;
   @Input() isLoading : boolean = false;
-  
+  //check event for use modal
+  @Input() checkEvent: ModalMode = 'create';
+  // save data detail
+  detail?: JobDetail;
 
    // --- state มาตรฐาน ---
    model: NameForm = this.defaultModel();
@@ -96,14 +115,20 @@ export class ModalTemplateComponent {
   }
 
    // เรียกจากข้างนอกได้ (ผ่าน parent อื่น)
-  open(data?: Partial<NameForm>) {
+  open(mode: ModalMode = 'create', data?: Partial<NameForm>, detail?: JobDetail) {
+      this.checkEvent = mode;
+      this.detail = detail;
+
+      if(mode === 'create'){
         this.model = { ...this.defaultModel(), createBy: this.userName, empNo: this.empNo, group: this.userGroupId, callFrom: this.userCallNodeId ,...(data ?? {}) };
         this.errorMsg = '';
         // ระวัง: MyModal พร้อมใช้หลัง AfterViewInit เท่านั้น → เรียกจากปุ่ม/เหตุการณ์หลังหน้าเรนเดอร์แล้วจะปลอดภัย
 
         // ✅ ส่งค่า priority เริ่มต้น (normal) ไปก่อน
         this.priorityValue.emit(this.model.priority);
-        this.myModal?.open();
+      }
+
+      this.myModal?.open();
   }
 
 

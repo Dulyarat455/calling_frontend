@@ -249,7 +249,13 @@
   }
   @if(groupDashboard === "Lamination"){
       <!-- Lamination -->
-    <app-lamination-panel  [laminationData]="buildLamination" [checkNotifyWait]="checkLamNotifyWait"  [checkNotifyPending]="checkLamNotifyPending" (updateRow)="onUpdateRow($event)"></app-lamination-panel>                
+    <app-lamination-panel  
+    [laminationData]="buildLamination" 
+    [checkNotifyWait]="checkLamNotifyWait" 
+    (notifyWaitCleared)="checkLamNotifyWait = 0" 
+    [checkNotifyPending]="checkLamNotifyPending" 
+    (updateRow)="onUpdateRow($event)">
+  </app-lamination-panel>                
   }
   @if( groupDashboard === "General" || groupDashboard === "Stator"){ 
       <!-- General & Stator -->
@@ -258,3 +264,8 @@
 
   </div> <!-- container -->
 </div>
+
+<app-alert-request
+#alertRequestModal
+>
+</app-alert-request>
