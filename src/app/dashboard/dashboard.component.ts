@@ -21,6 +21,7 @@ type States = {
   userInchargeId: number;
   stateJobName: string; 
   userInchargeName: string;
+  userInchargeEmpNo: string;
   date: string;
 }
 
@@ -29,6 +30,10 @@ type JobRow = {
   createByUserId: number;
   createByUserName: string;
   createByUserEmpNo: string;
+  userInchargeId: number | null;
+  userInchargeName: string | null;
+  userInchargeEmpNo: string | null;
+  createAt: string;
   remark: string;
   machineId: number;
   machineName: string;
@@ -162,34 +167,55 @@ export class DashboardComponent {
     // ✅ ฟัง event จาก websocket
     this.wsSub = this.callSocket.onJobChanged().subscribe((payload: any) => {
     console.log('job:changed payload =', payload);
-
+    const type = payload?.type as 'create' | 'update' | undefined;
     const job = payload?.job;
     const afterCreatetoNodeId = job.toNodeId; 
-
-    if(!job) {return;}
-
-    // สมมติ backend ส่ง payload แบบ { type, job } มา
-    // และ job.groupId คือ group ที่เกี่ยวข้อง
     const groupId = payload?.job?.groupId;
 
-    // ถ้าอยาก reload แค่ Lamination groupId = 3
-    if (groupId === 3) {
-      this.fetchJobByLam();
-    }
-    //update notify wait เมื่อมี request ใหม่เข้ามา
-    // check node ตัวเองกับ node ใน job ใหม่
-    if(this.userCallNodeId === afterCreatetoNodeId){
-      this.checkLamNotifyWait = 1;
-      //call alert modal | new request
-      this.openModalAlert();
-       
-    }
-    //update notify wait ของ dashboard unAuthorized
-    this.checkUnAuthorizedLamNotifyWait = 1;
+    if(type === 'create'){
+        if(!job) {return;}
 
+        if (groupId === 3) {
+          this.fetchJobByLam();
+        }
+        //update notify wait เมื่อมี request ใหม่เข้ามา
+        // check node ตัวเองกับ node ใน job ใหม่
+        if(this.userCallNodeId === afterCreatetoNodeId){
+          this.checkLamNotifyWait = 1;
+          //call alert modal | new request
+          this.openModalAlert();
+          
+        }
+        //update notify wait ของ dashboard unAuthorized
+        this.checkUnAuthorizedLamNotifyWait = 1;
+    }
+    if(type === 'update'){
+        if(!job) {return;}
+        const jobStatus = payload?.timeStateJob?.stateJobId;
+        if (groupId === 3) {
+          this.fetchJobByLam();
+        }
+        if(jobStatus === 2){
+          if(this.userCallNodeId === afterCreatetoNodeId ){
+              this.checkLamNotifyPending = 1;
+          }
+          
+            this.checkUnAuthorizedGenNotifyPending = 1;
+      }
+      if(jobStatus === 1){
+        if(this.userCallNodeId === afterCreatetoNodeId ){
+          this.checkLamNotifyWait = 1;
+          //call alert modal | new request
+          this.openModalAlert();
+        }
+
+        this.checkUnAuthorizedLamNotifyWait = 1;
+      }
+    }
   });
 
   }
+
 
 
 
@@ -231,42 +257,130 @@ export class DashboardComponent {
   
  
 
+  // private buildLamSectionFromJobs() {
+  //   // 1) แปลง JobRow -> RowItem[]
+  //   const allRows: RowItem[] = this.jobLaminations.map(job => {
+  //     // เอา state ล่าสุดของ job นี้ (สมมติ backend sort date desc มาแล้ว ถ้าไม่มั่นใจค่อย sort เอง)
+  //     const latestState = job.states && job.states.length > 0
+  //       ? job.states[0]
+  //       : null;
+  
+  //     // เวลา: แปลงจาก ISO string เป็น HH:mm
+  //     const timeStr = latestState
+  //       ? new Date(latestState.date).toLocaleTimeString('th-TH', {
+  //           hour: '2-digit',
+  //           minute: '2-digit',
+  //           hour12: false,
+  //         })
+  //       : '';
+  
+  //     // สเตตัส: map จาก stateJobName -> 'wait' | 'pending'
+  //     // (ปรับตามจริง เช่น "Done" ทีหลังได้)
+  //     let status: 'wait' | 'pending' = 'wait';
+  //     if (latestState && latestState.stateJobName.toLowerCase() === 'pending') {
+  //       status = 'pending';
+  //     }
+  
+  //     return {
+  //       time: timeStr,
+  //       date: latestState
+  //       ? new Date(latestState.date).toLocaleDateString('th-TH', {
+  //           year: 'numeric',
+  //           month: '2-digit',
+  //           day: '2-digit',
+  //         })
+  //       : '',
+  //       machineName: job.machineName,   // ใช้ชื่อเครื่องเป็น station
+  //       status,
+  //       //add new
+  //       jobId: job.id,
+  //       createByUserId: job.createByUserId,
+  //       createByUserName: job.createByUserName,
+  //       createByUserEmpNo: job.createByUserEmpNo,
+  //       remark: job.remark,
+  //       machineId: job.machineId,
+  //       groupId: job.groupId,
+  //       groupName: job.groupName,
+  //       fromNodeId: job.fromNodeId,
+  //       fromNodeName: job.fromNodeName,
+  //       toNodeId: job.toNodeId,
+  //       toNodeName: job.toNodeName,
+  //       priority: job.priority
+  //     };
+  //   });
+  //   //  นับยอด wait / pending
+  //   const waitCount = allRows.filter(r => r.status === 'wait').length;
+  //   const pendingCount = allRows.filter(r => r.status === 'pending').length;
+
+  //   //  อัปเดต section1 ที่ UI ใช้อยู่
+  //   this.buildLamination = {
+  //     waitCount,
+  //     pendingCount,
+  //     Rows:allRows
+  //   };
+  // }
+
+
   private buildLamSectionFromJobs() {
-    // 1) แปลง JobRow -> RowItem[]
     const allRows: RowItem[] = this.jobLaminations.map(job => {
-      // เอา state ล่าสุดของ job นี้ (สมมติ backend sort date desc มาแล้ว ถ้าไม่มั่นใจค่อย sort เอง)
-      const latestState = job.states && job.states.length > 0
-        ? job.states[0]
+  
+      // ✅ ใช้ createAt แทน state.date
+      const createdAt = job.createAt
+        ? new Date(job.createAt)
         : null;
   
-      // เวลา: แปลงจาก ISO string เป็น HH:mm
-      const timeStr = latestState
-        ? new Date(latestState.date).toLocaleTimeString('th-TH', {
+      // เวลา HH:mm
+      const timeStr = createdAt
+        ? createdAt.toLocaleTimeString('th-TH', {
             hour: '2-digit',
             minute: '2-digit',
             hour12: false,
           })
         : '';
   
-      // สเตตัส: map จาก stateJobName -> 'wait' | 'pending'
-      // (ปรับตามจริง เช่น "Done" ทีหลังได้)
+      // วันที่ dd/MM/yyyy
+      const dateStr = createdAt
+        ? createdAt.toLocaleDateString('th-TH', {
+            day: '2-digit',
+            month: '2-digit',
+            year: 'numeric',
+          })
+        : '';
+  
+      // status (ยังใช้ latestState เพื่อบอก wait / pending)
+      const latestState =
+        job.states && job.states.length > 0 ? job.states[0] : null;
+  
       let status: 'wait' | 'pending' = 'wait';
-      if (latestState && latestState.stateJobName.toLowerCase() === 'pending') {
+      if (
+        latestState &&
+        latestState.stateJobName.toLowerCase() === 'pending'
+      ) {
         status = 'pending';
       }
+
+
+      const incharge = 
+      status === 'pending'
+        ? {
+            userInchargeId: latestState?.userInchargeId ?? null,
+            userInchargeName: latestState?.userInchargeName ?? null,
+            userInchargeEmpNo: latestState?.userInchargeEmpNo ?? null,
+          }
+        : {
+            userInchargeId: null,
+            userInchargeName: null,
+            userInchargeEmpNo: null,
+          };
+
   
       return {
         time: timeStr,
-        date: latestState
-        ? new Date(latestState.date).toLocaleDateString('th-TH', {
-            year: 'numeric',
-            month: '2-digit',
-            day: '2-digit',
-          })
-        : '',
-        machineName: job.machineName,   // ใช้ชื่อเครื่องเป็น station
+        date: dateStr,
+        machineName: job.machineName,
         status,
-        //add new
+  
+        // --- fields เดิม ---
         jobId: job.id,
         createByUserId: job.createByUserId,
         createByUserName: job.createByUserName,
@@ -279,20 +393,22 @@ export class DashboardComponent {
         fromNodeName: job.fromNodeName,
         toNodeId: job.toNodeId,
         toNodeName: job.toNodeName,
-        priority: job.priority
+        priority: job.priority,
+        
+        ...incharge,
       };
     });
-    //  นับยอด wait / pending
+  
     const waitCount = allRows.filter(r => r.status === 'wait').length;
     const pendingCount = allRows.filter(r => r.status === 'pending').length;
-
-    //  อัปเดต section1 ที่ UI ใช้อยู่
+  
     this.buildLamination = {
       waitCount,
       pendingCount,
-      Rows:allRows
+      Rows: allRows,
     };
   }
+  
 
 
   private  buildGenStaFromJobs(groupType: string){
@@ -303,7 +419,6 @@ export class DashboardComponent {
       if(groupType === "Stator"){
         rowTemp = this.jobLaminations
       }
-
 
       const allRows: RowItem[] = this.jobLaminations.map(job => {
         // เอา state ล่าสุดของ job นี้ (สมมติ backend sort date desc มาแล้ว ถ้าไม่มั่นใจค่อย sort เอง)
@@ -351,7 +466,11 @@ export class DashboardComponent {
           fromNodeName: job.fromNodeName,
           toNodeId: job.toNodeId,
           toNodeName: job.toNodeName,
-          priority: job.priority
+          priority: job.priority,
+          userInchargeId: latestState?.userInchargeId ?? null,
+          userInchargeName: latestState?.userInchargeName ?? null,
+          userInchargeEmpNo: latestState?.userInchargeEmpNo ?? null,
+
         };
       });
 

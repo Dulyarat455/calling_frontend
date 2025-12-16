@@ -253,6 +253,7 @@
     [laminationData]="buildLamination" 
     [checkNotifyWait]="checkLamNotifyWait" 
     (notifyWaitCleared)="checkLamNotifyWait = 0" 
+    (notifyPendingCleared)="checkLamNotifyPending = 0"
     [checkNotifyPending]="checkLamNotifyPending" 
     (updateRow)="onUpdateRow($event)">
   </app-lamination-panel>                

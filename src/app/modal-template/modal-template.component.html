@@ -299,6 +299,13 @@
         </div>
       </div>
 
+      <div style="display:grid;grid-template-columns:160px 1fr;gap:10px;margin-bottom:12px;align-items:center;">
+        <div style="font-weight:700;color:#111;text-align:right;">InchargeBy</div>
+        <div style="background:#e2e8f0;border-radius:10px;padding:.6rem .9rem;font-weight:700;">
+          {{ detail?.userInchargeName  || '-' }}  ({{ detail?.userInchargeEmpNo || '-' }})
+        </div>
+      </div>
+
       <!-- ปุ่มล่าง detail -->
       <div style="margin-top:18px; display:flex; justify-content:flex-end; gap:10px; background:#f1f5f9; padding-top:10px; border-top:1px solid #ddd;">
         <button class="btn btn-outline-secondary" (click)="close()"

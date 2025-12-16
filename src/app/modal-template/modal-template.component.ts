@@ -17,6 +17,9 @@ export type JobDetail = {
   toNodeName?: string;
   remark?: string;
   priority?: 'urgent' | 'normal' | string;
+  userInchargeId?: number;
+  userInchargeName?: string;
+  userInchargeEmpNo?: string;
 };
 
 //***************** */

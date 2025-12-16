@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, Output, ViewChild, SimpleChanges, ElementRef } from '@angular/core';
+import { Component, EventEmitter, Input, Output, ViewChild, SimpleChanges, ElementRef, output } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ModalTemplateComponent } from '../modal-template/modal-template.component';
 import { HttpClient } from '@angular/common/http';
@@ -19,6 +19,9 @@ export interface RowItem {
   createByUserId: number;
   createByUserName: string;
   createByUserEmpNo: string;
+  userInchargeId: number | null;
+  userInchargeName: string | null; 
+  userInchargeEmpNo: string | null;
   remark: string;
   machineId: number;
   machineName: string;
@@ -75,6 +78,18 @@ type CallNodeRow ={
 }
 
 
+type JobAction = 'accept' | 'cancel' | 'confirm';
+
+type ActionUI = {
+  title: string;
+  confirmText: string;
+  confirmColor: string;
+  cancelText: string;
+  icon: 'question' | 'warning' | 'info';
+  successText: string;
+};
+
+
 @Component({
   selector: 'app-lamination-panel',
   standalone: true,
@@ -88,6 +103,7 @@ export class LaminationPanelComponent {
   @Input() checkNotifyPending: number = 0;
   @Output() updateRow = new EventEmitter<RowItem>();
   @Output() notifyWaitCleared = new EventEmitter<void>();
+  @Output() notifyPendingCleared = new EventEmitter<void>();
 
   @ViewChild('assignJobModal') modal!: ModalTemplateComponent;
   @ViewChild('lamScrolPanel') lamScroll?: ElementRef<HTMLDivElement>;
@@ -147,6 +163,103 @@ export class LaminationPanelComponent {
   }
 
 
+  //for action button 
+  private readonly ACTION_UI: { [K in JobAction]: ActionUI } = {
+    accept: {
+      title: 'ยืนยันการ Accept?',
+      confirmText: 'Accept',
+      confirmColor: '#12d32f',
+      cancelText: 'ยกเลิก',
+      icon: 'question',
+      successText: 'Accept เรียบร้อย',
+     
+    },
+    cancel: {
+      title: 'ยืนยันการ Cancel?',
+      confirmText: 'Cancel',
+      confirmColor: '#eb1207',
+      cancelText: 'กลับ',
+      icon: 'warning',
+      successText: 'Cancel เรียบร้อย',
+    },
+    confirm: {
+      title: 'ยืนยันการ Confirm?',
+      confirmText: 'Confirm',
+      confirmColor: '#463df1',
+      cancelText: 'ยกเลิก',
+      icon: 'info',
+      successText: 'Confirm เรียบร้อย',
+    },
+  };
+
+  jobActionLoading = false;
+
+  async onJobAction(item: RowItem, action: JobAction) {
+    if (this.jobActionLoading) return;
+  
+    const ui = this.ACTION_UI[action];
+  
+    const result = await Swal.fire({
+      title: ui.title,
+      html: `
+        <div>
+          <div><b>Machine:</b> ${item.machineName}</div>
+          <div><b>To:</b> ${item.toNodeName}</div>
+          <div><b>Status:</b> ${item.status}</div>
+          ${item.remark ? `<div><b>Remark:</b> ${item.remark}</div>` : ''}
+        </div>
+      `,
+      icon: ui.icon,
+      showCancelButton: true,
+      confirmButtonText: ui.confirmText,
+      cancelButtonText: ui.cancelText,
+      confirmButtonColor: ui.confirmColor,
+     
+    });
+  
+    if (!result.isConfirmed) return;
+  
+    // ✅ กัน userId / nodeId null
+    if (this.userId == null || this.valueUserCallNodeId == null) {
+      Swal.fire({ title: 'Error', text: 'ไม่พบ userId/nodeId', icon: 'error' });
+      return;
+    }
+  
+    this.jobActionLoading = true;
+  
+    // ✅ payload ส่งไปหลังบ้าน (ปรับตาม API จริงของคุณ)
+    const payload = {
+      jobId: item.jobId,
+      action, // 'accept' | 'cancel' | 'confirm'
+      userId: this.userId,
+    };
+  
+    this.http.post(config.apiServer + '/api/job/updateJob', payload).subscribe({
+      next: () => {
+        this.jobActionLoading = false;
+        Swal.fire({
+          title: 'สำเร็จ',
+          text: ui.successText,
+          icon: 'success',
+          timer: 1200,
+          showConfirmButton: false,
+        });
+      },
+      error: (err) => {
+        this.jobActionLoading = false;
+        Swal.fire({
+          title: 'ผิดพลาด',
+          text: err?.error?.message || err.message || 'ทำรายการไม่สำเร็จ',
+          icon: 'error',
+        });
+      },
+    });
+  }
+  
+  
+
+
+
   onLamScroll() {
     const el = this.lamScroll?.nativeElement;
     if (!el) return;
@@ -156,6 +269,7 @@ export class LaminationPanelComponent {
   
     if (atBottom) {
       this.notifyWaitCleared.emit(); // ✅ ให้ parent เคลียร์
+      this.notifyPendingCleared.emit();
     }
   }
 
@@ -168,10 +282,9 @@ export class LaminationPanelComponent {
   
     if (noScroll) {
       this.notifyWaitCleared.emit(); // ✅ ให้ parent เคลียร์
+      this.notifyPendingCleared.emit();
     }
   }
-
- 
 
 
   fetchGroup(){
@@ -374,6 +487,9 @@ export class LaminationPanelComponent {
       toNodeName: item.toNodeName,
       remark: item.remark,
       priority: item.priority as any,
+      userInchargeId: item.userInchargeId ?? undefined  ,
+      userInchargeName: item.userInchargeName ?? undefined,
+      userInchargeEmpNo: item.userInchargeEmpNo ?? undefined
     });
   }
   

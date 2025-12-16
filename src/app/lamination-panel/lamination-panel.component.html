@@ -144,33 +144,34 @@
                      
 
                         @if (valueUserCallNodeId === item.toNodeId) {
-                          <button 
+                          @if (item.status === 'wait') {
+                            <button 
                             class="btn btn-sm d-flex align-items-center gap-1 fw-semibold" 
                             style="background:#12d32f; color:rgb(10, 8, 8); border-radius:8px; box-shadow:0 2px 4px rgba(0,0,0,0.15);"
-                            
+                            (click)="onJobAction(item, 'accept')"
                             >
                             <i class="fas fa-edit"></i>
                             Accept
                           </button>
-                          <button 
-                          class="btn btn-sm d-flex align-items-center gap-1 fw-semibold" 
-                          style="background:#eb1207; color:rgb(255, 255, 255); border-radius:8px; box-shadow:0 2px 4px rgba(0,0,0,0.15);"
-                          
-                          >
-                          <i class="fas fa-times"></i>
-
-                          Cancel
-                        </button>
-                        <button 
-                        class="btn btn-sm d-flex align-items-center gap-1 fw-semibold" 
-                        style="background:#463df1; color:rgb(255, 255, 255); border-radius:8px; box-shadow:0 2px 4px rgba(0,0,0,0.15);"
-                        
-                        >
-                        <i class="fas fa-check-circle"></i>
-                        Confirm
-                      </button>
-                        
-
+                          }
+                          @if (item.status === 'pending') {
+                            <button 
+                              class="btn btn-sm d-flex align-items-center gap-1 fw-semibold" 
+                              style="background:#463df1; color:rgb(255, 255, 255); border-radius:8px; box-shadow:0 2px 4px rgba(0,0,0,0.15);"
+                              (click)="onJobAction(item, 'confirm')"
+                              >
+                              <i class="fas fa-check-circle"></i>
+                                Confirm
+                            </button>
+                              <button 
+                                class="btn btn-sm d-flex align-items-center gap-1 fw-semibold" 
+                                style="background:#eb1207; color:rgb(255, 255, 255); border-radius:8px; box-shadow:0 2px 4px rgba(0,0,0,0.15);"
+                                (click)="onJobAction(item, 'cancel')"
+                                >
+                                <i class="fas fa-times"></i>
+                                Cancel
+                            </button>
+                          }
                        }
                        <button
                        class="detail-icon-btn"
