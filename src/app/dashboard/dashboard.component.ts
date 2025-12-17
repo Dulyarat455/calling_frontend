@@ -11,6 +11,7 @@ import { AlertRequestComponent } from '../alert-request/alert-request.component'
 import Swal from 'sweetalert2';
 import config from '../../config';
 import { CallSocketService } from '../services/call-socket.service';
+import { group } from '@angular/animations';
 
 export type Status = 'wait' | 'pending';
 
@@ -47,6 +48,8 @@ type JobRow = {
   priority: string;
 };
 
+ type PanelKey = 'lam' | 'gen' | 'sta';
+
 
 @Component({
   selector: 'app-dashboard',
@@ -76,6 +79,12 @@ export class DashboardComponent {
   checkLamNotifyWait: number = 0;
   checkLamNotifyPending: number = 0;
 
+  checkGenNotifyWait: number = 0;
+  checkGenNotifyPending: number = 0;
+
+  checkStaNotifyWait: number = 0;
+  checkStaNotifyPending: number = 0;
+
   checkUnAuthorizedLamNotifyWait: number = 0;
   checkUnAuthorizedLamNotifyPending: number = 0;
 
@@ -93,6 +102,8 @@ export class DashboardComponent {
   ) {}
 
   @ViewChild('lamScroll') lamScroll?: ElementRef<HTMLDivElement>;
+  @ViewChild('genScroll') genScroll?: ElementRef<HTMLDivElement>;
+  @ViewChild('staScroll') staScroll?: ElementRef<HTMLDivElement>;
   @ViewChild('alertRequestModal') modalAlert!: AlertRequestComponent;
 
   buildLamination = {
@@ -113,35 +124,35 @@ export class DashboardComponent {
     Rows: [] as RowItem[]
   }
 
-
+  
 
   // general stator
   // ✅ General panel (dummy)
-  generalGroup: GroupPanel = {
-    title: 'General',
-    waitCount: 7,
-    pendingCount: 1,
-    rows: <GSRowItem[]>[
-      { time: '07:10', station: 'D2', status: 'wait', date: '05/12/2025',toNodeName: 'PC_STORE_GEN'},
-      { time: '07:25', station: 'A5', status: 'pending', date: '05/12/2025',toNodeName: 'PC_STORE_GEN' },
-      { time: '08:23', station: 'A3', status: 'wait', date: '05/12/2025', toNodeName: 'PC_STORE_GEN' },
-      { time: '08:38', station: 'D3', status: 'wait', date: '05/12/2025', toNodeName: 'PC_STORE_GEN' },
-      { time: '09:15', station: 'A1', status: 'wait', date: '05/12/2025', toNodeName: 'PC_STORE_GEN' },
-      { time: '09:15', station: 'A1', status: 'wait', date: '05/12/2025', toNodeName: 'PC_STORE_GEN' },
-      { time: '09:15', station: 'A1', status: 'wait', date: '05/12/2025', toNodeName: 'PC_STORE_GEN' },
-    ],
-  };
+  // generalGroup: GroupPanel = {
+  //   title: 'General',
+  //   waitCount: 7,
+  //   pendingCount: 1,
+  //   rows: <GSRowItem[]>[
+  //     { time: '07:10', station: 'D2', status: 'wait', date: '05/12/2025',toNodeName: 'PC_STORE_GEN'},
+  //     { time: '07:25', station: 'A5', status: 'pending', date: '05/12/2025',toNodeName: 'PC_STORE_GEN' },
+  //     { time: '08:23', station: 'A3', status: 'wait', date: '05/12/2025', toNodeName: 'PC_STORE_GEN' },
+  //     { time: '08:38', station: 'D3', status: 'wait', date: '05/12/2025', toNodeName: 'PC_STORE_GEN' },
+  //     { time: '09:15', station: 'A1', status: 'wait', date: '05/12/2025', toNodeName: 'PC_STORE_GEN' },
+  //     { time: '09:15', station: 'A1', status: 'wait', date: '05/12/2025', toNodeName: 'PC_STORE_GEN' },
+  //     { time: '09:15', station: 'A1', status: 'wait', date: '05/12/2025', toNodeName: 'PC_STORE_GEN' },
+  //   ],
+  // };
 
   // ✅ Stator panel (dummy)
-  statorGroup: GroupPanel = {
-    title: 'Stator',
-    waitCount: 1,
-    pendingCount: 1,
-    rows: <GSRowItem[]>[
-      { time: '09:20', station: 'B1', status: 'pending', date: '05/12/2025',toNodeName: 'PD_STA' },
-      { time: '09:25', station: 'C5', status: 'wait', date: '05/12/2025',toNodeName: 'PC_STORE_STA' },
-    ],
-  };
+  // statorGroup: GroupPanel = {
+  //   title: 'Stator',
+  //   waitCount: 1,
+  //   pendingCount: 1,
+  //   rows: <GSRowItem[]>[
+  //     { time: '09:20', station: 'B1', status: 'pending', date: '05/12/2025',toNodeName: 'PD_STA' },
+  //     { time: '09:25', station: 'C5', status: 'wait', date: '05/12/2025',toNodeName: 'PC_STORE_STA' },
+  //   ],
+  // };
 
 
 
@@ -177,17 +188,37 @@ export class DashboardComponent {
 
         if (groupId === 3) {
           this.fetchJobByLam();
+           //update notify wait ของ dashboard unAuthorized
+          this.checkUnAuthorizedLamNotifyWait = 1;
         }
+
+        if (groupId === 2){
+          this.fetchJobByGen();
+          this.checkUnAuthorizedGenNotifyWait = 1;
+        }
+
+        if(groupId === 4){
+          this.fetchJobBySta();
+          this.checkUnAuthorizedStaNotifyWait = 1;
+        }
+
         //update notify wait เมื่อมี request ใหม่เข้ามา
         // check node ตัวเองกับ node ใน job ใหม่
         if(this.userCallNodeId === afterCreatetoNodeId){
-          this.checkLamNotifyWait = 1;
+          if(groupId === 3){
+            this.checkLamNotifyWait = 1;
+          }
+          if(groupId === 2){
+            this.checkGenNotifyWait = 1;
+          }
+          if(groupId === 4){
+            this.checkStaNotifyWait = 1;
+          }
           //call alert modal | new request
           this.openModalAlert();
-          
         }
-        //update notify wait ของ dashboard unAuthorized
-        this.checkUnAuthorizedLamNotifyWait = 1;
+       
+       
     }
     if(type === 'update'){
         if(!job) {return;}
@@ -195,130 +226,134 @@ export class DashboardComponent {
         if (groupId === 3) {
           this.fetchJobByLam();
         }
+        if(groupId === 2){
+          this.fetchJobByGen();
+        }
+        if(groupId === 4){
+          this.fetchJobBySta();
+        }
+
+
         if(jobStatus === 2){
+          //pending
           if(this.userCallNodeId === afterCreatetoNodeId ){
+            if(groupId === 3){
               this.checkLamNotifyPending = 1;
+            }
+            if(groupId === 2){
+              this.checkGenNotifyPending = 1;
+            }
+            if(groupId === 4){
+              this.checkStaNotifyPending = 1;
+            }
           }
-          
+          if(groupId === 3){
+            this.checkUnAuthorizedLamNotifyPending = 1;
+          }
+          if(groupId === 2){
             this.checkUnAuthorizedGenNotifyPending = 1;
+          }
+          if(groupId === 4){
+            this.checkUnAuthorizedStaNotifyPending = 1;
+          }
       }
       if(jobStatus === 1){
+        //back to wait
         if(this.userCallNodeId === afterCreatetoNodeId ){
+          if(groupId === 3){
           this.checkLamNotifyWait = 1;
+          }
+          if(groupId === 2){
+          this.checkGenNotifyWait = 1;
+          }
+          if(groupId === 4){
+          this.checkStaNotifyWait = 1;
+          }
           //call alert modal | new request
           this.openModalAlert();
         }
 
-        this.checkUnAuthorizedLamNotifyWait = 1;
+        if(groupId === 3){
+          this.checkUnAuthorizedLamNotifyWait = 1;
+        }
+        if(groupId === 2){
+          this.checkUnAuthorizedGenNotifyWait = 1;
+        }
+        if(groupId === 4){
+          this.checkUnAuthorizedStaNotifyWait = 1;
+        }
       }
     }
   });
 
   }
-
-
-
+  
 
   openModalAlert(){
     this.modalAlert?.open()
   }
   
 
-  private clearLamNotify() {
-    this.checkLamNotifyWait = 0;
-    this.checkUnAuthorizedLamNotifyWait = 0;
-  }
+  // private clearLamNotify() {
+  //   this.checkLamNotifyWait = 0;
+  //   this.checkUnAuthorizedLamNotifyWait = 0;
+  // }
 
+
+  private clearNotify(panel: PanelKey) {
+    if (panel === 'lam') {
+      this.checkLamNotifyWait = 0;
+      this.checkLamNotifyPending = 0;
+      this.checkUnAuthorizedLamNotifyWait = 0;
+      this.checkUnAuthorizedLamNotifyPending = 0;
+    }
+  
+    if (panel === 'gen') {
+      this.checkGenNotifyWait = 0;
+      this.checkGenNotifyPending = 0;
+      this.checkUnAuthorizedGenNotifyWait = 0;
+      this.checkUnAuthorizedGenNotifyPending = 0;
+    }
+  
+    if (panel === 'sta') {
+      this.checkStaNotifyWait = 0;
+      this.checkStaNotifyPending = 0;
+      this.checkUnAuthorizedStaNotifyWait = 0;
+      this.checkUnAuthorizedStaNotifyPending = 0;
+    }
+  }
+  
+  private handleScrollClear(panel: PanelKey, el?: HTMLDivElement ) {
+    if (!el) return;
+    const atBottom = el.scrollTop + el.clientHeight >= el.scrollHeight - 1;
+    if (atBottom) this.clearNotify(panel);
+  }
+  
+  private handleClickClear(panel: PanelKey) {
+    // ✅ คลิกเมื่อไหร่ก็ clear ได้เลย
+    this.clearNotify(panel);
+  }
+  
 
   onLamScroll() {
-    const el = this.lamScroll?.nativeElement;
-    if (!el) return;
-  
-    const atBottom =
-      el.scrollTop + el.clientHeight >= el.scrollHeight - 1;
-  
-    if (atBottom) {
-      this.clearLamNotify();
-    }
-  }
-
-  onLamClick() {
-    const el = this.lamScroll?.nativeElement;
-    if (!el) return;
-  
-    // ถ้าไม่มี scrollbar (รายการน้อย → เห็นครบทุกแถวในจอเดียว)
-    const noScroll = el.scrollHeight <= el.clientHeight + 1;
-  
-    if (noScroll) {
-      this.clearLamNotify();
-    }
+    this.handleScrollClear('lam', this.lamScroll?.nativeElement);
   }
   
+  onGenScroll() {
+    this.handleScrollClear('gen', this.genScroll?.nativeElement);
+  }
   
- 
+  onStaScroll() {
+    this.handleScrollClear('sta', this.staScroll?.nativeElement);
+  }
+  
 
-  // private buildLamSectionFromJobs() {
-  //   // 1) แปลง JobRow -> RowItem[]
-  //   const allRows: RowItem[] = this.jobLaminations.map(job => {
-  //     // เอา state ล่าสุดของ job นี้ (สมมติ backend sort date desc มาแล้ว ถ้าไม่มั่นใจค่อย sort เอง)
-  //     const latestState = job.states && job.states.length > 0
-  //       ? job.states[0]
-  //       : null;
-  
-  //     // เวลา: แปลงจาก ISO string เป็น HH:mm
-  //     const timeStr = latestState
-  //       ? new Date(latestState.date).toLocaleTimeString('th-TH', {
-  //           hour: '2-digit',
-  //           minute: '2-digit',
-  //           hour12: false,
-  //         })
-  //       : '';
-  
-  //     // สเตตัส: map จาก stateJobName -> 'wait' | 'pending'
-  //     // (ปรับตามจริง เช่น "Done" ทีหลังได้)
-  //     let status: 'wait' | 'pending' = 'wait';
-  //     if (latestState && latestState.stateJobName.toLowerCase() === 'pending') {
-  //       status = 'pending';
-  //     }
-  
-  //     return {
-  //       time: timeStr,
-  //       date: latestState
-  //       ? new Date(latestState.date).toLocaleDateString('th-TH', {
-  //           year: 'numeric',
-  //           month: '2-digit',
-  //           day: '2-digit',
-  //         })
-  //       : '',
-  //       machineName: job.machineName,   // ใช้ชื่อเครื่องเป็น station
-  //       status,
-  //       //add new
-  //       jobId: job.id,
-  //       createByUserId: job.createByUserId,
-  //       createByUserName: job.createByUserName,
-  //       createByUserEmpNo: job.createByUserEmpNo,
-  //       remark: job.remark,
-  //       machineId: job.machineId,
-  //       groupId: job.groupId,
-  //       groupName: job.groupName,
-  //       fromNodeId: job.fromNodeId,
-  //       fromNodeName: job.fromNodeName,
-  //       toNodeId: job.toNodeId,
-  //       toNodeName: job.toNodeName,
-  //       priority: job.priority
-  //     };
-  //   });
-  //   //  นับยอด wait / pending
-  //   const waitCount = allRows.filter(r => r.status === 'wait').length;
-  //   const pendingCount = allRows.filter(r => r.status === 'pending').length;
+  onLamClick() { this.handleClickClear('lam'); }
+  onGenClick() { this.handleClickClear('gen'); }
+  onStaClick() { this.handleClickClear('sta'); }
 
-  //   //  อัปเดต section1 ที่ UI ใช้อยู่
-  //   this.buildLamination = {
-  //     waitCount,
-  //     pendingCount,
-  //     Rows:allRows
-  //   };
-  // }
+
+
 
 
   private buildLamSectionFromJobs() {
@@ -394,7 +429,6 @@ export class DashboardComponent {
         toNodeId: job.toNodeId,
         toNodeName: job.toNodeName,
         priority: job.priority,
-        
         ...incharge,
       };
     });
@@ -412,15 +446,15 @@ export class DashboardComponent {
 
 
   private  buildGenStaFromJobs(groupType: string){
-      let rowTemp = []
+    let rowTemp: JobRow[] = []; 
       if(groupType === "General"){
         rowTemp = this.jobGenerals
       }
       if(groupType === "Stator"){
-        rowTemp = this.jobLaminations
+        rowTemp = this.jobStators
       }
 
-      const allRows: RowItem[] = this.jobLaminations.map(job => {
+      const allRows: RowItem[] = rowTemp.map(job => {
         // เอา state ล่าสุดของ job นี้ (สมมติ backend sort date desc มาแล้ว ถ้าไม่มั่นใจค่อย sort เอง)
         const latestState = job.states && job.states.length > 0
           ? job.states[0]
@@ -441,6 +475,20 @@ export class DashboardComponent {
         if (latestState && latestState.stateJobName.toLowerCase() === 'pending') {
           status = 'pending';
         }
+
+
+        const incharge = 
+        status === 'pending'
+          ? {
+              userInchargeId: latestState?.userInchargeId ?? null,
+              userInchargeName: latestState?.userInchargeName ?? null,
+              userInchargeEmpNo: latestState?.userInchargeEmpNo ?? null,
+            }
+          : {
+              userInchargeId: null,
+              userInchargeName: null,
+              userInchargeEmpNo: null,
+            };
     
         return {
           time: timeStr,
@@ -467,24 +515,36 @@ export class DashboardComponent {
           toNodeId: job.toNodeId,
           toNodeName: job.toNodeName,
           priority: job.priority,
-          userInchargeId: latestState?.userInchargeId ?? null,
-          userInchargeName: latestState?.userInchargeName ?? null,
-          userInchargeEmpNo: latestState?.userInchargeEmpNo ?? null,
-
+          ...incharge,
         };
       });
 
        //  นับยอด wait / pending
     const waitCount = allRows.filter(r => r.status === 'wait').length;
     const pendingCount = allRows.filter(r => r.status === 'pending').length;
+
+    if(groupType === "General"){
+      this.buildGeneral = {
+        waitCount,
+        pendingCount,
+        Rows: allRows,
+      };
+    }
+    if(groupType === "Stator"){
+      this.buildStator = {
+        waitCount,
+        pendingCount,
+        Rows: allRows,
+      };
+    }
     
   }
   
 
-  onUpdateRow(row: RowItem) {
-    // TODO: เปิด modal / เรียก API / เปลี่ยนสถานะ ฯลฯ
-    console.log('Update clicked:', row);
-  }
+  // onUpdateRow(row: RowItem) {
+  //   // TODO: เปิด modal / เรียก API / เปลี่ยนสถานะ ฯลฯ
+  //   console.log('Update clicked:', row);
+  // }
 
 
 

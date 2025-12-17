@@ -8,158 +8,298 @@
   </div>
 
   <div class="card-body" style="background: #e3e3e3">
-    <div class="row g-4">
 
-      <!-- =============== LEFT : GENERAL =============== -->
-      <div class="col-md-6" *ngIf="general">
-        <div class="d-flex align-items-center">
-        <!-- หัวคอลัมน์ + summary -->
-        <div
-          class="p-3 rounded-3 mb-3 head-block flex-grow-1"
-          style="background-color: #d4f787"
-        >
+    <!-- ====================== GENERAL (TOP) ====================== -->
+    <div class="mb-4" *ngIf="general">
+      <!-- หัว + summary + ปุ่ม (บรรทัดเดียวกัน) -->
+      <div class="d-flex align-items-center justify-content-between mb-2">
+        <div class="p-3 rounded-3 head-block flex-grow-1" style="background-color: #d4f787">
           <div class="d-flex justify-content-between align-items-center">
-            <span class="fw-semibold">{{ general.title }}</span>
-            <div class="d-flex gap-3">
-              <span class="summary-chip">wait : {{ general.waitCount }}</span>
-              <span class="summary-chip">pending : {{ general.pendingCount }}</span>
+            <span class="fw-semibold fs-5">General</span>
+            <div class="d-flex gap-4">
+              <span 
+                class="summary-chip"
+                [ngClass]="{ 'notify': checkGenNotifyWait === 1 }"
+                >
+                  <ng-container *ngIf="checkGenNotifyWait === 1">
+                    <i class="fas fa-bell blink me-1"></i>
+                  </ng-container>
+                  wait : {{ general.waitCount }}
+              </span>
+              <span 
+              class="summary-chip"
+              [ngClass]="{ 'pending-notify': checkGenNotifyPending === 1 }"
+            >
+            <ng-container *ngIf="checkGenNotifyPending === 1">
+              <i class="fas fa-bell blink me-1"></i>
+            </ng-container>
+            pending : {{ general.pendingCount }}
+            </span
+              >
             </div>
           </div>
         </div>
-
-        <button
-        class="btn btn-primary ms-3 mb-3"
-        (click)="openModal()"
-      >
-        <i class="fa fa-file-alt me-1"></i> Add Job
-      </button>
+        @if (groupId === 2) {
+        <button class="btn btn-primary ms-3" (click)="openModal()">
+          <i class="fa fa-file-alt me-1"></i> Add Job
+        </button>
+      }
       </div>
-      <div class="mb-1">
+
+      <div class="mb-2">
         <span>
           <i class="fas fa-phone-volume ml-4"> : To Calling</i>
-          <i class="fas fa-user-circle  ml-4"> : Owner Job</i>
+          <i class="fas fa-user-circle ml-4"> : Owner Job</i>
         </span>
       </div>
 
-
-        <!-- ตารางแถว General (ล็อคความสูง + scroll) -->
-        <div class="lam-preview-scroll">
-          <div class="list-group rounded-3 overflow-hidden">
-            <a
-              *ngFor="let r of general.rows"
-              class="list-group-item list-group-item-action d-flex align-items-center justify-content-between"
-            >
-              <div class="d-flex align-items-center gap-3">
-                <!-- ถ้าอยากโชว์ date ด้วย เติม r.date ตรงนี้ได้ -->
-                <span class="mono kanit kanit-bold">{{ r.time }}</span>
-                <span class="fw-semibold">{{ r.station }}</span>
-              </div>
-
-              <div class="d-flex align-items-center gap-2">
-                @if (r.station !== "A3") {
-                <i class="fas fa-user-circle text-primary"></i>
-                }
-                <span class="node-tag" >{{ r.toNodeName }}</span>
-                <span
-                  class="status-chip badge rounded-pill px-3 py-2 text-capitalize"
-                  [ngClass]="
-                    r.status === 'wait'
-                      ? 'bg-success'
-                      : 'bg-warning text-dark'
-                  "
-                >
-                  {{ r.status }}
+      <!-- ตาราง General -->
+      <div class="lam-preview-scroll"
+       #generalScrolPanel
+        (scroll)="onGenScroll()"
+        (click)="onGenClick()"
+      >
+        <div class="list-group rounded-3 overflow-hidden">
+          <a
+            *ngFor="let r of general.Rows"
+            class="list-group-item list-group-item-action d-flex align-items-center justify-content-between"
+          >
+            <div class="d-flex align-items-center gap-3">
+              <span class="mono fw-semibold">{{ r.date }}</span>
+              <span class="mono fw-semibold">{{ r.time }}</span>
+              <span class="fw-semibold">{{ r.machineName }}</span>
+              @if (r.priority === "urgent") {
+                <span class="urgent-badge">
+                  <i class="fas fa-fire"></i>
                 </span>
-                <!-- <button 
-                class="btn btn-sm d-flex align-items-center gap-1 fw-semibold" 
-                style="background:#f5d820; color:rgb(10, 8, 8); border-radius:8px; box-shadow:0 2px 4px rgba(0,0,0,0.15);"
-               
-                >
-                <i class="fas fa-edit"></i>
-                Update
-              </button> -->
-              </div>
-            </a>
-          </div>
+              }
+
+              @if (r.remark) {
+                <ng-container *ngIf="isLongRemark(r.remark); else shortRemark2">
+                  <span class="remark-wrap">
+                    <button type="button" class="remark-pill">
+                      <i class="fas fa-comment-dots"></i>
+                    </button>
+              
+                    <span class="remark-tooltip">
+                      {{ r.remark }}
+                    </span>
+                  </span>
+                </ng-container>
+              
+                <ng-template #shortRemark2>
+                  <span class="remark-text">{{ r.remark }}</span>
+                </ng-template>
+              }
+
+            </div>
+
+            <div class="d-flex align-items-center gap-2">
+            
+              <span class="node-tag">{{ r.toNodeName }}</span>
+              <span
+                class="status-chip badge rounded-pill px-3 py-2 text-capitalize"
+                [ngClass]="r.status === 'wait' ? 'bg-success' : 'bg-warning text-dark'"
+              >
+                {{ r.status }}
+              </span>
+              @if (valueUserCallNodeId === r.toNodeId) {
+                @if (r.status === 'wait') {
+                  <button 
+                  class="btn btn-sm d-flex align-items-center gap-1 fw-semibold" 
+                  style="background:#12d32f; color:rgb(10, 8, 8); border-radius:8px; box-shadow:0 2px 4px rgba(0,0,0,0.15);"
+                  (click)="onJobAction(r, 'accept')"
+                  >
+                  <i class="fas fa-edit"></i>
+                  Accept
+                </button>
+                }
+                @if (r.status === 'pending') {
+                  <button 
+                    class="btn btn-sm d-flex align-items-center gap-1 fw-semibold" 
+                    style="background:#463df1; color:rgb(255, 255, 255); border-radius:8px; box-shadow:0 2px 4px rgba(0,0,0,0.15);"
+                    (click)="onJobAction(r, 'confirm')"
+                    >
+                    <i class="fas fa-check-circle"></i>
+                      Confirm
+                  </button>
+                    <button 
+                      class="btn btn-sm d-flex align-items-center gap-1 fw-semibold" 
+                      style="background:#eb1207; color:rgb(255, 255, 255); border-radius:8px; box-shadow:0 2px 4px rgba(0,0,0,0.15);"
+                      (click)="onJobAction(r, 'cancel')"
+                      >
+                      <i class="fas fa-times"></i>
+                      Cancel
+                  </button>
+                }
+             }
+              
+              <button
+              class="detail-icon-btn"
+              (click)="onDetail(r)"
+              title="View detail"
+            >
+              <i class="fas fa-bars"></i>
+          </button>
+            </div>
+          </a>
         </div>
       </div>
+    </div>
 
-      <!-- =============== RIGHT : STATOR =============== -->
-      <div class="col-md-6" *ngIf="stator">
-        <div class="d-flex align-items-center">
-      
-            <!-- หัวคอลัมน์ + summary -->
-            <div
-              class="p-3 rounded-3 mb-3 head-block flex-grow-1"
-              style="background-color: #9feefc"
+    <!-- ====================== STATOR (BOTTOM) ====================== -->
+    <div *ngIf="stator">
+      <!-- หัว + summary + ปุ่ม (บรรทัดเดียวกัน) -->
+      <div class="d-flex align-items-center justify-content-between mb-2">
+        <div class="p-3 rounded-3 head-block flex-grow-1" style="background-color: #9feefc">
+          <div class="d-flex justify-content-between align-items-center">
+            <span class="fw-semibold fs-5">Stator</span>
+            <div class="d-flex gap-4">
+              <span 
+                class="summary-chip"
+                [ngClass]="{ 'notify': checkStaNotifyWait === 1 }"
+                >
+                  <ng-container *ngIf="checkStaNotifyWait === 1">
+                    <i class="fas fa-bell blink me-1"></i>
+                  </ng-container>
+                  wait : {{ stator.waitCount }}
+              </span>
+              <span 
+              class="summary-chip"
+              [ngClass]="{ 'pending-notify': checkStaNotifyPending === 1 }"
             >
-              <div class="d-flex justify-content-between align-items-center">
-                <span class="fw-semibold">{{ stator.title }}</span>
-                <div class="d-flex gap-3">
-                  <span class="summary-chip">wait : {{ stator.waitCount }}</span>
-                  <span class="summary-chip">pending : {{ stator.pendingCount }}</span>
-                </div>
-              </div>
+            <ng-container *ngIf="checkStaNotifyPending === 1">
+              <i class="fas fa-bell blink me-1"></i>
+            </ng-container>
+            pending : {{ stator.pendingCount }}
+            </span
+              >
             </div>
-            <!-- ปุ่มอยู่นอกกรอบ แต่บรรทัดเดียวกัน -->
-            <button
-            class="btn btn-primary ms-3 mb-3"
-            (click)="openModal()"
-          >
+          </div>
+        </div>
+        @if (groupId === 4) {
+          <button class="btn btn-primary ms-3" (click)="openModal()">
             <i class="fa fa-file-alt me-1"></i> Add Job
           </button>
-
+        }
       </div>
-      <div class="mb-1">
+
+      <div class="mb-2">
         <span>
           <i class="fas fa-phone-volume ml-4"> : To Calling</i>
-          <i class="fas fa-user-circle  ml-4"> : Owner Job</i>
+          <i class="fas fa-user-circle ml-4"> : Owner Job</i>
         </span>
       </div>
-        <!-- ตารางแถว Stator (ล็อคความสูง + scroll) -->
-        <div class="lam-preview-scroll">
-          <div class="list-group rounded-3 overflow-hidden">
-            <a
-              *ngFor="let r of stator.rows"
-              class="list-group-item list-group-item-action d-flex align-items-center justify-content-between"
-            >
-              <div class="d-flex align-items-center gap-3">
-                <span class="mono kanit kanit-bold">{{ r.time }}</span>
-                <span class="fw-semibold">{{ r.station }}</span>
-              </div>
 
-
-              
-              <div class="d-flex align-items-center gap-2">
-               
-                <span class="node-tag" >{{ r.toNodeName }}</span>
-                <span
-                  class="status-chip badge rounded-pill px-3 py-2 text-capitalize"
-                  [ngClass]="
-                    r.status === 'wait'
-                      ? 'bg-success'
-                      : 'bg-warning text-dark'
-                  "
-                >
-                  {{ r.status }}
+      <!-- ตาราง Stator -->
+      <div class="lam-preview-scroll"
+        #statorScrolPanel
+        (scroll)="onStaScroll()"
+        (click)="onStaClick()"
+      >
+        <div class="list-group rounded-3 overflow-hidden">
+          <a
+            *ngFor="let r of stator.Rows"
+            class="list-group-item list-group-item-action d-flex align-items-center justify-content-between"
+          >
+            <div class="d-flex align-items-center gap-3">
+              <span class="mono fw-semibold">{{ r.date }}</span>
+              <span class="mono fw-semibold">{{ r.time }}</span>
+              <span class="fw-semibold">{{ r.machineName }}</span>
+              @if (r.priority === "urgent") {
+                <span class="urgent-badge">
+                  <i class="fas fa-fire"></i>
                 </span>
-                   <!-- <button 
-                class="btn btn-sm d-flex align-items-center gap-1 fw-semibold" 
-                style="background:#f5d820; color:rgb(10, 8, 8); border-radius:8px; box-shadow:0 2px 4px rgba(0,0,0,0.15);"
-               
-                >
-                <i class="fas fa-edit"></i>
-                Update
-              </button> -->
-                
-              </div>
-            </a>
-          </div>
+              }
+              @if (r.remark) {
+                <ng-container *ngIf="isLongRemark(r.remark); else shortRemark2">
+                  <span class="remark-wrap">
+                    <button type="button" class="remark-pill">
+                      <i class="fas fa-comment-dots"></i>
+                    </button>
+              
+                    <span class="remark-tooltip">
+                      {{ r.remark }}
+                    </span>
+                  </span>
+                </ng-container>
+              
+                <ng-template #shortRemark2>
+                  <span class="remark-text">{{ r.remark }}</span>
+                </ng-template>
+              }
+            </div>
+
+            <div class="d-flex align-items-center gap-2">
+              <span class="node-tag">{{ r.toNodeName }}</span>
+              <span
+                class="status-chip badge rounded-pill px-3 py-2 text-capitalize"
+                [ngClass]="r.status === 'wait' ? 'bg-success' : 'bg-warning text-dark'"
+              >
+                {{ r.status }}
+              </span>
+              @if (valueUserCallNodeId === r.toNodeId) {
+                @if (r.status === 'wait') {
+                  <button 
+                  class="btn btn-sm d-flex align-items-center gap-1 fw-semibold" 
+                  style="background:#12d32f; color:rgb(10, 8, 8); border-radius:8px; box-shadow:0 2px 4px rgba(0,0,0,0.15);"
+                  (click)="onJobAction(r, 'accept')"
+                  >
+                  <i class="fas fa-edit"></i>
+                  Accept
+                </button>
+                }
+                @if (r.status === 'pending') {
+                  <button 
+                    class="btn btn-sm d-flex align-items-center gap-1 fw-semibold" 
+                    style="background:#463df1; color:rgb(255, 255, 255); border-radius:8px; box-shadow:0 2px 4px rgba(0,0,0,0.15);"
+                    (click)="onJobAction(r, 'confirm')"
+                    >
+                    <i class="fas fa-check-circle"></i>
+                      Confirm
+                  </button>
+                    <button 
+                      class="btn btn-sm d-flex align-items-center gap-1 fw-semibold" 
+                      style="background:#eb1207; color:rgb(255, 255, 255); border-radius:8px; box-shadow:0 2px 4px rgba(0,0,0,0.15);"
+                      (click)="onJobAction(r, 'cancel')"
+                      >
+                      <i class="fas fa-times"></i>
+                      Cancel
+                  </button>
+                }
+             }
+             <button
+              class="detail-icon-btn"
+              (click)="onDetail(r)"
+              title="View detail"
+            >
+             <i class="fas fa-bars"></i>
+            </button>
+
+            </div>
+          </a>
         </div>
       </div>
-
     </div>
+
   </div>
 </div>
 
-<app-modal-template #assignJobModal (saved)="onSaved($event)"></app-modal-template>
+<app-modal-template #assignJobModal 
+  [modalName]="modalName"
+  [empNo]="empNo"
+  [userCallNodeId]="valueUserCallNodeId"
+  [userGroupId]="groupId"
+  [groups]="groups"
+  [machines]="machines"
+  [callNodes]="callNodes"
+  [filterByGroupFromNodecallNodes]="filterByGroupFromNodecallNodes"
+  [userId]="userId"
+  [userName]="userName"
+  [isLoading]="isLoading"
+  (machineSelectedId)="onMachineSelected($event)"
+  (callNodeToSelectedId)="onCallNodeToSelected($event)"
+  (remarkValue)="onRemarkValue($event)"
+  (priorityValue)="onPriorityValue($event)"
+  (saved)="onSaved($event)"
+></app-modal-template>

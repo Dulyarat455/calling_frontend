@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, Output, ViewChild, SimpleChanges, ElementRef, output } from '@angular/core';
+import { Component, EventEmitter, Input, Output, ViewChild, SimpleChanges, ElementRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ModalTemplateComponent } from '../modal-template/modal-template.component';
 import { HttpClient } from '@angular/common/http';
@@ -101,7 +101,7 @@ export class LaminationPanelComponent {
   @Input() laminationData!: LaminationGroup;
   @Input() checkNotifyWait: number = 0;
   @Input() checkNotifyPending: number = 0;
-  @Output() updateRow = new EventEmitter<RowItem>();
+  
   @Output() notifyWaitCleared = new EventEmitter<void>();
   @Output() notifyPendingCleared = new EventEmitter<void>();
 
@@ -472,10 +472,7 @@ export class LaminationPanelComponent {
 
   }
 
-  onUpdate(item: RowItem) {
-    this.openModal(item);
-    this.updateRow.emit(item);
-  }
+  
 
   onDetail(item: RowItem) {
     this.modal.open('detail', undefined, {
