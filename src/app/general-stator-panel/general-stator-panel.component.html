@@ -103,8 +103,8 @@
               >
                 {{ r.status }}
               </span>
-              @if (valueUserCallNodeId === r.toNodeId) {
-                @if (r.status === 'wait') {
+              @if (valueUserCallNodeId === r.toNodeId || (sectionName === 'PC' && r.toNodeId === 9 )) {
+                @if (r.status === 'wait' && r.userInchargeId == null) {
                   <button 
                   class="btn btn-sm d-flex align-items-center gap-1 fw-semibold" 
                   style="background:#12d32f; color:rgb(10, 8, 8); border-radius:8px; box-shadow:0 2px 4px rgba(0,0,0,0.15);"
@@ -114,7 +114,7 @@
                   Accept
                 </button>
                 }
-                @if (r.status === 'pending') {
+                @if (r.status === 'pending' && r.userInchargeId !== null && r.userInchargeId === userId) {
                   <button 
                     class="btn btn-sm d-flex align-items-center gap-1 fw-semibold" 
                     style="background:#463df1; color:rgb(255, 255, 255); border-radius:8px; box-shadow:0 2px 4px rgba(0,0,0,0.15);"
@@ -238,8 +238,8 @@
               >
                 {{ r.status }}
               </span>
-              @if (valueUserCallNodeId === r.toNodeId) {
-                @if (r.status === 'wait') {
+              @if (valueUserCallNodeId === r.toNodeId || (sectionName === 'PC' && r.toNodeId === 12 )) {
+                @if (r.status === 'wait' && r.userInchargeId == null) {
                   <button 
                   class="btn btn-sm d-flex align-items-center gap-1 fw-semibold" 
                   style="background:#12d32f; color:rgb(10, 8, 8); border-radius:8px; box-shadow:0 2px 4px rgba(0,0,0,0.15);"
@@ -249,7 +249,7 @@
                   Accept
                 </button>
                 }
-                @if (r.status === 'pending') {
+                @if (r.status === 'pending' && r.userInchargeId !== null && r.userInchargeId === userId ) {
                   <button 
                     class="btn btn-sm d-flex align-items-center gap-1 fw-semibold" 
                     style="background:#463df1; color:rgb(255, 255, 255); border-radius:8px; box-shadow:0 2px 4px rgba(0,0,0,0.15);"

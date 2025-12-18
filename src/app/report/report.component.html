@@ -1,64 +1,148 @@
 <div class="mt-3">
     <div class="card-header">Report Page</div>
     <div class="card-body mt-3">
-      <!-- <button
-        class="btn btn-primary me-2"
-        data-bs-toggle="modal"
-        data-bs-target="#modalRegister"
-        (click)="openModal()"
-      >
-        <i class="fa fa-user-plus me-2"></i>Add Groups
-      </button> -->
-      <!-- <button
-        class="btn btn-success me-2"
-        data-bs-toggle="modal"
-        data-bs-target="#modalExcel"
-      >
-        <i class="fa fa-upload me-2"></i>Add by Excel file
-      </button> -->
+      
       <button class="btn btn-success">
         <i class="fa fa-download me-2"></i>Export to Excel
       </button>
-
-
-            <div class="form-inline mt-3">
-        <div class="input-group">
-            <input
+       
+      <div class="row mt-3 g-3">
+        <!-- Start -->
+        <div class="col-md-3">
+          <label class="form-label mb-1">Start date</label>
+          <input type="date" class="form-control" [(ngModel)]="draft.startDate" />
+        </div>
+      
+        <!-- End -->
+        <div class="col-md-3">
+          <label class="form-label mb-1">End date</label>
+          <input type="date" class="form-control" [(ngModel)]="draft.endDate" />
+        </div>
+      
+        <!-- Call From -->
+        <div class="col-md-3 position-relative">
+          <label class="form-label mb-1">Call From*</label>
+        
+          <input
             type="text"
             class="form-control"
-            placeholder="ค้นหา Job No."
-            [(ngModel)]="searchJobNo"
+            placeholder="-- Select Node --"
+            [(ngModel)]="fromKeyword"
+            (focus)="showFromDrop = true; filterFromNodes()"
+            (input)="filterFromNodes()"
+            (blur)="onFromBlur()"
+          />
+        
+          <ul
+            class="list-group position-absolute w-100 shadow"
+            *ngIf="showFromDrop && filteredFromNodes.length"
+            style="z-index:1000; max-height:220px; overflow:auto;"
+          >
+            <li
+              class="list-group-item list-group-item-action"
+              *ngFor="let c of filteredFromNodes"
+              (mousedown)="selectFromNode(c)"
+            >
+              {{ c.code }}
+            </li>
+          </ul>
+        </div>
+        
+      
+        <!-- Call To -->
+        <div class="col-md-3 position-relative">
+          <label class="form-label mb-1">Call To*</label>
+        
+          <input
+            type="text"
+            class="form-control"
+            placeholder="-- Select Node --"
+            [(ngModel)]="toKeyword"
+            (focus)="showToDrop = true; filterToNodes()"
+            (input)="filterToNodes()"
+            (blur)="onToBlur()"
+          />
+        
+          <ul
+            class="list-group position-absolute w-100 shadow"
+            *ngIf="showToDrop && filteredToNodes.length"
+            style="z-index:1000; max-height:220px; overflow:auto;"
+          >
+            <li
+              class="list-group-item list-group-item-action"
+              *ngFor="let c of filteredToNodes"
+              (mousedown)="selectToNode(c)"
+            >
+              {{ c.code }}
+            </li>
+          </ul>
+        </div>
+        
+      
+        <!-- Machine -->
+        <div class="col-md-3 position-relative">
+          <label class="form-label mb-1">Machine*</label>
+        
+          <input
+            type="text"
+            class="form-control"
+            placeholder="-- Select Machine --"
+            [(ngModel)]="machineKeyword"
+            (focus)="showMachineDrop = true; filterMachines()"
+            (input)="filterMachines()"
+            (blur)="onMachineBlur()"
+          />
+        
+          <ul
+            class="list-group position-absolute w-100 shadow"
+            *ngIf="showMachineDrop && filteredMachines.length"
+            style="z-index:1000; max-height:220px; overflow:auto;"
+          >
+            <li
+              class="list-group-item list-group-item-action"
+              *ngFor="let m of filteredMachines"
+              (mousedown)="selectMachine(m)"
+            >
+              {{ m.code }}
+            </li>
+          </ul>
+        </div>
+        
+      
+        <!-- Job No. (อยู่บรรทัดเดียวกับ Machine) -->
+        <div class="col-md-4">
+          <label class="form-label mb-1">Job No.</label>
+          <div class="input-group">
+            <input
+              type="text"
+              class="form-control"
+              placeholder="ค้นหา Job No."
+              [(ngModel)]="draft.jobNo"
             />
-            <div class="input-group-append">
-            <button class="btn btn-primary" type="button">
-                <i class="fas fa-search fa-fw"></i>
-            </button>
-            </div>
-        </div>
-        </div>
-
-        <div class="row mt-3">
-            <div class="col-md-3">
-              <label class="form-label mb-1">Start date</label>
-              <input
-                type="date"
-                class="form-control"
-                [(ngModel)]="startDate"
-              />
-            </div>
-            <div class="col-md-3">
-              <label class="form-label mb-1">End date</label>
-              <input
-                type="date"
-                class="form-control"
-                [(ngModel)]="endDate"
-              />
-            </div>
+           
           </div>
+        </div>
+      
+        <!-- ปุ่ม Filter แยก -->
+        <div class="col-md-2 d-flex align-items-end">
+          <button
+            class="btn btn-primary w-100"
+            type="button"
+            (click)="applyFilter()"
+          >
+          <i class="fas fa-search me-2"></i>Search
+          </button>
+          <button class="btn btn-outline-secondary ms-2" type="button" (click)="clearFilter()">
+            Reset
+          </button>
+        </div>
+      </div>
+      
+            
           
 
 
-
+      <div class="report-table-wrap mt-3">
       <table class="table table-bordered table-striped mt-3 report-table">
         <thead>
             <tr>
@@ -121,6 +205,22 @@
                   Calculate
                 </div>
               </th>
+              <th width="120">
+                <div class="head-title">Wait time</div>
+                <div class="head-hint">
+                  hh:mm<br>
+                  Calculate
+                </div>
+              </th>
+              
+              <th width="120">
+                <div class="head-title">Work time</div>
+                <div class="head-hint">
+                  hh:mm<br>
+                  Calculate
+                </div>
+              </th>
+              
         
               <th width="140">
                 <div class="head-title">Call by</div>
@@ -168,6 +268,16 @@
               <td>
                 {{ calcWaitTime(row.createAt, row.userIncharge?.date) }}
               </td>
+              <!-- Wait time -->
+              <td>
+                <!-- {{ calcWaitTime(row.createAt, row.userIncharge?.date) }} -->
+              </td>
+
+              <!-- Work time -->
+              <td>
+                <!-- {{ calcWorkTime(row.createAt, row.userIncharge?.date) }} -->
+              </td>
+
           
               <!-- Call by -->
               <td>
@@ -185,6 +295,8 @@
             </tr>
           </tbody>
       </table>
+    </div>
+
     </div>
   </div>
 
