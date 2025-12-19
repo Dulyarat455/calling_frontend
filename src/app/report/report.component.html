@@ -107,6 +107,18 @@
             </li>
           </ul>
         </div>
+
+
+        <div class="col-md-2">
+          <label class="form-label mb-1">Shift</label>
+          <select class="form-select" [(ngModel)]="draft.shift">
+            <option [ngValue]="null">All</option>
+            <option [ngValue]="'A'">A (07:00 - 15:10)</option>
+            <option [ngValue]="'B'">B (15:00 - 23:10)</option>
+            <option [ngValue]="'C'">C (23:00 - 07:10)</option>
+          </select>
+        </div>
+        
         
       
         <!-- Job No. (อยู่บรรทัดเดียวกับ Machine) -->
@@ -199,7 +211,7 @@
               </th>
         
               <th width="120">
-                <div class="head-title">Wait time</div>
+                <div class="head-title">finish time</div>
                 <div class="head-hint">
                   hh:mm<br>
                   Calculate
@@ -247,7 +259,9 @@
               </td>
           
               <!-- Shift (ตอนนี้ยังไม่มี logic → ใส่ - ไว้ก่อน) -->
-              <td>-</td>
+              <td>
+                {{ getShift(row.createAt) }}
+             </td>
           
               <!-- M/C -->
               <td>{{ row.machineName }}</td>
@@ -266,16 +280,16 @@
           
               <!-- Wait time (Finish - Start) -->
               <td>
-                {{ calcWaitTime(row.createAt, row.userIncharge?.date) }}
+                {{ calcTime(row, 'total') }}
               </td>
               <!-- Wait time -->
               <td>
-                <!-- {{ calcWaitTime(row.createAt, row.userIncharge?.date) }} -->
+                {{ calcTime(row, 'wait') }}
               </td>
 
               <!-- Work time -->
               <td>
-                <!-- {{ calcWorkTime(row.createAt, row.userIncharge?.date) }} -->
+                {{ calcTime(row, 'work') }}
               </td>
 
           

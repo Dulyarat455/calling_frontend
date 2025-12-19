@@ -11,6 +11,7 @@ import { AlertRequestComponent } from '../alert-request/alert-request.component'
 import Swal from 'sweetalert2';
 import config from '../../config';
 import { CallSocketService } from '../services/call-socket.service';
+import { ChartComponent } from '../chart/chart.component';
 import { group } from '@angular/animations';
 
 export type Status = 'wait' | 'pending';
@@ -54,7 +55,7 @@ type JobRow = {
 @Component({
   selector: 'app-dashboard',
   standalone: true,
-  imports: [CommonModule,LaminationPanelComponent,GeneralStatorPanelComponent,AlertRequestComponent],
+  imports: [CommonModule,LaminationPanelComponent,GeneralStatorPanelComponent,AlertRequestComponent,ChartComponent],
   templateUrl: './dashboard.component.html',
   styleUrl: './dashboard.component.css'
 })
@@ -123,36 +124,6 @@ export class DashboardComponent {
     pendingCount: 0,
     Rows: [] as RowItem[]
   }
-
-  
-
-  // general stator
-  // ✅ General panel (dummy)
-  // generalGroup: GroupPanel = {
-  //   title: 'General',
-  //   waitCount: 7,
-  //   pendingCount: 1,
-  //   rows: <GSRowItem[]>[
-  //     { time: '07:10', station: 'D2', status: 'wait', date: '05/12/2025',toNodeName: 'PC_STORE_GEN'},
-  //     { time: '07:25', station: 'A5', status: 'pending', date: '05/12/2025',toNodeName: 'PC_STORE_GEN' },
-  //     { time: '08:23', station: 'A3', status: 'wait', date: '05/12/2025', toNodeName: 'PC_STORE_GEN' },
-  //     { time: '08:38', station: 'D3', status: 'wait', date: '05/12/2025', toNodeName: 'PC_STORE_GEN' },
-  //     { time: '09:15', station: 'A1', status: 'wait', date: '05/12/2025', toNodeName: 'PC_STORE_GEN' },
-  //     { time: '09:15', station: 'A1', status: 'wait', date: '05/12/2025', toNodeName: 'PC_STORE_GEN' },
-  //     { time: '09:15', station: 'A1', status: 'wait', date: '05/12/2025', toNodeName: 'PC_STORE_GEN' },
-  //   ],
-  // };
-
-  // ✅ Stator panel (dummy)
-  // statorGroup: GroupPanel = {
-  //   title: 'Stator',
-  //   waitCount: 1,
-  //   pendingCount: 1,
-  //   rows: <GSRowItem[]>[
-  //     { time: '09:20', station: 'B1', status: 'pending', date: '05/12/2025',toNodeName: 'PD_STA' },
-  //     { time: '09:25', station: 'C5', status: 'wait', date: '05/12/2025',toNodeName: 'PC_STORE_STA' },
-  //   ],
-  // };
 
 
 
@@ -444,7 +415,6 @@ export class DashboardComponent {
   }
   
 
-
   private  buildGenStaFromJobs(groupType: string){
     let rowTemp: JobRow[] = []; 
       if(groupType === "General"){
@@ -459,23 +429,37 @@ export class DashboardComponent {
         const latestState = job.states && job.states.length > 0
           ? job.states[0]
           : null;
-    
-        // เวลา: แปลงจาก ISO string เป็น HH:mm
-        const timeStr = latestState
-          ? new Date(latestState.date).toLocaleTimeString('th-TH', {
-              hour: '2-digit',
-              minute: '2-digit',
-              hour12: false,
-            })
-          : '';
-    
-        // สเตตัส: map จาก stateJobName -> 'wait' | 'pending'
-        // (ปรับตามจริง เช่น "Done" ทีหลังได้)
+
+
+        // ✅ ใช้ createAt แทน state.date
+        const createdAt = job.createAt
+        ? new Date(job.createAt)
+        : null;
+
+
+      // เวลา HH:mm
+      const timeStr = createdAt
+      ? createdAt.toLocaleTimeString('th-TH', {
+          hour: '2-digit',
+          minute: '2-digit',
+          hour12: false,
+        })
+      : '';
+
+
+      // วันที่ dd/MM/yyyy
+      const dateStr = createdAt
+        ? createdAt.toLocaleDateString('th-TH', {
+            day: '2-digit',
+            month: '2-digit',
+            year: 'numeric',
+          })
+        : '';
+
         let status: 'wait' | 'pending' = 'wait';
         if (latestState && latestState.stateJobName.toLowerCase() === 'pending') {
           status = 'pending';
         }
-
 
         const incharge = 
         status === 'pending'
@@ -492,13 +476,7 @@ export class DashboardComponent {
     
         return {
           time: timeStr,
-          date: latestState
-          ? new Date(latestState.date).toLocaleDateString('th-TH', {
-              year: 'numeric',
-              month: '2-digit',
-              day: '2-digit',
-            })
-          : '',
+          date: dateStr,
           machineName: job.machineName,   // ใช้ชื่อเครื่องเป็น station
           status,
           //add new
@@ -540,12 +518,10 @@ export class DashboardComponent {
     
   }
   
-
   // onUpdateRow(row: RowItem) {
   //   // TODO: เปิด modal / เรียก API / เปลี่ยนสถานะ ฯลฯ
   //   console.log('Update clicked:', row);
   // }
-
 
 
   toggleLamPreview() {

@@ -17,6 +17,8 @@ type inchargeUser = {
   userEmpNo: string;
 }
 
+
+
 type reportRow = {
   jobId: number;
   groupId: number;
@@ -32,6 +34,7 @@ type reportRow = {
   createByuserEmpNo: string;
   createAt: string;
   userIncharge: inchargeUser | null;   // ✅ เผื่อบาง job ยังไม่ finish
+  pendingUser?: inchargeUser | null;   // ✅ เพิ่ม
 };
 
 
@@ -59,6 +62,7 @@ type CallNodeRow ={
   state: string;
 }
 
+type ShiftCode = 'A' | 'B' | 'C';
 
 type ReportFilters = {
   jobNo?: string;           // optional
@@ -67,6 +71,7 @@ type ReportFilters = {
   machineId?: number | null;
   fromNodeId?: number | null;
   toNodeId?: number | null;
+  shift?: ShiftCode | null; 
 };
 
 
@@ -101,11 +106,11 @@ export class ReportComponent {
     machineId: null,
     fromNodeId: null,
     toNodeId: null,
+    shift: null,
   };
 
    // applied = ค่าที่กดปุ่ม Filter แล้ว
-   applied: ReportFilters = {};
-
+  applied: ReportFilters = {};
 
   // ======================
   // Searchable dropdown 
@@ -199,6 +204,8 @@ export class ReportComponent {
     if (this.draft.machineId != null) f.machineId = this.draft.machineId;
     if (this.draft.fromNodeId != null) f.fromNodeId = this.draft.fromNodeId;
     if (this.draft.toNodeId != null) f.toNodeId = this.draft.toNodeId;
+    if (this.draft.shift != null) f.shift = this.draft.shift;
+
 
     // validate date range
     if (f.startDate && f.endDate) {
@@ -226,6 +233,7 @@ export class ReportComponent {
       machineId: null,
       fromNodeId: null,
       toNodeId: null,
+      shift: null,
     };
     this.applied = {};
 
@@ -278,6 +286,13 @@ export class ReportComponent {
           if (jobDate > end) return false;
         }
       }
+
+      // Shift
+      if (f.shift) {
+        const rowShift = this.getShift(row.createAt);
+        if (rowShift !== f.shift) return false;
+      }
+
 
       return true;
     });
@@ -376,6 +391,7 @@ export class ReportComponent {
     return d.toLocaleTimeString('th-TH', {
       hour: '2-digit',
       minute: '2-digit',
+      second: '2-digit',
       hour12: false,
     });
   }
@@ -397,10 +413,88 @@ export class ReportComponent {
     return `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}`;
   }
 
+
+  private diffHHmmss(fromIso?: string | null, toIso?: string | null): string {
+    if (!fromIso || !toIso) return '-';
+  
+    const from = new Date(fromIso);
+    const to = new Date(toIso);
+  
+    if (isNaN(from.getTime()) || isNaN(to.getTime())) return '-';
+  
+    const diffMs = to.getTime() - from.getTime();
+    if (diffMs < 0) return '-';
+  
+    const totalSeconds = Math.floor(diffMs / 1000);
+    const hh = Math.floor(totalSeconds / 3600);
+    const mm = Math.floor((totalSeconds % 3600) / 60);
+    const ss = totalSeconds % 60;
+  
+    return `${String(hh).padStart(2, '0')}:${String(mm).padStart(2, '0')}:${String(ss).padStart(2, '0')}`;
+  }
+  
+  
+  calcTime(row: reportRow, mode: 'wait' | 'work' | 'total'): string {
+    const start = row.createAt;
+    const pending = row.pendingUser?.date || null;      // pending ล่าสุด
+    const finish = row.userIncharge?.date || null;      // finish
+  
+    if (mode === 'wait') {
+      // Start -> Pending
+      return this.diffHHmmss(start, pending);
+    }
+  
+    if (mode === 'work') {
+      // Pending -> Finish
+      return this.diffHHmmss(pending, finish);
+    }
+  
+    // total (เผื่ออยากใช้) Start -> Finish
+    return this.diffHHmmss(start, finish);
+  }
+
+  getShift(createAt?: string | null): 'A' | 'B' | 'C' | '-' {
+    if (!createAt) return '-';
+  
+    const d = new Date(createAt);
+    if (isNaN(d.getTime())) return '-';
+  
+    const h = d.getHours();
+    const m = d.getMinutes();
+    const totalMin = h * 60 + m;
+  
+    const A_START = 7 * 60;          // 07:00
+    const A_END   = 15 * 60 + 10;    // 15:10
+  
+    const B_START = 15 * 60;         // 15:00
+    const B_END   = 23 * 60 + 10;    // 23:10
+  
+    const C_START = 23 * 60;         // 23:00
+    const C_END   = 7 * 60 + 10;     // 07:10 (ข้ามวัน)
+  
+    // Shift A
+    if (totalMin >= A_START && totalMin <= A_END) {
+      return 'A';
+    }
+  
+    // Shift B
+    if (totalMin >= B_START && totalMin <= B_END) {
+      return 'B';
+    }
+  
+    // Shift C (ข้ามวัน)
+    if (totalMin >= C_START || totalMin <= C_END) {
+      return 'C';
+    }
+  
+    return '-';
+  }
+  
+  
+
   add() {}
   edit(item: any) {}
   remove(item: any) {}
 
-  
 
 }

@@ -1,0 +1,142 @@
+<div class="charts-wrap">
+
+    <div class="charts-grid">
+  
+      <!-- Lamination -->
+      <section class="group-card lam">
+        <header class="group-head">
+          <div class="group-pill">Lamination</div>
+        </header>
+  
+        <div class="row-2">
+          <!-- WAIT -->
+          <div class="metric-card">
+            <div class="metric-title">Wait</div>
+            <div class="metric-body">
+              <div class="donut">
+                <canvas
+                  baseChart
+                  [type]="'doughnut'"
+                  [data]="lamWaitData"
+                  [options]="donutOptions"
+                ></canvas>
+              </div>
+              <div class="legend-chips">
+                <span class="chip" *ngFor="let x of lamWaitLegend">
+                  <i class="dot" [style.background]="x.color"></i>
+                  <span class="name">{{ x.label }}</span>
+                  <span class="val">{{ x.value }}</span>
+                </span>
+              </div>
+            </div>
+          </div>
+  
+          <!-- PENDING -->
+          <div class="metric-card">
+            <div class="metric-title">Pending</div>
+            <div class="metric-body">
+              <div class="donut">
+                <canvas
+                  baseChart
+                  [type]="'doughnut'"
+                  [data]="lamPendingData"
+                  [options]="donutOptions"
+                ></canvas>
+              </div>
+              <div class="legend-chips">
+                <span class="chip" *ngFor="let x of lamPendingLegend">
+                  <i class="dot" [style.background]="x.color"></i>
+                  <span class="name">{{ x.label }}</span>
+                  <span class="val">{{ x.value }}</span>
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+  
+      <!-- General -->
+      <section class="group-card gen">
+        <header class="group-head">
+          <div class="group-pill">General</div>
+        </header>
+  
+        <div class="row-2">
+          <div class="metric-card">
+            <div class="metric-title">Wait</div>
+            <div class="metric-body">
+              <div class="donut">
+                <canvas baseChart [type]="'doughnut'" [data]="genWaitData" [options]="donutOptions"></canvas>
+              </div>
+              <div class="legend-chips">
+                <span class="chip" *ngFor="let x of genWaitLegend">
+                  <i class="dot" [style.background]="x.color"></i>
+                  <span class="name">{{ x.label }}</span>
+                  <span class="val">{{ x.value }}</span>
+                </span>
+              </div>
+            </div>
+          </div>
+  
+          <div class="metric-card">
+            <div class="metric-title">Pending</div>
+            <div class="metric-body">
+              <div class="donut">
+                <canvas baseChart [type]="'doughnut'" [data]="genPendingData" [options]="donutOptions"></canvas>
+              </div>
+              <div class="legend-chips">
+                <span class="chip" *ngFor="let x of genPendingLegend">
+                  <i class="dot" [style.background]="x.color"></i>
+                  <span class="name">{{ x.label }}</span>
+                  <span class="val">{{ x.value }}</span>
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+  
+      <!-- Stator -->
+      <section class="group-card sta">
+        <header class="group-head">
+          <div class="group-pill">Stator</div>
+        </header>
+  
+        <div class="row-2">
+          <div class="metric-card">
+            <div class="metric-title">Wait</div>
+            <div class="metric-body">
+              <div class="donut">
+                <canvas baseChart [type]="'doughnut'" [data]="staWaitData" [options]="donutOptions"></canvas>
+              </div>
+              <div class="legend-chips">
+                <span class="chip" *ngFor="let x of staWaitLegend">
+                  <i class="dot" [style.background]="x.color"></i>
+                  <span class="name">{{ x.label }}</span>
+                  <span class="val">{{ x.value }}</span>
+                </span>
+              </div>
+            </div>
+          </div>
+  
+          <div class="metric-card">
+            <div class="metric-title">Pending</div>
+            <div class="metric-body">
+              <div class="donut">
+                <canvas baseChart [type]="'doughnut'" [data]="staPendingData" [options]="donutOptions"></canvas>
+              </div>
+              <div class="legend-chips">
+                <span class="chip" *ngFor="let x of staPendingLegend">
+                  <i class="dot" [style.background]="x.color"></i>
+                  <span class="name">{{ x.label }}</span>
+                  <span class="val">{{ x.value }}</span>
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+  
+    </div>
+  </div>
+  

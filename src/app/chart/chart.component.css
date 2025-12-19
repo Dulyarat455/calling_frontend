@@ -1,0 +1,122 @@
+.charts-wrap{
+    margin: 12px 0 18px;
+  }
+  
+  .charts-grid{
+    display: grid;
+    grid-template-columns: repeat(3, minmax(260px, 1fr));
+    gap: 14px;
+  }
+  
+  .group-card{
+    border-radius: 12px;
+    background: transparent; /* โปร่งตามที่ต้องการ */
+    padding: 10px 10px 12px;
+  }
+  
+  .group-head{
+    display:flex;
+    justify-content:center;
+    margin-bottom: 8px;
+  }
+  
+  .group-pill{
+    font-weight: 800;
+    padding: 8px 18px;
+    border-radius: 999px;
+    letter-spacing: .2px;
+    color:#0b4aa6;
+    box-shadow: 0 4px 12px rgba(0,0,0,.08);
+  }
+  
+  /* โทนตาม dashboard เดิม */
+  .group-card.lam .group-pill{ background:#79f2a2; }
+  .group-card.gen .group-pill{ background:#d4f787; }
+  .group-card.sta .group-pill{ background:#9feefc; }
+  
+  .row-2{
+    display:grid;
+    grid-template-columns: 1fr;
+    gap: 10px;
+  }
+  
+  .metric-card{
+    border-radius: 12px;
+    padding: 10px 10px 12px;
+    background: rgba(255,255,255,0.22); /* โปร่งนิดๆ ไม่โล่ง */
+    backdrop-filter: blur(6px);
+    border: 1px solid rgba(0,0,0,0.06);
+  }
+  
+  .metric-title{
+    text-align:center;
+    font-size: 20px;
+    font-weight: 900;
+    color:#0b4aa6;
+    margin: 2px 0 10px;
+  }
+  
+  .metric-body{
+    display:grid;
+    grid-template-columns: 150px 1fr;
+    gap: 10px;
+    align-items:center;
+  }
+  
+  .donut{
+    width: 150px;
+    height: 150px;
+    margin: 0 auto;
+  }
+  .donut canvas{
+    width: 150px !important;
+    height: 150px !important;
+  }
+  
+  .legend-chips{
+    display:flex;
+    flex-direction:column;
+    gap: 6px;
+    min-width: 0;
+  }
+  
+  .chip{
+    display:flex;
+    align-items:center;
+    gap: 8px;
+    padding: 6px 10px;
+    border-radius: 10px;
+    background: rgba(255,255,255,0.50);
+    border: 1px solid rgba(0,0,0,0.06);
+    font-size: 12px;
+    line-height: 1;
+  }
+  
+  .dot{
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    flex: 0 0 10px;
+  }
+  
+  .name{
+    flex: 1;
+    min-width: 0;
+    overflow:hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font-weight: 700;
+    color:#2b2b2b;
+  }
+  
+  .val{
+    font-weight: 900;
+    color:#111;
+  }
+  
+  /* responsive */
+  @media (max-width: 1050px){
+    .charts-grid{ grid-template-columns: 1fr; }
+    .metric-body{ grid-template-columns: 150px 1fr; }
+  }
+  
