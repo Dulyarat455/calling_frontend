@@ -4,12 +4,13 @@
     class="card-header text-white fw-semibold"
     style="background: #2f2f30; border-top-left-radius: 12px; border-top-right-radius: 12px"
   >
-    Dashboard job list for General & Stator
+     Job transaction for General & Stator
   </div>
 
   <div class="card-body" style="background: #e3e3e3">
 
     <!-- ====================== GENERAL (TOP) ====================== -->
+    @if (general.Rows.length || sectionName === 'PC' ) {
     <div class="mb-4" *ngIf="general">
       <!-- หัว + summary + ปุ่ม (บรรทัดเดียวกัน) -->
       <div class="d-flex align-items-center justify-content-between mb-2">
@@ -59,12 +60,14 @@
         (scroll)="onGenScroll()"
         (click)="onGenClick()"
       >
-        <div class="list-group rounded-3 overflow-hidden">
-          <a
+      <div class="list-group rounded-3 overflow-hidden">
+        <ng-container *ngIf="general.Rows.length > 0; else noJobTpl">
+          <div
+            class="list-group-item d-flex align-items-center justify-content-between"
+            [ngClass]="{ 'row-late': isJobLate(r) }"
             *ngFor="let r of general.Rows"
-            class="list-group-item list-group-item-action d-flex align-items-center justify-content-between"
           >
-            <div class="d-flex align-items-center gap-3">
+            <div class="d-flex align-items-center gap-3" >
               <span class="mono fw-semibold">{{ r.date }}</span>
               <span class="mono fw-semibold">{{ r.time }}</span>
               <span class="fw-semibold">{{ r.machineName }}</span>
@@ -95,6 +98,12 @@
             </div>
 
             <div class="d-flex align-items-center gap-2">
+              @if (userId === r.createByUserId) {
+                <i class="fas fa-user-circle text-primary"></i>
+              }
+              @if (valueUserCallNodeId === r.toNodeId || (sectionName === 'PC' && r.toNodeId === 9 )) {
+                 <i class="fas fa-phone-volume"></i>
+              }
             
               <span class="node-tag">{{ r.toNodeName }}</span>
               <span
@@ -142,12 +151,22 @@
               <i class="fas fa-bars"></i>
           </button>
             </div>
-          </a>
+          </div>
+           
+        </ng-container>
+        <ng-template #noJobTpl>
+          <div class="empty-box">
+            <img src="dist/img/no-task.png" alt="no job" />
+            <div class="empty-text">No job request</div>
+          </div>
+        </ng-template>
+
         </div>
       </div>
     </div>
-
+  }
     <!-- ====================== STATOR (BOTTOM) ====================== -->
+     @if (stator.Rows.length || sectionName === 'PC' ) {
     <div *ngIf="stator">
       <!-- หัว + summary + ปุ่ม (บรรทัดเดียวกัน) -->
       <div class="d-flex align-items-center justify-content-between mb-2">
@@ -197,10 +216,12 @@
         (scroll)="onStaScroll()"
         (click)="onStaClick()"
       >
-        <div class="list-group rounded-3 overflow-hidden">
-          <a
+      <div class="list-group rounded-3 overflow-hidden">
+        <ng-container *ngIf="stator.Rows.length > 0; else noJobTpl">
+          <div
+            class="list-group-item d-flex align-items-center justify-content-between"
+            [ngClass]="{ 'row-late': isJobLate(r) }"
             *ngFor="let r of stator.Rows"
-            class="list-group-item list-group-item-action d-flex align-items-center justify-content-between"
           >
             <div class="d-flex align-items-center gap-3">
               <span class="mono fw-semibold">{{ r.date }}</span>
@@ -231,6 +252,13 @@
             </div>
 
             <div class="d-flex align-items-center gap-2">
+
+              @if (userId === r.createByUserId) {
+                <i class="fas fa-user-circle text-primary"></i>
+              }
+              @if (valueUserCallNodeId === r.toNodeId || (sectionName === 'PC' && r.toNodeId === 12 )) {
+                 <i class="fas fa-phone-volume"></i>
+              }
               <span class="node-tag">{{ r.toNodeName }}</span>
               <span
                 class="status-chip badge rounded-pill px-3 py-2 text-capitalize"
@@ -277,11 +305,19 @@
             </button>
 
             </div>
-          </a>
+          </div>
+
+        </ng-container>
+        <ng-template #noJobTpl>
+          <div class="empty-box">
+            <img src="dist/img/no-task.png" alt="no job" />
+            <div class="empty-text">No job request</div>
+          </div>
+        </ng-template>
         </div>
       </div>
     </div>
-
+  }
   </div>
 </div>
 

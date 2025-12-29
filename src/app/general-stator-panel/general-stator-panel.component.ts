@@ -24,6 +24,7 @@ export interface RowItem {
     userInchargeId: number | null;
     userInchargeName: string | null; 
     userInchargeEmpNo: string | null;
+    userInchargeDate: string | null;
     remark: string;
     machineId: number;
     machineName: string;
@@ -34,6 +35,8 @@ export interface RowItem {
     toNodeId: number;
     toNodeName: string;
     priority: string;
+    jobNo: string | null
+    createAt: string | null;
 }
 
 
@@ -391,6 +394,9 @@ export class GeneralStatorPanelComponent {
       next: (res: any) => {
       this.valueUserCallNodeId = res.row.id;
       this.fetchCallNodeByGroupFromNode();
+
+      this.applyUserFilterAndRecountPanel('general');
+      this.applyUserFilterAndRecountPanel('stator');
       },
       error: (err) => {
         Swal.fire({
@@ -572,32 +578,98 @@ private toMs(dateStr?: string, timeStr?: string): number {
   return isNaN(dt.getTime()) ? 0 : dt.getTime();
 }
 
-private sortPanel(panel?: GroupPanel) {
-  if (!panel?.Rows) return;
 
-  panel.Rows = [...panel.Rows].sort((a, b) => {
-    const aUrgent = (a.priority || '').toLowerCase() === 'urgent';
-    const bUrgent = (b.priority || '').toLowerCase() === 'urgent';
+ private isOverMinutes(iso?: string | null, minutes = 5): boolean {
+    if (!iso) return false;
+    const t = new Date(iso).getTime();
+    if (Number.isNaN(t)) return false;
+    return (Date.now() - t) >= minutes * 60 * 1000;
+  }
+  
+  isJobLate(item: RowItem): boolean {
+    return this.isOverMinutes(item.createAt, 5);
+  }
 
-    // 1) urgent มาก่อน
-    if (aUrgent !== bUrgent) return aUrgent ? -1 : 1;
 
-    // 2) ภายในกลุ่มเดียวกัน เรียงตามวันเวลา (เก่าก่อน)
-    const aMs = this.toMs(a.date, a.time);
-    const bMs = this.toMs(b.date, b.time);
 
-    return aMs - bMs;
-  });
-}
+  private originalGeneralRows: RowItem[] = [];
+  private originalStatorRows: RowItem[] = [];
+
+  private applyUserFilterAndRecountPanel(panelKey: 'general' | 'stator') {
+    // ใช้เฉพาะ role user
+    const role = localStorage.getItem('calling_role') || '';
+    if (role !== 'user') return;
+  
+    const nodeId = this.valueUserCallNodeId;
+    const uid = this.userId;
+  
+    if (!nodeId && !uid) return;
+  
+    const panel = panelKey === 'general' ? this.general : this.stator;
+    if (!panel) return;
+  
+    // เลือก original ตาม panel
+    const src =
+      panelKey === 'general'
+        ? this.originalGeneralRows
+        : this.originalStatorRows;
+  
+    // ถ้ายังไม่เคยเก็บ original ให้เก็บครั้งแรก
+    if (!src.length && panel.Rows?.length) {
+      if (panelKey === 'general') this.originalGeneralRows = [...panel.Rows];
+      else this.originalStatorRows = [...panel.Rows];
+    }
+  
+    const base =
+      panelKey === 'general'
+        ? this.originalGeneralRows
+        : this.originalStatorRows;
+  
+    // 1) filter (OR)
+    let rows = (base || []).filter(r =>
+      (nodeId != null && r.toNodeId === nodeId) ||
+      (uid != null && r.createByUserId === uid) ||
+      (this.sectionName === 'PC' && r.toNodeId === 9 )
+    );
+  
+    // 2) sort (urgent ก่อน + เก่าก่อน)
+    rows.sort((a, b) => {
+      const aUrgent = (a.priority || '').toLowerCase() === 'urgent';
+      const bUrgent = (b.priority || '').toLowerCase() === 'urgent';
+      if (aUrgent !== bUrgent) return aUrgent ? -1 : 1;
+  
+      const aMs = this.toMs(a.date, a.time);
+      const bMs = this.toMs(b.date, b.time);
+      return aMs - bMs;
+    });
+  
+    // 3) recount ใหม่เฉพาะ user
+    panel.waitCount = rows.filter(r => r.status === 'wait').length;
+    panel.pendingCount = rows.filter(r => r.status === 'pending').length;
+  
+    // 4) อัปเดต rows
+    panel.Rows = rows;
+  }
+  
+
+
+
 
 
 ngOnChanges(changes: SimpleChanges) {
 
   if (changes['general']?.currentValue) {
-    this.sortPanel(this.general);
+    // เก็บ original ครั้งแรก/ทุกครั้งที่ parent ส่งมาใหม่
+    this.originalGeneralRows = [...(this.general?.Rows || [])];
+
+    // role user → filter + recount + sort ใหม่
+    this.applyUserFilterAndRecountPanel('general');
   }
+
   if (changes['stator']?.currentValue) {
-    this.sortPanel(this.stator);
+    this.originalStatorRows = [...(this.stator?.Rows || [])];
+
+    this.applyUserFilterAndRecountPanel('stator');
   }
 
 
@@ -606,7 +678,5 @@ ngOnChanges(changes: SimpleChanges) {
 
 
 
-   
-
- 
+  
 }

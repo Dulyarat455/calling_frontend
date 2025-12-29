@@ -101,13 +101,6 @@ export class SignInComponent {
               return;
             }
 
-            // if (res.token) {
-            //   // Save user data
-            //   this.token = res.token;
-            //   localStorage.setItem('angular_token', res.token);
-            //   localStorage.setItem('angular_name', res.name);
-            //   localStorage.setItem('angular_id', res.id);
-            //   localStorage.setItem('angular_empNo', res.empNo);
             this.authService.login(res);
             // Show success message
             Swal.fire({
@@ -118,9 +111,9 @@ export class SignInComponent {
               showConfirmButton: true,
             }).then(() => {
               // location.reload();
-              this.router.navigate(['/']);
               this.token = localStorage.getItem('calling_token')!;
               this.empNo = localStorage.getItem('calling_empNo')!;
+              this.router.navigate(['/dashboard']);
             });
             // }
           },

@@ -163,3 +163,33 @@
     white-space: nowrap;
   }
   
+
+
+  /* กล่อง role badge */
+
+.role-badge {
+  font-size: 0.6rem;       
+  font-weight: 600;         
+  letter-spacing: 0.4px;   
+  text-transform: uppercase;
+  line-height: 1;           /* ไม่ดันกรอบ */
+
+  /* ❌ ไม่แตะกรอบ */
+  padding: 5px 7px;
+  border-radius: 999px;
+}
+
+
+/* ADMIN */
+.role-admin {
+  background: linear-gradient(135deg, #ff9800, #ff5722);
+  color: #fff;
+  box-shadow: 0 0 6px rgba(255, 152, 0, 0.6);
+}
+
+/* USER */
+.role-user {
+  background: rgba(40, 235, 53, 0.15);
+  color: #d0e6ff;
+  border: 1px solid rgba(255, 255, 255, 0.25);
+}

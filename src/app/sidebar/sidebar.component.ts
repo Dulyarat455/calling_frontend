@@ -1,6 +1,8 @@
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Component } from '@angular/core';
 import { RouterLink, Router } from '@angular/router';
+import { CommonModule } from '@angular/common';
+
 import Swal from 'sweetalert2';
 import config from '../../config';
 import { AuthService } from '../services/auth.service';
@@ -8,7 +10,7 @@ import { AuthService } from '../services/auth.service';
 @Component({
   selector: 'app-sidebar',
   standalone: true,
-  imports: [RouterLink],
+  imports: [RouterLink,CommonModule],
   templateUrl: './sidebar.component.html',
   styleUrl: './sidebar.component.css',
 })

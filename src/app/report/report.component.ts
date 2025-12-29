@@ -33,6 +33,7 @@ type reportRow = {
   createByuserName: string;
   createByuserEmpNo: string;
   createAt: string;
+  jobNo: string | null ;
   userIncharge: inchargeUser | null;   // ✅ เผื่อบาง job ยังไม่ finish
   pendingUser?: inchargeUser | null;   // ✅ เพิ่ม
 };
@@ -72,6 +73,34 @@ type ReportFilters = {
   fromNodeId?: number | null;
   toNodeId?: number | null;
   shift?: ShiftCode | null; 
+};
+
+
+type ExportRow = {
+  jobNo: string;
+
+  dateFrom: string;      // formatDate(createAt)
+  dateTo: string;        // formatDate(userIncharge?.date)
+
+  shift: 'A' | 'B' | 'C' | '-';
+
+  machine: string;
+
+  callFrom: string;
+  callTo: string;
+
+  startTime: string;     // formatTime(createAt)
+  finishTime: string;    // formatTime(userIncharge?.date)
+
+  totalTime: string;     // calcTime(row,'total')
+  waitTime: string;      // calcTime(row,'wait')
+  workTime: string;      // calcTime(row,'work')
+
+  callByEmpNo: string;
+  callByName: string;
+
+  inchargeEmpNo: string;
+  inchargeName: string;
 };
 
 
@@ -127,9 +156,21 @@ export class ReportComponent {
   showToDrop = false;
   showMachineDrop = false;
 
+
+  // snapshot ล่าสุดที่หน้าเว็บโชว์อยู่ (ใช้ตอน export)
+  lastView = {
+    applied: {} as ReportFilters,
+    rows: [] as reportRow[],
+    updatedAt: 0
+  };
+
+
   
 
   ngOnInit() {
+    // ✅ default filter: เมื่อวาน -> วันนี้
+    this.setDefaultDateRangeYesterdayToday();
+
     this.fetchData();
     this.fetchMachine();
     this.fetchCallNode(); 
@@ -145,6 +186,13 @@ export class ReportComponent {
     this.http.get(config.apiServer + '/api/report/list').subscribe({
       next: (res: any) => {
         this.reportRows = res.results || [];
+        // ✅ snapshot เริ่มต้นให้ตรงกับหน้า (ยังไม่ filter)
+        this.lastView = {
+          applied: { ...this.applied },     
+          rows: [...this.filteredRows],     
+          updatedAt: Date.now()
+        };
+
       },
       error: (err) => {
         Swal.fire({
@@ -222,6 +270,13 @@ export class ReportComponent {
     }
 
     this.applied = f;
+
+    this.lastView = {
+      applied: { ...this.applied },
+      rows: [...this.filteredRows],
+      updatedAt: Date.now()
+    };
+
   }
 
 
@@ -245,6 +300,17 @@ export class ReportComponent {
     this.showFromDrop = false;
     this.showToDrop = false;
     this.showMachineDrop = false;
+
+
+    // ✅ กลับไป default เมื่อวาน-วันนี้
+  this.setDefaultDateRangeYesterdayToday();
+
+  // ✅ snapshot ให้ตรงหน้า
+  this.lastView = {
+    applied: { ...this.applied },
+    rows: [...this.filteredRows],
+    updatedAt: Date.now()
+  };
   }
 
   get filteredRows(): reportRow[] {
@@ -253,7 +319,9 @@ export class ReportComponent {
     return this.reportRows.filter((row) => {
       // Job No
       if (f.jobNo) {
-        if (!row.jobId.toString().includes(f.jobNo)) return false;
+        const kw = f.jobNo.trim();
+        if (!row.jobNo) return false;              // ไม่มี jobNo = ไม่เอา
+        if (!row.jobNo.includes(kw)) return false; // match jobNo เท่านั้น
       }
 
       // Machine
@@ -489,7 +557,140 @@ export class ReportComponent {
   
     return '-';
   }
+
+
+
+  //part export Excel file ******************************
+
+  private mapToExportRow(row: reportRow): ExportRow {
+    return {
+      jobNo: row.jobNo ?? '-',
   
+      dateFrom: this.formatDate(row.createAt),
+      dateTo: this.formatDate(row.userIncharge?.date),
+  
+      shift: this.getShift(row.createAt),
+  
+      machine: row.machineName || '-',
+  
+      callFrom: row.fromNodeName || '-',
+      callTo: row.toNodeName || '-',
+  
+      startTime: this.formatTime(row.createAt),
+      finishTime: this.formatTime(row.userIncharge?.date),
+  
+      totalTime: this.calcTime(row, 'total'),
+      waitTime: this.calcTime(row, 'wait'),
+      workTime: this.calcTime(row, 'work'),
+  
+      callByEmpNo: row.createByuserEmpNo || '-',
+      callByName: row.createByuserName || '-',
+  
+      inchargeEmpNo: row.userIncharge?.userEmpNo || '-',
+      inchargeName: row.userIncharge?.userName || '-',
+    };
+  }
+
+
+  exportExcel() {
+    if (this.isLoading) return;
+  
+    // ✅ snapshot ตามหน้าปัจจุบัน (applied + filteredRows)
+    this.lastView = {
+      applied: { ...this.applied },
+      rows: [...this.filteredRows],
+      updatedAt: Date.now(),
+    };
+  
+    const viewRows = this.lastView.rows;
+  
+    if (!viewRows.length) {
+      Swal.fire('No data', 'ไม่มีข้อมูลสำหรับ Export', 'info');
+      return;
+    }
+  
+    const exportRows: ExportRow[] = viewRows.map((r) => this.mapToExportRow(r));
+  
+    const payload = {
+      filters: { ...this.lastView.applied }, // ✅ ใช้ applied ที่หน้าใช้อยู่จริง
+      rows: exportRows,                      // ✅ flatten + calculate แล้ว
+      exportedAt: new Date().toISOString(),
+      count: exportRows.length,
+    };
+  
+    this.isLoading = true;
+  
+    this.http
+      .post(config.apiServer + '/api/report/exportExcel', payload, {
+        responseType: 'blob',
+        observe: 'response', // ✅ เพื่ออ่าน header (filename)
+      })
+      .subscribe({
+        next: (resp) => {
+          const blob = resp.body as Blob;
+  
+          // ✅ ดึงชื่อไฟล์จาก header ถ้ามี
+          const cd = resp.headers.get('content-disposition') || '';
+          const match = cd.match(/filename="?([^"]+)"?/i);
+          const serverFileName = match?.[1];
+  
+          const fallbackName =
+            `report-${new Date().toISOString().slice(0, 19).replace(/[:T]/g, '-')}.xlsx`;
+  
+          const fileName = serverFileName || fallbackName;
+  
+          // ✅ download
+          const url = window.URL.createObjectURL(blob);
+          const a = document.createElement('a');
+          a.href = url;
+          a.download = fileName;
+          a.click();
+          window.URL.revokeObjectURL(url);
+  
+          this.isLoading = false;
+        },
+        error: (err) => {
+          this.isLoading = false;
+  
+          // บางที error จะเป็น blob → แปลงเป็นข้อความก่อน (optional)
+          const msg =
+            err?.error?.message ||
+            err?.message ||
+            'Export failed';
+  
+          Swal.fire('Error', msg, 'error');
+        },
+      });
+  }
+  
+  
+
+  //start filter date now 
+  private toYMDLocal(date: Date): string {
+  const y = date.getFullYear();
+  const m = String(date.getMonth() + 1).padStart(2, '0');
+  const d = String(date.getDate()).padStart(2, '0');
+  return `${y}-${m}-${d}`;
+}
+
+
+
+private setDefaultDateRangeYesterdayToday() {
+  const today = new Date();
+  const ytd = new Date();
+  ytd.setDate(today.getDate() - 1);
+
+  const start = this.toYMDLocal(ytd);
+  const end = this.toYMDLocal(today);
+
+  // ✅ ให้ input date โชว์เลย
+  this.draft.startDate = start;
+  this.draft.endDate = end;
+
+  // ✅ ให้ filter ทำงานทันที (ไม่ต้องกด search)
+  this.applied = { ...this.applied, startDate: start, endDate: end };
+}
+
   
 
   add() {}

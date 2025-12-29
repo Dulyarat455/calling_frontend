@@ -2,9 +2,12 @@
     <div class="card-header">Report Page</div>
     <div class="card-body mt-3">
       
-      <button class="btn btn-success">
-        <i class="fa fa-download me-2"></i>Export to Excel
+      <button class="btn btn-success" type="button" (click)="exportExcel()" [disabled]="isLoading">
+        <i class="fa fa-download me-2"></i>
+        <span *ngIf="!isLoading">Export to Excel</span>
+        <span *ngIf="isLoading"><i class="fas fa-spinner fa-spin me-2"></i>Exporting...</span>
       </button>
+      
        
       <div class="row mt-3 g-3">
         <!-- Start -->
@@ -211,7 +214,7 @@
               </th>
         
               <th width="120">
-                <div class="head-title">finish time</div>
+                <div class="head-title">Total time</div>
                 <div class="head-hint">
                   hh:mm<br>
                   Calculate
@@ -248,7 +251,7 @@
           <tbody>
             <tr *ngFor="let row of filteredRows">
               <!-- Job No. -->
-              <td>{{ row.jobId }}</td>
+              <td>{{ row.jobNo }}</td>
           
               <!-- Date (From / To) -->
               <td>

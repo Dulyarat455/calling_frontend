@@ -57,10 +57,10 @@
   }
   
   .metric-body{
-    display:grid;
-    grid-template-columns: 150px 1fr;
-    gap: 10px;
-    align-items:center;
+    height: 180px;             
+    display: flex;
+    align-items: center;       
+    justify-content: center;
   }
   
   .donut{
@@ -78,9 +78,15 @@
     flex-direction:column;
     gap: 6px;
     min-width: 0;
+  
+    /* ✅ lock 3 rows then scroll (3 chip + 2 gaps) */
+    max-height: calc(28px * 3 + 6px * 2);
+    overflow-y: auto;
+    padding-right: 6px;
   }
   
   .chip{
+    height: 28px;              /* ✅ ทำให้คุม 3 แถวได้เป๊ะ */
     display:flex;
     align-items:center;
     gap: 8px;
@@ -88,9 +94,20 @@
     border-radius: 10px;
     background: rgba(255,255,255,0.50);
     border: 1px solid rgba(0,0,0,0.06);
-    font-size: 12px;
+    font-size: 16px;
     line-height: 1;
+    box-sizing: border-box;    /* กันเพี้ยนจาก padding */
   }
+
+
+  .legend-chips::-webkit-scrollbar{ width: 8px; }
+  .legend-chips::-webkit-scrollbar-thumb{
+    background: rgba(0,0,0,0.18);
+    border-radius: 999px;
+  }
+  .legend-chips::-webkit-scrollbar-track{ background: transparent; }
+
+  
   
   .dot{
     width: 10px;
@@ -113,6 +130,33 @@
     font-weight: 900;
     color:#111;
   }
+
+
+
+
+  .empty-box {
+    height: 100%;
+    min-height: 160px;        /* ความสูงพื้นที่ empty */
+    display: flex;
+    flex-direction: column;
+    align-items: center;      /* แนวนอน */
+    justify-content: center;  /* แนวตั้ง */
+    gap: 8px;
+    opacity: 0.7;
+  }
+  
+  .empty-box img {
+    width: 64px;
+    height: auto;
+  }
+  
+  .empty-text {
+    font-size: 14px;
+    color: #9ca3af;
+    font-weight: 600;
+  }
+  
+
   
   /* responsive */
   @media (max-width: 1050px){
@@ -120,3 +164,5 @@
     .metric-body{ grid-template-columns: 150px 1fr; }
   }
   
+
+

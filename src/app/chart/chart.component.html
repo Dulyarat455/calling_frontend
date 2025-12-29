@@ -1,142 +1,244 @@
 <div class="charts-wrap">
+  <div class="charts-grid">
 
-    <div class="charts-grid">
-  
-      <!-- Lamination -->
-      <section class="group-card lam">
-        <header class="group-head">
-          <div class="group-pill">Lamination</div>
-        </header>
-  
-        <div class="row-2">
-          <!-- WAIT -->
-          <div class="metric-card">
-            <div class="metric-title">Wait</div>
-            <div class="metric-body">
+    <!-- ================= Lamination ================= -->
+    <section class="group-card lam">
+      <header class="group-head">
+        <div class="group-pill">Lamination</div>
+      </header>
+
+      <div class="row-2">
+        <!-- WAIT -->
+        <div class="metric-card">
+          <div class="metric-title">Wait</div>
+          <div class="metric-body">
+
+            <ng-container *ngIf="!isEmptyChart(lamWaitData, lamWaitLegend); else lamWaitEmpty">
               <div class="donut">
                 <canvas
                   baseChart
                   [type]="'doughnut'"
                   [data]="lamWaitData"
-                  [options]="donutOptions"
-                ></canvas>
+                  [options]="donutOptions">
+                </canvas>
               </div>
+
               <div class="legend-chips">
-                <span class="chip" *ngFor="let x of lamWaitLegend">
+                <span class="chip"
+                      *ngFor="let x of lamWaitLegend"
+                      [attr.title]="x.label">
                   <i class="dot" [style.background]="x.color"></i>
                   <span class="name">{{ x.label }}</span>
                   <span class="val">{{ x.value }}</span>
                 </span>
               </div>
-            </div>
+            </ng-container>
+
+            <ng-template #lamWaitEmpty>
+              <div class="empty-box">
+                <img src="dist/img/folder.png" alt="no data">
+                <div class="empty-text">No data</div>
+              </div>
+            </ng-template>
+
           </div>
-  
-          <!-- PENDING -->
-          <div class="metric-card">
-            <div class="metric-title">Pending</div>
-            <div class="metric-body">
+        </div>
+
+        <!-- PENDING -->
+        <div class="metric-card">
+          <div class="metric-title">Pending</div>
+          <div class="metric-body">
+
+            <ng-container *ngIf="!isEmptyChart(lamPendingData, lamPendingLegend); else lamPendingEmpty">
               <div class="donut">
                 <canvas
                   baseChart
                   [type]="'doughnut'"
                   [data]="lamPendingData"
-                  [options]="donutOptions"
-                ></canvas>
+                  [options]="donutOptions">
+                </canvas>
               </div>
+
               <div class="legend-chips">
-                <span class="chip" *ngFor="let x of lamPendingLegend">
+                <span class="chip"
+                      *ngFor="let x of lamPendingLegend"
+                      [attr.title]="x.label">
                   <i class="dot" [style.background]="x.color"></i>
                   <span class="name">{{ x.label }}</span>
                   <span class="val">{{ x.value }}</span>
                 </span>
               </div>
-            </div>
+            </ng-container>
+
+            <ng-template #lamPendingEmpty>
+              <div class="empty-box">
+                <img src="dist/img/folder.png" alt="no data">
+                <div class="empty-text">No data</div>
+              </div>
+            </ng-template>
+
           </div>
         </div>
-      </section>
-  
-      <!-- General -->
-      <section class="group-card gen">
-        <header class="group-head">
-          <div class="group-pill">General</div>
-        </header>
-  
-        <div class="row-2">
-          <div class="metric-card">
-            <div class="metric-title">Wait</div>
-            <div class="metric-body">
+      </div>
+    </section>
+
+    <!-- ================= General ================= -->
+    <section class="group-card gen">
+      <header class="group-head">
+        <div class="group-pill">General</div>
+      </header>
+
+      <div class="row-2">
+        <!-- WAIT -->
+        <div class="metric-card">
+          <div class="metric-title">Wait</div>
+          <div class="metric-body">
+
+            <ng-container *ngIf="!isEmptyChart(genWaitData, genWaitLegend); else genWaitEmpty">
               <div class="donut">
-                <canvas baseChart [type]="'doughnut'" [data]="genWaitData" [options]="donutOptions"></canvas>
+                <canvas baseChart
+                        [type]="'doughnut'"
+                        [data]="genWaitData"
+                        [options]="donutOptions">
+                </canvas>
               </div>
+
               <div class="legend-chips">
-                <span class="chip" *ngFor="let x of genWaitLegend">
+                <span class="chip"
+                      *ngFor="let x of genWaitLegend"
+                      [attr.title]="x.label">
                   <i class="dot" [style.background]="x.color"></i>
                   <span class="name">{{ x.label }}</span>
                   <span class="val">{{ x.value }}</span>
                 </span>
               </div>
-            </div>
-          </div>
-  
-          <div class="metric-card">
-            <div class="metric-title">Pending</div>
-            <div class="metric-body">
-              <div class="donut">
-                <canvas baseChart [type]="'doughnut'" [data]="genPendingData" [options]="donutOptions"></canvas>
+            </ng-container>
+
+            <ng-template #genWaitEmpty>
+              <div class="empty-box">
+                <img src="dist/img/folder.png" alt="no data">
+                <div class="empty-text">No data</div>
               </div>
-              <div class="legend-chips">
-                <span class="chip" *ngFor="let x of genPendingLegend">
-                  <i class="dot" [style.background]="x.color"></i>
-                  <span class="name">{{ x.label }}</span>
-                  <span class="val">{{ x.value }}</span>
-                </span>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-  
-      <!-- Stator -->
-      <section class="group-card sta">
-        <header class="group-head">
-          <div class="group-pill">Stator</div>
-        </header>
-  
-        <div class="row-2">
-          <div class="metric-card">
-            <div class="metric-title">Wait</div>
-            <div class="metric-body">
-              <div class="donut">
-                <canvas baseChart [type]="'doughnut'" [data]="staWaitData" [options]="donutOptions"></canvas>
-              </div>
-              <div class="legend-chips">
-                <span class="chip" *ngFor="let x of staWaitLegend">
-                  <i class="dot" [style.background]="x.color"></i>
-                  <span class="name">{{ x.label }}</span>
-                  <span class="val">{{ x.value }}</span>
-                </span>
-              </div>
-            </div>
-          </div>
-  
-          <div class="metric-card">
-            <div class="metric-title">Pending</div>
-            <div class="metric-body">
-              <div class="donut">
-                <canvas baseChart [type]="'doughnut'" [data]="staPendingData" [options]="donutOptions"></canvas>
-              </div>
-              <div class="legend-chips">
-                <span class="chip" *ngFor="let x of staPendingLegend">
-                  <i class="dot" [style.background]="x.color"></i>
-                  <span class="name">{{ x.label }}</span>
-                  <span class="val">{{ x.value }}</span>
-                </span>
-              </div>
-            </div>
+            </ng-template>
+
           </div>
         </div>
-      </section>
-  
-    </div>
+
+        <!-- PENDING -->
+        <div class="metric-card">
+          <div class="metric-title">Pending</div>
+          <div class="metric-body">
+
+            <ng-container *ngIf="!isEmptyChart(genPendingData, genPendingLegend); else genPendingEmpty">
+              <div class="donut">
+                <canvas baseChart
+                        [type]="'doughnut'"
+                        [data]="genPendingData"
+                        [options]="donutOptions">
+                </canvas>
+              </div>
+
+              <div class="legend-chips">
+                <span class="chip"
+                      *ngFor="let x of genPendingLegend"
+                      [attr.title]="x.label">
+                  <i class="dot" [style.background]="x.color"></i>
+                  <span class="name">{{ x.label }}</span>
+                  <span class="val">{{ x.value }}</span>
+                </span>
+              </div>
+            </ng-container>
+
+            <ng-template #genPendingEmpty>
+              <div class="empty-box">
+                <img src="dist/img/folder.png" alt="no data">
+                <div class="empty-text">No data</div>
+              </div>
+            </ng-template>
+
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= Stator ================= -->
+    <section class="group-card sta">
+      <header class="group-head">
+        <div class="group-pill">Stator</div>
+      </header>
+
+      <div class="row-2">
+        <!-- WAIT -->
+        <div class="metric-card">
+          <div class="metric-title">Wait</div>
+          <div class="metric-body">
+
+            <ng-container *ngIf="!isEmptyChart(staWaitData, staWaitLegend); else staWaitEmpty">
+              <div class="donut">
+                <canvas baseChart
+                        [type]="'doughnut'"
+                        [data]="staWaitData"
+                        [options]="donutOptions">
+                </canvas>
+              </div>
+
+              <div class="legend-chips">
+                <span class="chip"
+                      *ngFor="let x of staWaitLegend"
+                      [attr.title]="x.label">
+                  <i class="dot" [style.background]="x.color"></i>
+                  <span class="name">{{ x.label }}</span>
+                  <span class="val">{{ x.value }}</span>
+                </span>
+              </div>
+            </ng-container>
+
+            <ng-template #staWaitEmpty>
+              <div class="empty-box">
+                <img src="dist/img/folder.png" alt="no data">
+                <div class="empty-text">No data</div>
+              </div>
+            </ng-template>
+
+          </div>
+        </div>
+
+        <!-- PENDING -->
+        <div class="metric-card">
+          <div class="metric-title">Pending</div>
+          <div class="metric-body">
+
+            <ng-container *ngIf="!isEmptyChart(staPendingData, staPendingLegend); else staPendingEmpty">
+              <div class="donut">
+                <canvas baseChart
+                        [type]="'doughnut'"
+                        [data]="staPendingData"
+                        [options]="donutOptions">
+                </canvas>
+              </div>
+
+              <div class="legend-chips">
+                <span class="chip"
+                      *ngFor="let x of staPendingLegend"
+                      [attr.title]="x.label">
+                  <i class="dot" [style.background]="x.color"></i>
+                  <span class="name">{{ x.label }}</span>
+                  <span class="val">{{ x.value }}</span>
+                </span>
+              </div>
+            </ng-container>
+
+            <ng-template #staPendingEmpty>
+              <div class="empty-box">
+                <img src="dist/img/folder.png" alt="no data">
+                <div class="empty-text">No data</div>
+              </div>
+            </ng-template>
+
+          </div>
+        </div>
+      </div>
+    </section>
+
   </div>
-  
+</div>

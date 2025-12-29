@@ -308,4 +308,40 @@
   box-shadow: 0 2px 4px rgba(0,0,0,0.12);
 }
 
-  
+
+
+ /* job spent over time */
+
+ .row-late{
+  background: #ffe2e2 !important;
+  border-color: rgba(239, 68, 68, 0.25) !important;
+}
+
+
+
+
+
+/* empty data */
+
+.empty-box{
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  padding:24px 12px;
+  border:1px dashed rgba(0,0,0,.25);
+  border-radius:14px;
+  background: rgba(255,255,255,.55);
+}
+
+.empty-box img{
+  width:96px;
+  height:auto;
+  opacity:.9;
+}
+
+.empty-text{
+  margin-top:10px;
+  font-weight:700;
+  color:#555;
+}

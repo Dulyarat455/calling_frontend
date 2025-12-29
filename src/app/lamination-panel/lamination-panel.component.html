@@ -1,17 +1,6 @@
 <div class="min-vh-100 py-4" style="background: #eaf6f9">
   <div class="container-lg">
     <div class="card shadow-lg border-0" style="border-radius: 14px">
-      <!-- <div
-        class="card-header text-white d-flex align-items-center gap-2"
-        style="
-          background: #36393c;
-          border-top-left-radius: 14px;
-          border-top-right-radius: 14px;
-        "
-      >
-        <i class="fas fa-chart-line fs-4"></i>
-        <h4 class="mb-0 fw-bold">Dashboard</h4>
-      </div> -->
 
       <div class="card-body p-4">
         <div class="mb-5 position-relative panel-wrap">
@@ -27,7 +16,7 @@
                 border-top-right-radius: 12px;
               "
             >
-              {{ laminationData.title || "Parts wait move" }}
+              {{ laminationData.title || "Job transaction for Lamination" }}
             </div>
 
             <div class="card-body p-4">
@@ -90,9 +79,11 @@
                 (scroll)="onLamScroll()"
                 (click)="onLamClick()"
                 >
-                  <div class="list-group rounded-3 overflow-hidden">
+                <div class="list-group rounded-3 overflow-hidden">
+                  <ng-container *ngIf="laminationData.Rows.length > 0; else noJobTpl">
                     <div
                       class="list-group-item d-flex align-items-center justify-content-between"
+                      [ngClass]="{ 'row-late': isJobLate(item) }"
                       *ngFor="let item of laminationData.Rows"
                     >
                       <div class="d-flex align-items-center gap-3">
@@ -130,7 +121,7 @@
                         @if (userId === item.createByUserId) {
                           <i class="fas fa-user-circle text-primary"></i>
                         }
-                        @if (valueUserCallNodeId === item.toNodeId) {
+                        @if (valueUserCallNodeId === item.toNodeId && userRole === 'user') {
                            <i class="fas fa-phone-volume"></i>
                         }
                         <span class="node-tag" > {{ item.toNodeName}} </span>
@@ -141,10 +132,9 @@
                           {{ item.status }}
                         </span>
 
-                     
-
-                        @if (valueUserCallNodeId === item.toNodeId) {
-                          @if (item.status === 'wait') {
+                    
+                        @if (valueUserCallNodeId === item.toNodeId && userRole === 'user') {
+                          @if (item.status === 'wait' && item.userInchargeId == null ) {
                             <button 
                             class="btn btn-sm d-flex align-items-center gap-1 fw-semibold" 
                             style="background:#12d32f; color:rgb(10, 8, 8); border-radius:8px; box-shadow:0 2px 4px rgba(0,0,0,0.15);"
@@ -154,7 +144,7 @@
                             Accept
                           </button>
                           }
-                          @if (item.status === 'pending') {
+                          @if (item.status === 'pending' && item.userInchargeId !== null && item.userInchargeId === userId) {
                             <button 
                               class="btn btn-sm d-flex align-items-center gap-1 fw-semibold" 
                               style="background:#463df1; color:rgb(255, 255, 255); border-radius:8px; box-shadow:0 2px 4px rgba(0,0,0,0.15);"
@@ -183,6 +173,13 @@
 
                     </div>
                     </div>
+                  </ng-container>
+                  <ng-template #noJobTpl>
+                    <div class="empty-box">
+                      <img src="dist/img/no-task.png" alt="no job" />
+                      <div class="empty-text">No job request</div>
+                    </div>
+                  </ng-template>
                   </div>
                 </div>
               </div>

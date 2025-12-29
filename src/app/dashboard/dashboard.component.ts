@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, Output, ViewChild, ElementRef } from '@angular/core';
+import { Component, EventEmitter, Input, Output, ViewChild, ElementRef, SimpleChanges } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { LaminationPanelComponent,RowItem } from '../lamination-panel/lamination-panel.component';
 import { GeneralStatorPanelComponent,GroupPanel, RowItem as GSRowItem,  } from '../general-stator-panel/general-stator-panel.component';
@@ -6,7 +6,7 @@ import { HttpClient } from '@angular/common/http';
 import { Router} from '@angular/router';
 import { Subscription } from 'rxjs';
 
-
+import { ModalTemplateComponent } from '../modal-template/modal-template.component';
 import { AlertRequestComponent } from '../alert-request/alert-request.component';
 import Swal from 'sweetalert2';
 import config from '../../config';
@@ -47,7 +47,29 @@ type JobRow = {
   toNodeName: string;
   states: States[];
   priority: string;
+  jobNo: string | null
 };
+
+
+type callNodeRow = {
+  id: number;
+  code: string;
+  sectionId: number;
+  sectionName: string;
+  groupId: number;
+  groupName: string;
+  subSectionId: number;
+  subSectionName: string;
+  isActive: number;
+  state: string;
+};
+
+type BuildSection = {
+  waitCount: number;
+  pendingCount: number;
+  Rows: RowItem[];
+};
+
 
  type PanelKey = 'lam' | 'gen' | 'sta';
 
@@ -55,7 +77,7 @@ type JobRow = {
 @Component({
   selector: 'app-dashboard',
   standalone: true,
-  imports: [CommonModule,LaminationPanelComponent,GeneralStatorPanelComponent,AlertRequestComponent,ChartComponent],
+  imports: [CommonModule,LaminationPanelComponent,GeneralStatorPanelComponent,AlertRequestComponent,ChartComponent,ModalTemplateComponent],
   templateUrl: './dashboard.component.html',
   styleUrl: './dashboard.component.css'
 })
@@ -77,6 +99,8 @@ export class DashboardComponent {
 
   wsSub?: Subscription;
 
+  callNodes: callNodeRow[] = []
+
   checkLamNotifyWait: number = 0;
   checkLamNotifyPending: number = 0;
 
@@ -95,6 +119,7 @@ export class DashboardComponent {
   checkUnAuthorizedStaNotifyWait: number = 0;
   checkUnAuthorizedStaNotifyPending: number = 0;
 
+  
 
   constructor(
     private http: HttpClient, 
@@ -106,6 +131,7 @@ export class DashboardComponent {
   @ViewChild('genScroll') genScroll?: ElementRef<HTMLDivElement>;
   @ViewChild('staScroll') staScroll?: ElementRef<HTMLDivElement>;
   @ViewChild('alertRequestModal') modalAlert!: AlertRequestComponent;
+   @ViewChild('assignJobModal') modal!: ModalTemplateComponent;
 
   buildLamination = {
     waitCount: 0,
@@ -144,6 +170,7 @@ export class DashboardComponent {
     this.fetchJobByGen();
     this.fetchJobByLam();
     this.fetchJobBySta();
+    this.fetchCallNode();
 
 
     // ✅ ฟัง event จาก websocket
@@ -258,18 +285,11 @@ export class DashboardComponent {
   });
 
   }
-  
 
   openModalAlert(){
+   
     this.modalAlert?.open()
   }
-  
-
-  // private clearLamNotify() {
-  //   this.checkLamNotifyWait = 0;
-  //   this.checkUnAuthorizedLamNotifyWait = 0;
-  // }
-
 
   private clearNotify(panel: PanelKey) {
     if (panel === 'lam') {
@@ -372,11 +392,14 @@ export class DashboardComponent {
             userInchargeId: latestState?.userInchargeId ?? null,
             userInchargeName: latestState?.userInchargeName ?? null,
             userInchargeEmpNo: latestState?.userInchargeEmpNo ?? null,
+            userInchargeDate: latestState?.date ?? null,
+          
           }
         : {
             userInchargeId: null,
             userInchargeName: null,
             userInchargeEmpNo: null,
+            userInchargeDate: null,
           };
 
   
@@ -400,6 +423,9 @@ export class DashboardComponent {
         toNodeId: job.toNodeId,
         toNodeName: job.toNodeName,
         priority: job.priority,
+        jobNo: job.jobNo,
+        createAt: createdAt ? createdAt.toISOString() : null,
+
         ...incharge,
       };
     });
@@ -467,11 +493,13 @@ export class DashboardComponent {
               userInchargeId: latestState?.userInchargeId ?? null,
               userInchargeName: latestState?.userInchargeName ?? null,
               userInchargeEmpNo: latestState?.userInchargeEmpNo ?? null,
+              userInchargeDate: latestState?.date ?? null,
             }
           : {
               userInchargeId: null,
               userInchargeName: null,
               userInchargeEmpNo: null,
+              userInchargeDate: null,
             };
     
         return {
@@ -493,6 +521,9 @@ export class DashboardComponent {
           toNodeId: job.toNodeId,
           toNodeName: job.toNodeName,
           priority: job.priority,
+          jobNo: job.jobNo,
+          createAt: createdAt ? createdAt.toISOString() : null,
+
           ...incharge,
         };
       });
@@ -547,6 +578,7 @@ export class DashboardComponent {
       next: (res: any) => {
       this.jobLaminations = res.results || [];
       this.buildLamSectionFromJobs();
+      this.sortSectionRows(this.buildLamination);
       },
       error: (err) => {
         Swal.fire({
@@ -567,6 +599,7 @@ export class DashboardComponent {
       next: (res: any) => {
         this.jobGenerals = res.results || [];
         this.buildGenStaFromJobs("General");
+        this.sortSectionRows(this.buildGeneral);
       },
       error: (err) => {
         Swal.fire({
@@ -587,6 +620,7 @@ export class DashboardComponent {
       next: (res: any) => {
         this.jobStators = res.results || [];
         this.buildGenStaFromJobs("Stator");
+        this.sortSectionRows(this.buildStator);
       },
       error: (err) => {
         Swal.fire({
@@ -597,6 +631,104 @@ export class DashboardComponent {
       },
     });
   }
+
+
+  fetchCallNode(){
+    this.http.get(config.apiServer + '/api/callnode/list').subscribe({
+      next: (res: any) => {
+        this.callNodes = res.results || [];
+      },
+      error: (err) => {
+        Swal.fire({
+          title: 'Error',
+          text: err.message,
+          icon: 'error',
+        });
+      },
+    })
+  }
+
+
+  //sort data follow urgent status
+
+  private toMs(dateStr?: string, timeStr?: string): number {
+    if (!dateStr) return 0;
+  
+    // รองรับทั้ง dd/MM/yyyy และ dd-MM-yyyy
+    const normalized = dateStr.replace(/-/g, '/').trim();
+    const parts = normalized.split('/'); // [dd, MM, yyyy] หรือ [yyyy, MM, dd] ก็ได้
+    let d: number, m: number, y: number;
+  
+    if (parts[0].length === 4) {
+      // yyyy/MM/dd
+      y = Number(parts[0]);
+      m = Number(parts[1]);
+      d = Number(parts[2]);
+    } else {
+      // dd/MM/yyyy
+      d = Number(parts[0]);
+      m = Number(parts[1]);
+      y = Number(parts[2]);
+    }
+  
+    const [hh, mm] = (timeStr || '00:00').split(':').map(Number);
+    const dt = new Date(y, (m || 1) - 1, d || 1, hh || 0, mm || 0, 0);
+  
+    return isNaN(dt.getTime()) ? 0 : dt.getTime();
+  }
+
+
+
+  private sortSectionRows(section: BuildSection) {
+    if (!section?.Rows) return;
+  
+    section.Rows = [...section.Rows].sort((a, b) => {
+      const aUrgent = (a.priority || '').toLowerCase() === 'urgent';
+      const bUrgent = (b.priority || '').toLowerCase() === 'urgent';
+  
+      // 1) urgent มาก่อน
+      if (aUrgent !== bUrgent) return aUrgent ? -1 : 1;
+  
+      // 2) เก่าก่อนอยู่บน (สร้างก่อน)
+      const aMs = this.toMs(a.date, a.time);
+      const bMs = this.toMs(b.date, b.time);
+  
+      return aMs - bMs;
+    });
+  }
+
+
+
+  onDetail(item: RowItem) {
+    this.modal.open('detail', undefined, {
+      createByUserName: item.createByUserName,
+      createByUserEmpNo: item.createByUserEmpNo,
+      groupName: item.groupName,
+      machineName: item.machineName,
+      fromNodeName: item.fromNodeName,
+      toNodeName: item.toNodeName,
+      remark: item.remark,
+      priority: item.priority as any,
+      userInchargeId: item.userInchargeId ?? undefined  ,
+      userInchargeName: item.userInchargeName ?? undefined,
+      userInchargeEmpNo: item.userInchargeEmpNo ?? undefined
+    });
+  }
+
+
+  private isOverMinutes(iso?: string | null, minutes = 5): boolean {
+    if (!iso) return false;
+    const t = new Date(iso).getTime();
+    if (Number.isNaN(t)) return false;
+    return (Date.now() - t) >= minutes * 60 * 1000;
+  }
+  
+  isJobLate(item: RowItem): boolean {
+    return this.isOverMinutes(item.createAt, 5);
+  }
+  
+
+ 
 
 
   createJob(){

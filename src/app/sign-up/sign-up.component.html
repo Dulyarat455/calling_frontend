@@ -10,29 +10,45 @@
       <i class="fa fa-user-plus me-2"></i>Register Employee
     </button>
     <button
-      class="btn btn-success me-2"
-      data-bs-toggle="modal"
-      data-bs-target="#modalExcel"
-    >
-      <i class="fa fa-upload me-2"></i>Add by Excel file
-    </button>
+    class="btn btn-success me-2"
+    type="button"
+    (click)="excelInput.click()"
+  >
+    <i class="fa fa-upload me-2"></i>Add by Excel file
+  </button>
+  
+  <!-- input file ซ่อนไว้ -->
+  <input
+    #excelInput
+    type="file"
+    accept=".xlsx"
+    style="display:none"
+    (change)="onExcelSelected($event)"
+  />
     <button class="btn btn-success" (click)="downloadExcel()">
       <i class="fa fa-download me-2"></i>Export to Excel
     </button>
     <div class="form-inline mt-3">
       <div class="input-group">
+      
         <input
-          type="text"
-          class="form-control"
-          placeholder="ค้นหารหัสพนักงาน"
-          [(ngModel)]="searchEmpNo"
-          (keyup)="filterEmpNo()"
-        />
-        <div class="input-group-append">
-          <button class="btn btn-primary" (click)="filterEmpNo()">
-            <i class="fas fa-search fa-fw"></i>
-          </button>
-        </div>
+        type="text"
+        class="form-control"
+        style="min-width: 360px;"
+        placeholder="ค้นหา (empNo / name / group / section / rfid)"
+        [(ngModel)]="searchEmpNo"
+        (input)="filterEmpNo()"
+      />
+      
+      <div class="input-group-append">
+        <button class="btn btn-primary" (click)="filterEmpNo()">
+          <i class="fas fa-search fa-fw"></i>
+        </button>
+        <button class="btn btn-secondary" (click)="clearSearch()">
+          <i class="fas fa-times"></i>
+        </button>
+      </div>
+      
       </div>
     </div>
     <table class="table table-bordered table-striped mt-3">
@@ -87,7 +103,7 @@
           <div class="login-card">
             <div class="card-header">
               <h6 class="text-center mb-0">
-                <i class="fas fa-user-plus me-2"></i>Add Members
+                {{ isEditMode ? 'Edit Member' : 'Add Members' }}
               </h6>
             </div>
         
@@ -234,18 +250,9 @@
                   />
                 </div>
         
-                <button
-                  class="btn btn-primary w-100"
-                  (click)="addMember()"
-                  [disabled]="isLoading"
-                >
-                  @if (isLoading) {
-                  <i class="fas fa-spinner fa-spin me-2"></i>
-                  Processing...
-                  } @else {
-                  <i class="fas fa-user-plus me-2"></i>
-                  Create Account
-                  }
+                <button class="btn btn-primary w-100" (click)="addMember()" [disabled]="isLoading">
+                  @if (isLoading) { Processing... }
+                  @else { {{ isEditMode ? 'Update Member' : 'Add Member' }} }
                 </button>
         
                 <button

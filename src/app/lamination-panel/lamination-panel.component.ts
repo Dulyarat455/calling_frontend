@@ -22,6 +22,7 @@ export interface RowItem {
   userInchargeId: number | null;
   userInchargeName: string | null; 
   userInchargeEmpNo: string | null;
+  userInchargeDate: string | null;
   remark: string;
   machineId: number;
   machineName: string;
@@ -32,6 +33,8 @@ export interface RowItem {
   toNodeId: number;
   toNodeName: string;
   priority: string;
+  jobNo: string | null;
+  createAt: string | null;
 }
 
 
@@ -110,7 +113,8 @@ export class LaminationPanelComponent {
 
   constructor(private http: HttpClient, private router: Router) {}
   //user current
-  modalName: string = "Lamination AssignJob"
+  modalName: string = "Lamination AssignJob";
+  userRole: string = "";
   userName: string = "";
   userId: number | null = null; 
   sectionId: number | null = null;
@@ -122,6 +126,7 @@ export class LaminationPanelComponent {
   groupName: string = "";
   valueUserCallNodeId: number | null = null;
   valueUserCallNodeName: string = "";
+
   //at modal form
   machines: MachineRow[] = [];
   groups: GroupRow[] = [];
@@ -138,6 +143,7 @@ export class LaminationPanelComponent {
 
   ngOnInit() {
     this.userName = localStorage.getItem('calling_name')!;
+    this.userRole = localStorage.getItem('calling_role')!;
     this.empNo = localStorage.getItem('calling_empNo')!;
     this.userId = parseInt(localStorage.getItem('calling_id')!);
     this.sectionId = parseInt(localStorage.getItem("calling_sectionId")!);
@@ -273,17 +279,12 @@ export class LaminationPanelComponent {
     }
   }
 
+
   onLamClick() {
     const el = this.lamScroll?.nativeElement;
     if (!el) return;
-  
-    // ถ้าไม่มี scrollbar (รายการน้อย → เห็นครบทุกแถวในจอเดียว)
-    const noScroll = el.scrollHeight <= el.clientHeight + 1;
-  
-    if (noScroll) {
       this.notifyWaitCleared.emit(); // ✅ ให้ parent เคลียร์
       this.notifyPendingCleared.emit();
-    }
   }
 
 
@@ -360,6 +361,7 @@ export class LaminationPanelComponent {
     .subscribe({
       next: (res: any) => {
       this.valueUserCallNodeId = res.row.id;
+      this.applyUserFilterAndRecount();
       this.fetchCallNodeByGroupFromNode();
       },
       error: (err) => {
@@ -538,31 +540,66 @@ export class LaminationPanelComponent {
     return isNaN(dt.getTime()) ? 0 : dt.getTime();
   }
   
-  sortLaminationRows() {
-    if (!this.laminationData?.Rows) return;
+
+  private isOverMinutes(iso?: string | null, minutes = 5): boolean {
+    if (!iso) return false;
+    const t = new Date(iso).getTime();
+    if (Number.isNaN(t)) return false;
+    return (Date.now() - t) >= minutes * 60 * 1000;
+  }
   
-    this.laminationData.Rows = [...this.laminationData.Rows].sort((a, b) => {
+  isJobLate(item: RowItem): boolean {
+    return this.isOverMinutes(item.createAt, 5);
+  }
+  
+
+
+  private originalRows: RowItem[] = [];
+
+
+  private applyUserFilterAndRecount() {
+    if (this.userRole !== 'user') return;
+    if (!this.laminationData) return;
+  
+    // ต้องมีอย่างน้อย 1 อย่างเพื่อ filter ได้
+    const nodeId = this.valueUserCallNodeId;
+    const uid = this.userId;
+  
+    if (!nodeId && !uid) return;
+  
+    // 1) filter เฉพาะงานของ user (OR condition)
+    let rows = this.originalRows.filter(r =>
+      (nodeId != null && r.toNodeId === nodeId) ||
+      (uid != null && r.createByUserId === uid)
+    );
+  
+    // 2) sort (urgent ก่อน + เก่าก่อน)
+    rows.sort((a, b) => {
       const aUrgent = (a.priority || '').toLowerCase() === 'urgent';
       const bUrgent = (b.priority || '').toLowerCase() === 'urgent';
-  
-      // 1) urgent มาก่อน
       if (aUrgent !== bUrgent) return aUrgent ? -1 : 1;
   
-      // 2) ภายในกลุ่มเดียวกัน เรียงตาม date/time (สร้างก่อนอยู่บน)
       const aMs = this.toMs(a.date, a.time);
       const bMs = this.toMs(b.date, b.time);
-  
-      return aMs - bMs; // เก่าก่อน
+      return aMs - bMs;
     });
+  
+    // 3) recount ใหม่เฉพาะ user
+    this.laminationData.waitCount = rows.filter(r => r.status === 'wait').length;
+    this.laminationData.pendingCount = rows.filter(r => r.status === 'pending').length;
+  
+    // 4) update rows
+    this.laminationData.Rows = rows;
   }
+  
 
   ngOnChanges(changes: SimpleChanges) {
-
     if (changes['laminationData']?.currentValue) {
-      this.sortLaminationRows();
+      // เก็บข้อมูลต้นฉบับจาก parent
+      this.originalRows = [...(this.laminationData?.Rows || [])];
+      // ใช้เฉพาะ role user
+      this.applyUserFilterAndRecount();
     }
-
-
   }
   
   

@@ -81,6 +81,7 @@ export class CallNodesComponent {
     ngOnInit() {
       this.fetchGroup();
       this.fetchCallNode();
+      this.fetchSection();
     }
 
 
@@ -114,34 +115,34 @@ export class CallNodesComponent {
       
     }
 
-    fetchSectionByGroup(){
-        // ถ้าไม่ได้เลือก Group ไม่ต้องยิง API
-        if (!this.selectedGroupId) {
-          this.sections = [];
-          this.selectedSectionId = null;
-          return;
-        }
+    // fetchSectionByGroup(){
+    //     // ถ้าไม่ได้เลือก Group ไม่ต้องยิง API
+    //     if (!this.selectedGroupId) {
+    //       this.sections = [];
+    //       this.selectedSectionId = null;
+    //       return;
+    //     }
 
-        this.http
-        .post(config.apiServer + '/api/section/filterByGroup', {
-          groupId: this.selectedGroupId,
-        })
-        .subscribe({
-          next: (res: any) => {
-            // backend ส่ง { results: [...] }
-            this.sections = res.results || [];
-            this.selectedSectionId = null; // เลือกใหม่ทุกครั้งที่เปลี่ยน section
-          },
-          error: (err) => {
-            Swal.fire({
-              title: 'Error',
-              text: err.message || 'Cannot load Section',
-              icon: 'error',
-            });
-          },
-        });
+    //     this.http
+    //     .post(config.apiServer + '/api/section/filterByGroup', {
+    //       groupId: this.selectedGroupId,
+    //     })
+    //     .subscribe({
+    //       next: (res: any) => {
+    //         // backend ส่ง { results: [...] }
+    //         this.sections = res.results || [];
+    //         this.selectedSectionId = null; // เลือกใหม่ทุกครั้งที่เปลี่ยน section
+    //       },
+    //       error: (err) => {
+    //         Swal.fire({
+    //           title: 'Error',
+    //           text: err.message || 'Cannot load Section',
+    //           icon: 'error',
+    //         });
+    //       },
+    //     });
 
-    }
+    // }
 
 
 
