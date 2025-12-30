@@ -102,7 +102,7 @@
             <label style="font-weight:700; color:#111; text-align:right;">Call From*</label>
             <select [(ngModel)]="model.callFrom" disabled
               style="background:#e2e8f0; border:2px solid transparent; border-radius:10px; padding:.6rem .9rem; font-weight:600; width:100%;">
-              <option value="" disabled selected>-- Select Node --</option>
+              <option value="" disabled selected>-- Select Process --</option>
               <option *ngFor="let c of callNodes" [value]="c.id">
                 {{ c.code }}
               </option>
@@ -114,7 +114,7 @@
             <label style="font-weight:700; color:#111; text-align:right;">Call To*</label>
             <select [(ngModel)]="model.callTo" (change)="onCallNodeToChange($event)"
               style="background:#c8f7c5; border:2px solid transparent; border-radius:10px; padding:.6rem .9rem; font-weight:600; width:100%;">
-              <option value="" disabled selected>-- Select Node --</option>
+              <option value="" disabled selected>-- Select Process --</option>
               <option *ngFor="let f of filterByGroupFromNodecallNodes" [value]="f.id">
                 {{ f.code }}
               </option>

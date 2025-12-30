@@ -12,4 +12,36 @@ body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
   .cdk-overlay-pane {
     z-index: 2001 !important;
   }
+
+  @font-face {
+    font-family: 'Kanit';
+    src: url('../public/assets/fonts/Kanit-Regular.ttf') format('truetype');
+    font-weight: 400;
+    font-style: normal;
+    font-display: swap;
+  }
+  
+  @font-face {
+    font-family: 'Kanit';
+    src: url('../public/assets/fonts/Kanit-Medium.ttf') format('truetype');
+    font-weight: 500;
+    font-style: normal;
+    font-display: swap;
+  }
+  
+  @font-face {
+    font-family: 'Kanit';
+    src: url('../public/assets/fonts/Kanit-SemiBold.ttf') format('truetype');
+    font-weight: 600;
+    font-style: normal;
+    font-display: swap;
+  }
+  
+  @font-face {
+    font-family: 'Kanit';
+    src: url('../public/assets/fonts/Kanit-Bold.ttf') format('truetype');
+    font-weight: 700;
+    font-style: normal;
+    font-display: swap;
+  }
   

@@ -782,7 +782,7 @@ export class SignUpComponent {
   
       parts.push(`
         <div style="margin-bottom:6px;">
-          <div style="font-weight:700; font-size:16px; margin-bottom:8px;">📍 CallNode Not Found</div>
+          <div style="font-weight:700; font-size:16px; margin-bottom:8px;">📍 Position Not Match</div>
           ${callNodeHtml}
         </div>
       `);
@@ -993,9 +993,86 @@ export class SignUpComponent {
   }
   
 
-  remove(item: any){
+  remove(item: UsersRow){
+    if (!item?.id) return;
+
+    Swal.fire({
+      title: 'ยืนยันการลบ?',
+      html: `
+        <div>
+          <div><b>EmpNo:</b> ${item.empNo ?? '-'}</div>
+          <div><b>Name:</b> ${item.name ?? '-'}</div>
+        </div>
+      `,
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonText: 'ลบ',
+      cancelButtonText: 'ยกเลิก',
+      confirmButtonColor: '#d33',
+    }).then((r) => {
+      if (!r.isConfirmed) return;
+  
+      // ✅ Loading ระหว่างลบ
+      Swal.fire({
+        title: 'กำลังลบ...',
+        text: 'โปรดรอสักครู่',
+        allowOutsideClick: false,
+        allowEscapeKey: false,
+        didOpen: () => Swal.showLoading(),
+      });
+  
+      const payload: any = {
+        userId: item.id,
+        userRole: 'admin', // ถ้าหลังบ้านเช็ค role
+      };
+  
+      this.http.post(config.apiServer + '/api/user/deleteUser', payload).subscribe({
+        next: (res: any) => {
+          Swal.close();
+  
+          Swal.fire({
+            icon: 'success',
+            title: 'ลบสำเร็จ',
+            text: 'ระบบทำการปิดบัญชี (accountState=delete) แล้ว',
+            timer: 1400,
+            showConfirmButton: false,
+          });
+  
+          this.fetchDataUser();
+        },
+  
+        error: (err) => {
+          Swal.close();
+  
+          const data = err?.error;
+  
+          // ✅ CASE: blocked jobs (โชว์เหมือน updateOneUser)
+          const hasBlocked = Array.isArray(data?.blockedJobs) && data.blockedJobs.length > 0;
+          if (hasBlocked) {
+            const html = this.buildBlockedHtml(data); // ✅ ใช้ของเดิม
+            Swal.fire({
+              title: 'Error',
+              icon: 'error',
+              html,
+              width: 800,
+              confirmButtonText: 'OK',
+            });
+            return;
+          }
+  
+          // fallback error
+          Swal.fire({
+            title: 'Error',
+            text: data?.message || err.message || 'Delete failed',
+            icon: 'error',
+          });
+        }
+      });
+    });
 
   }
+
+
   edit(item: any){
 
   }

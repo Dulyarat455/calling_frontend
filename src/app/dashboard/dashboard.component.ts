@@ -181,6 +181,12 @@ export class DashboardComponent {
     const afterCreatetoNodeId = job.toNodeId; 
     const groupId = payload?.job?.groupId;
 
+
+    
+    
+       
+
+
     if(type === 'create'){
         if(!job) {return;}
 
@@ -291,6 +297,45 @@ export class DashboardComponent {
     this.modalAlert?.open()
   }
 
+  private clearNotifyIfNoJobs(panel: PanelKey, section: BuildSection) {
+    const waitCount = (section?.waitCount ?? 0) === 0 
+    const pendingCount = (section?.pendingCount ?? 0) === 0;
+    if (waitCount) {
+      this.clearNotifyCountZero(panel, 'wait');
+    }
+    if(pendingCount){
+      this.clearNotifyCountZero(panel, 'pending');
+    }
+  }
+
+  private clearNotifyCountZero(panel: PanelKey, state: "wait" | "pending") {
+    if (panel === 'lam') {
+      if(state === 'wait'){
+        this.checkUnAuthorizedLamNotifyWait = 0;
+      }
+      else{
+        this.checkUnAuthorizedLamNotifyPending = 0;
+      }
+    }
+    if (panel === 'gen') {
+      if(state === 'wait'){
+        this.checkUnAuthorizedGenNotifyWait = 0;
+      }else{
+        this.checkUnAuthorizedGenNotifyPending = 0;
+      }
+    }
+    if (panel === 'sta') {
+      if(state === 'wait' ){
+        this.checkUnAuthorizedStaNotifyWait = 0;
+      }
+      else{
+        this.checkUnAuthorizedStaNotifyPending = 0;
+      }
+      
+    }
+  }
+  
+
   private clearNotify(panel: PanelKey) {
     if (panel === 'lam') {
       this.checkLamNotifyWait = 0;
@@ -342,8 +387,6 @@ export class DashboardComponent {
   onLamClick() { this.handleClickClear('lam'); }
   onGenClick() { this.handleClickClear('gen'); }
   onStaClick() { this.handleClickClear('sta'); }
-
-
 
 
 
@@ -549,11 +592,6 @@ export class DashboardComponent {
     
   }
   
-  // onUpdateRow(row: RowItem) {
-  //   // TODO: เปิด modal / เรียก API / เปลี่ยนสถานะ ฯลฯ
-  //   console.log('Update clicked:', row);
-  // }
-
 
   toggleLamPreview() {
     this.showLamPreview = !this.showLamPreview;
@@ -579,6 +617,9 @@ export class DashboardComponent {
       this.jobLaminations = res.results || [];
       this.buildLamSectionFromJobs();
       this.sortSectionRows(this.buildLamination);
+
+       // ✅ ถ้าไม่มีงานแล้ว เคลียร์ notify ของ lam
+      this.clearNotifyIfNoJobs('lam', this.buildLamination);
       },
       error: (err) => {
         Swal.fire({
@@ -600,6 +641,9 @@ export class DashboardComponent {
         this.jobGenerals = res.results || [];
         this.buildGenStaFromJobs("General");
         this.sortSectionRows(this.buildGeneral);
+
+         // ✅ เคลียร์ notify ของ gen ถ้าไม่มีงาน
+        this.clearNotifyIfNoJobs('gen', this.buildGeneral);
       },
       error: (err) => {
         Swal.fire({
@@ -621,6 +665,9 @@ export class DashboardComponent {
         this.jobStators = res.results || [];
         this.buildGenStaFromJobs("Stator");
         this.sortSectionRows(this.buildStator);
+
+        // ✅ เคลียร์ notify ของ sta ถ้าไม่มีงาน
+        this.clearNotifyIfNoJobs('sta', this.buildStator);
       },
       error: (err) => {
         Swal.fire({

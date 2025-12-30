@@ -10,7 +10,7 @@
   <div class="card-body" style="background: #e3e3e3">
 
     <!-- ====================== GENERAL (TOP) ====================== -->
-    @if (general.Rows.length || sectionName === 'PC' ) {
+    @if (groupId === 2 || sectionName === 'PC' ) {
     <div class="mb-4" *ngIf="general">
       <!-- หัว + summary + ปุ่ม (บรรทัดเดียวกัน) -->
       <div class="d-flex align-items-center justify-content-between mb-2">
@@ -166,7 +166,7 @@
     </div>
   }
     <!-- ====================== STATOR (BOTTOM) ====================== -->
-     @if (stator.Rows.length || sectionName === 'PC' ) {
+     @if (groupId === 4 || sectionName === 'PC' ) {
     <div *ngIf="stator">
       <!-- หัว + summary + ปุ่ม (บรรทัดเดียวกัน) -->
       <div class="d-flex align-items-center justify-content-between mb-2">

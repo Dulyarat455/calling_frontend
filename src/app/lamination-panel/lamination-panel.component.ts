@@ -263,9 +263,6 @@ export class LaminationPanelComponent {
   }
   
   
-
-
-
   onLamScroll() {
     const el = this.lamScroll?.nativeElement;
     if (!el) return;
