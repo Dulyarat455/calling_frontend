@@ -87,10 +87,10 @@
       
           <!-- Machine -->
           <div style="display:grid; grid-template-columns:160px 1fr; align-items:center; gap:10px; margin-bottom:14px;">
-            <label style="font-weight:700; color:#111; text-align:right;">Machine*</label>
+            <label style="font-weight:700; color:#111; text-align:right;">Area*</label>
             <select [(ngModel)]="model.machine" (change)="onMachineChange($event)" 
             style="background:#c8f7c5; border:2px solid transparent; border-radius:10px; padding:.6rem .9rem; font-weight:600; width:100%;">
-              <option value="" disabled selected>-- Select Machine --</option>
+              <option value="" disabled selected>-- Select Area --</option>
               <option *ngFor="let m of machines" [value]="m.id">
                 {{ m.code }}
               </option>
@@ -265,7 +265,7 @@
       </div>
 
       <div style="display:grid;grid-template-columns:160px 1fr;gap:10px;margin-bottom:12px;align-items:center;">
-        <div style="font-weight:700;color:#111;text-align:right;">Machine</div>
+        <div style="font-weight:700;color:#111;text-align:right;">Area</div>
         <div style="background:#e2e8f0;border-radius:10px;padding:.6rem .9rem;font-weight:600;">
           {{ detail?.machineName || '-' }}
         </div>

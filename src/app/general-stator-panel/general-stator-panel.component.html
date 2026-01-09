@@ -150,6 +150,16 @@
             >
               <i class="fas fa-bars"></i>
           </button>
+
+          @if (userId === r.createByUserId) {
+            <button
+            class="delete-icon-btn"
+            (click)="onDeleteJob('general', r, $event)"
+            title="Delete job"
+          >
+            <i class="fas fa-trash-alt"></i>
+          </button>
+          }
             </div>
           </div>
            
@@ -303,6 +313,17 @@
             >
              <i class="fas fa-bars"></i>
             </button>
+
+            @if (userId === r.createByUserId) {
+              <button
+              class="delete-icon-btn"
+              (click)="onDeleteJob('stator', r, $event)"
+              title="Delete job"
+            >
+              <i class="fas fa-trash-alt"></i>
+            </button>
+            
+            }
 
             </div>
           </div>

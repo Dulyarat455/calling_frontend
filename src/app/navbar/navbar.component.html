@@ -45,6 +45,20 @@
         </li>
       }
 
+      @if (token && token.trim()) {
+        <li class="nav-item">
+             <a
+               [routerLink]="['/chart']"
+               class="nav-link"
+               routerLinkActive="active border-bottom fw-semibold text-dark"
+               [routerLinkActiveOptions]="{ exact: true }"
+               style="--bs-border-color: black;"
+             >
+               Chart
+             </a>
+         </li>
+       }
+
     </ul>
   </ul>
   

@@ -65,6 +65,10 @@ export class FlowJobComponent {
   selectedFromNodeId: number | null = null;
   selectedToNodeId: number | null = null;
 
+  modalMode: 'create' | 'edit' = 'create';
+  editingId: number | null = null;
+
+
   ngOnInit() {
     this.fetchGroup();
     this.fetchFlowJob();
@@ -72,6 +76,8 @@ export class FlowJobComponent {
 
   openModal() {
     this.clearForm();
+    this.modalMode = 'create';
+    this.editingId = null;
     this.myModal.open();
   }
 
@@ -109,8 +115,11 @@ export class FlowJobComponent {
     next: (res: any) => {
       // backend ส่ง { results: [...] }
       this.callNodes = res.results || [];
-      this.selectedFromNodeId = null; // เลือกใหม่ทุกครั้งที่เปลี่ยน group
-      this.selectedToNodeId = null;
+      // ✅ ถ้าเป็น create ค่อย reset แต่ถ้า edit ไม่ต้อง reset
+      if (this.modalMode !== 'edit') {
+        this.selectedFromNodeId = null;
+        this.selectedToNodeId = null;
+      }
     },
     error: (err) => {
       Swal.fire({
@@ -212,15 +221,138 @@ export class FlowJobComponent {
     this.selectedFromNodeId = null;
     this.selectedToNodeId = null;
     this.callNodes = [];
+    this.modalMode = 'create';
+    this.editingId = null;
   }
 
-  edit(item:any){
 
+  submitFlowJob() {
+    if (this.isLoading) return;
+  
+    if (this.selectedGroupId == null || this.selectedFromNodeId == null || this.selectedToNodeId == null) {
+      Swal.fire({ title: 'ตรวจสอบข้อมูล', text: 'กรุณาเลือก ข้อมูล ให้ครบ', icon: 'warning' });
+      return;
+    }
+  
+    const role = localStorage.getItem('calling_role');
+    if (role !== 'admin') {
+      Swal.fire({ title: 'Role not allowed', text: 'ไม่สามารถทำรายการได้', icon: 'warning' });
+      return;
+    }
+  
+    const isEdit = this.modalMode === 'edit';
+  
+    const url = isEdit
+      ? config.apiServer + '/api/flowJob/edit'
+      : config.apiServer + '/api/flowJob/add';
+  
+    const payload: any = {
+      role,
+      groupId: this.selectedGroupId,
+      fromNodeId: this.selectedFromNodeId,
+      toNodeId: this.selectedToNodeId,
+    };
+  
+    // ✅ backend edit ต้องการ flowJobId
+    if (isEdit) {
+      if (this.editingId == null) {
+        Swal.fire({ title: 'Error', text: 'ไม่พบ id ที่จะแก้ไข', icon: 'error' });
+        return;
+      }
+      payload.flowJobId = this.editingId; // map id -> flowJobId
+    }
+  
+    this.isLoading = true;
+  
+    this.http.post(url, payload).subscribe({
+      next: () => {
+        this.isLoading = false;
+  
+        Swal.fire({
+          title: 'สำเร็จ',
+          text: isEdit ? 'แก้ไข FlowJob เรียบร้อย' : 'Map FlowJob เรียบร้อยแล้ว',
+          icon: 'success',
+          timer: 1200,
+          showConfirmButton: false,
+        });
+  
+        this.myModal.close();
+        this.clearForm();
+        this.fetchFlowJob();
+      },
+      error: (err) => {
+        this.isLoading = false;
+        const msg = err?.error?.message || err?.message || 'ทำรายการไม่สำเร็จ';
+        Swal.fire({ title: 'ไม่สามารถบันทึกได้', text: msg, icon: 'error' });
+      },
+    });
   }
 
-  remove(item:any){
-    
-  }
+  
+
+
+
+
+  edit(item: FlowJobRow) {
+  this.modalMode = 'edit';
+  this.editingId = item.id;
+
+  this.selectedGroupId = item.groupId;
+  this.selectedFromNodeId = item.fromNodeId;
+  this.selectedToNodeId = item.toNodeId;
+
+  // ✅ โหลด callNodes ให้ dropdown มีตัวเลือกก่อน
+  this.fetchCallNodeByGroup();
+
+  this.myModal.open();
+}
+
+
+
+remove(item: FlowJobRow) {
+  Swal.fire({
+    title: 'ยืนยันการลบ?',
+    html: `
+      <div style="text-align:left">
+        <div><b>Group:</b> ${item.groupName}</div>
+        <div><b>From:</b> ${item.fromNodeName}</div>
+        <div><b>To:</b> ${item.toNodeName}</div>
+      </div>
+    `,
+    icon: 'warning',
+    showCancelButton: true,
+    confirmButtonText: 'ลบ',
+    cancelButtonText: 'ยกเลิก',
+    confirmButtonColor: '#dc2626',
+  }).then((r) => {
+    if (!r.isConfirmed) return;
+
+    this.isLoading = true;
+
+    this.http.post(config.apiServer + '/api/flowJob/delete', { flowJobId: item.id }).subscribe({
+      next: () => {
+        this.isLoading = false;
+
+        Swal.fire({
+          title: 'สำเร็จ',
+          text: 'ลบ FlowJob เรียบร้อย',
+          icon: 'success',
+          timer: 1200,
+          showConfirmButton: false,
+        });
+
+        // ✅ เอาออกจากหน้าเลย
+        this.flowJobs = this.flowJobs.filter(x => x.id !== item.id);
+      },
+      error: (err) => {
+        this.isLoading = false;
+        const msg = err?.error?.message || err?.message || 'ลบไม่สำเร็จ';
+        Swal.fire({ title: 'ผิดพลาด', text: msg, icon: 'error' });
+      }
+    });
+  });
+}
+
 
 
 

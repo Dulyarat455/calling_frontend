@@ -546,7 +546,7 @@ export class LaminationPanelComponent {
   }
   
   isJobLate(item: RowItem): boolean {
-    return this.isOverMinutes(item.createAt, 5);
+    return this.isOverMinutes(item.createAt, 20);
   }
   
 
@@ -598,6 +598,62 @@ export class LaminationPanelComponent {
       this.applyUserFilterAndRecount();
     }
   }
+
+
+
+
+  onDeleteJob(item: RowItem, ev?: Event) {
+    ev?.stopPropagation(); // กัน click ไปโดน onLamClick()
+  
+    Swal.fire({
+      title: 'ยืนยันการลบ Job?',
+      html: `
+        <div style="text-align:left">
+          <div><b>Job:</b> ${item.jobNo ?? '-'}</div>
+          <div><b>Machine:</b> ${item.machineName}</div>
+          <div><b>To:</b> ${item.toNodeName}</div>
+          ${item.remark ? `<div><b>Remark:</b> ${item.remark}</div>` : ''}
+        </div>
+      `,
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonText: 'ลบ',
+      cancelButtonText: 'ยกเลิก',
+      confirmButtonColor: '#dc2626',
+    }).then((r) => {
+      if (!r.isConfirmed) return;
+  
+      if (item?.jobId == null) {
+        Swal.fire({ title: 'Error', text: 'ไม่พบ jobId', icon: 'error' });
+        return;
+      }
+  
+      this.http.post(config.apiServer + '/api/job/delete', { jobId: item.jobId }).subscribe({
+        next: () => {
+          Swal.fire({
+            title: 'สำเร็จ',
+            text: 'ลบ Job เรียบร้อย',
+            icon: 'success',
+            timer: 1200,
+            showConfirmButton: false,
+          });
+  
+          // ✅ เอาออกจากหน้าทันที (ไม่ต้องรอ refresh)
+          this.laminationData.Rows = this.laminationData.Rows.filter(x => x.jobId !== item.jobId);
+          this.laminationData.waitCount = this.laminationData.Rows.filter(x => x.status === 'wait').length;
+          this.laminationData.pendingCount = this.laminationData.Rows.filter(x => x.status === 'pending').length;
+        },
+        error: (err) => {
+          Swal.fire({
+            title: 'ผิดพลาด',
+            text: err?.error?.message || err.message || 'ลบไม่สำเร็จ',
+            icon: 'error',
+          });
+        },
+      });
+    });
+  }
+  
   
   
 

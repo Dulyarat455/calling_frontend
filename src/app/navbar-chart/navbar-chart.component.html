@@ -1,0 +1,18 @@
+
+<div class="card shadow border-0 mt-4" style="border-radius: 12px;">
+    <div class="card-header text-white" style="background:#36393c; border-top-left-radius:12px; border-top-right-radius:12px;">
+      <h4 class="mb-0">
+        <i class="fas fa-chart-line me-2"></i> Chart
+      </h4>
+    </div>
+    <div class="card-body p-4">
+        <app-chart
+        [lamRows]="buildLamination.Rows"
+        [genRows]="buildGeneral.Rows"
+        [staRows]="buildStator.Rows"
+        [callNodeRows]="callNodes"
+        >
+        </app-chart> 
+
+    </div>
+</div>

@@ -9,7 +9,7 @@
       >
         <i class="fa fa-user-plus me-2"></i>Add Groups
       </button>
-      <button
+      <!-- <button
         class="btn btn-success me-2"
         data-bs-toggle="modal"
         data-bs-target="#modalExcel"
@@ -18,7 +18,7 @@
       </button>
       <button class="btn btn-success">
         <i class="fa fa-download me-2"></i>Export to Excel
-      </button>
+      </button> -->
       <div class="form-inline mt-3">
         <div class="input-group">
           <input
@@ -39,8 +39,8 @@
             <th>Group name</th>
             <th>CreateAt</th>
             <th>CreateUpdate</th>
-            <th width="50px">แก้ไข</th>
-            <th width="50px">ลบ</th>
+            <!-- <th width="50px">แก้ไข</th>
+            <th width="50px">ลบ</th> -->
           </tr>
         </thead>
         <tbody>
@@ -49,7 +49,7 @@
             <td>{{item.name}}</td>
             <td>{{item.createdAt}}</td>
             <td>{{item.updateAt}}</td>
-            <td class="text-center">
+            <!-- <td class="text-center">
               <button
                 class="btn btn-primary"
                 (click)="edit(item)"
@@ -63,7 +63,7 @@
               <button class="btn btn-danger" (click)="remove(item)">
                 <i class="fa fa-times"></i>
               </button>
-            </td>
+            </td> -->
           </tr>
           }
         </tbody>

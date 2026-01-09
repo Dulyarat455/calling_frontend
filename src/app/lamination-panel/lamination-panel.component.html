@@ -22,18 +22,18 @@
             <div class="card-body p-4">
               <!-- แถบหัว + สรุป -->
               <div
-                class="d-flex align-items-center justify-content-between mb-4"
+                class="d-flex align-items-center justify-content-between mb-4 lam-topbar"
               >
                 <!-- กรอบเขียว -->
                 <div
-                  class="flex-grow-1 d-flex justify-content-between align-items-center p-3 rounded-3"
-                  style="background: #79f2a2"
+                class="flex-grow-1 d-flex justify-content-between align-items-center p-3 rounded-3 lam-topbar-main"
+                style="background: #79f2a2"
                 >
                   <span class="fw-semibold fs-5">{{
                     laminationData.header || "Lamination"
                   }}</span>
 
-                  <div class="d-flex gap-4">
+                  <div class="d-flex gap-4 lam-summary">
                     <span 
                       class="summary-chip"
                       [ngClass]="{ 'notify': checkNotifyWait === 1 }"
@@ -58,7 +58,7 @@
 
                 <!-- ปุ่มอยู่นอกกรอบ แต่บรรทัดเดียวกัน -->
                 <button
-                  class="btn btn-primary ms-3"
+                  class="btn btn-primary ms-3 lam-add-btn"
                   data-bs-toggle="modal"
                   data-bs-target="#modalRegister"
                   (click)="openModal()"
@@ -86,7 +86,7 @@
                       [ngClass]="{ 'row-late': isJobLate(item) }"
                       *ngFor="let item of laminationData.Rows"
                     >
-                      <div class="d-flex align-items-center gap-3">
+                      <div class="d-flex align-items-center gap-3 lam-row-left">
                         <span class="mono fw-semibold">{{ item.date }}</span>
                         <span class="mono fw-semibold">{{ item.time }}</span>
                         <span class="fw-semibold">{{ item.machineName }}</span>
@@ -115,7 +115,7 @@
                           </ng-template>
                         }
                       </div>
-                      <div class="d-flex align-items-center gap-2"> 
+                      <div class="d-flex align-items-center gap-2 lam-row-right"> 
                       
                         
                         @if (userId === item.createByUserId) {
@@ -170,6 +170,15 @@
                      >
                        <i class="fas fa-bars"></i>
                    </button>
+                   @if (userId === item.createByUserId) {
+                    <button
+                      class="delete-icon-btn"
+                      (click)="onDeleteJob(item, $event)"
+                      title="Delete job"
+                    >
+                      <i class="fas fa-trash-alt"></i>
+                    </button>
+                  }
 
                     </div>
                     </div>

@@ -12,6 +12,7 @@ import { CallNodesComponent } from './call-nodes/call-nodes.component';
 import { SubSectionComponent } from './sub-section/sub-section.component';
 import { FlowJobComponent } from './flow-job/flow-job.component';
 import { ReportComponent } from './report/report.component';
+import { NavbarChartComponent } from './navbar-chart/navbar-chart.component';
 
 
 export const routes: Routes = [
@@ -63,6 +64,10 @@ export const routes: Routes = [
   {
     path: 'report',
     component: ReportComponent
+  },
+  {
+    path: 'chart',
+    component: NavbarChartComponent
   },
   {
     path: '404',

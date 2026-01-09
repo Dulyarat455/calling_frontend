@@ -151,7 +151,7 @@ export class DashboardComponent {
     Rows: [] as RowItem[]
   }
 
-
+  
 
   ngOnInit() {
     this.checkLamNotifyWait = 0
@@ -184,8 +184,6 @@ export class DashboardComponent {
 
     
     
-       
-
 
     if(type === 'create'){
         if(!job) {return;}
@@ -289,6 +287,9 @@ export class DashboardComponent {
       }
     }
   });
+
+
+  
 
   }
 
@@ -409,7 +410,7 @@ export class DashboardComponent {
   
       // วันที่ dd/MM/yyyy
       const dateStr = createdAt
-        ? createdAt.toLocaleDateString('th-TH', {
+        ? createdAt.toLocaleDateString('en-US', {
             day: '2-digit',
             month: '2-digit',
             year: 'numeric',
@@ -518,7 +519,7 @@ export class DashboardComponent {
 
       // วันที่ dd/MM/yyyy
       const dateStr = createdAt
-        ? createdAt.toLocaleDateString('th-TH', {
+        ? createdAt.toLocaleDateString('en-US', {
             day: '2-digit',
             month: '2-digit',
             year: 'numeric',
@@ -745,7 +746,6 @@ export class DashboardComponent {
   }
 
 
-
   onDetail(item: RowItem) {
     this.modal.open('detail', undefined, {
       createByUserName: item.createByUserName,
@@ -771,13 +771,10 @@ export class DashboardComponent {
   }
   
   isJobLate(item: RowItem): boolean {
-    return this.isOverMinutes(item.createAt, 5);
+    return this.isOverMinutes(item.createAt, 20);
   }
   
-
  
-
-
   createJob(){
     //add job to dashboard
   }
@@ -791,6 +788,7 @@ export class DashboardComponent {
 
   ngOnDestroy() {
     this.wsSub?.unsubscribe();
+   
   }
 
 }

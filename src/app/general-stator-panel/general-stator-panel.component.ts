@@ -587,7 +587,7 @@ private toMs(dateStr?: string, timeStr?: string): number {
   }
   
   isJobLate(item: RowItem): boolean {
-    return this.isOverMinutes(item.createAt, 5);
+    return this.isOverMinutes(item.createAt, 20);
   }
 
 
@@ -673,6 +673,74 @@ ngOnChanges(changes: SimpleChanges) {
   }
 
 
+}
+
+
+
+
+onDeleteJob(panelKey: 'general' | 'stator', item: RowItem, ev?: Event) {
+  ev?.stopPropagation(); // กัน click ไปโดน onGenClick/onStaClick
+
+  const panel = panelKey === 'general' ? this.general : this.stator;
+  if (!panel) return;
+
+  Swal.fire({
+    title: 'ยืนยันการลบ Job?',
+    html: `
+      <div style="text-align:left">
+        <div><b>Job:</b> ${item.jobNo ?? '-'}</div>
+        <div><b>Machine:</b> ${item.machineName ?? '-'}</div>
+        <div><b>To:</b> ${item.toNodeName ?? '-'}</div>
+        ${item.remark ? `<div><b>Remark:</b> ${item.remark}</div>` : ''}
+      </div>
+    `,
+    icon: 'warning',
+    showCancelButton: true,
+    confirmButtonText: 'ลบ',
+    cancelButtonText: 'ยกเลิก',
+    confirmButtonColor: '#dc2626',
+  }).then((r) => {
+    if (!r.isConfirmed) return;
+
+    if (item?.jobId == null) {
+      Swal.fire({ title: 'Error', text: 'ไม่พบ jobId', icon: 'error' });
+      return;
+    }
+
+    this.http.post(config.apiServer + '/api/job/delete', { jobId: item.jobId }).subscribe({
+      next: () => {
+        Swal.fire({
+          title: 'สำเร็จ',
+          text: 'ลบ Job เรียบร้อย',
+          icon: 'success',
+          timer: 1200,
+          showConfirmButton: false,
+        });
+
+        // ✅ 1) ลบออกจาก panel ที่แสดงอยู่
+        panel.Rows = (panel.Rows || []).filter(x => x.jobId !== item.jobId);
+        panel.waitCount = panel.Rows.filter(x => x.status === 'wait').length;
+        panel.pendingCount = panel.Rows.filter(x => x.status === 'pending').length;
+
+        // ✅ 2) ลบออกจาก original ด้วย (กันมันเด้งกลับตอน filter/recount)
+        if (panelKey === 'general') {
+          this.originalGeneralRows = (this.originalGeneralRows || []).filter(x => x.jobId !== item.jobId);
+        } else {
+          this.originalStatorRows = (this.originalStatorRows || []).filter(x => x.jobId !== item.jobId);
+        }
+
+        // ✅ 3) ถ้า role user มีการ filter/recount → เรียกซ้ำให้ตรง logic เดิม
+        this.applyUserFilterAndRecountPanel(panelKey);
+      },
+      error: (err) => {
+        Swal.fire({
+          title: 'ผิดพลาด',
+          text: err?.error?.message || err.message || 'ลบไม่สำเร็จ',
+          icon: 'error',
+        });
+      },
+    });
+  });
 }
 
 

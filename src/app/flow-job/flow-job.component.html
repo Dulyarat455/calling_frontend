@@ -9,7 +9,7 @@
       >
         <i class="fa fa-user-plus me-2"></i>Add Position
       </button>
-      <button
+      <!-- <button
         class="btn btn-success me-2"
         data-bs-toggle="modal"
         data-bs-target="#modalExcel"
@@ -18,7 +18,7 @@
       </button>
       <button class="btn btn-success">
         <i class="fa fa-download me-2"></i>Export to Excel
-      </button>
+      </button> -->
       <div class="form-inline mt-3">
         <div class="input-group">
           <input
@@ -89,7 +89,7 @@
             <!-- Title -->
             <div class="section-title mt-2 mb-3">
               <span class="line"></span>
-              <span>Add FlowJobs</span>
+              <span>{{ modalMode === 'edit' ? 'Edit FlowJob' : 'Add FlowJob' }}</span>
               <span class="line"></span>
             </div>
   
@@ -150,13 +150,15 @@
             
             <!-- Buttons -->
             <div class="mt-4">
-              <button class="btn btn-primary w-100" (click)="createFlowJob()" [disabled]="isLoading">
+              <button class="btn btn-primary w-100" (click)="submitFlowJob()" [disabled]="isLoading">
                 @if(isLoading){
                   <i class="fas fa-spinner fa-spin me-2"></i>Processing...
                 } @else {
-                  <i class="fas fa-save me-2"></i> Save FlowJob
+                  <i class="fas fa-save me-2"></i>
+                  {{ modalMode === 'edit' ? 'Update FlowJob' : 'Save FlowJob' }}
                 }
               </button>
+              
     
               <button class="btn btn-secondary w-100 mt-3" (click)="clearForm()" [disabled]="isLoading">
                 <i class="fas fa-times me-2"></i> Clear

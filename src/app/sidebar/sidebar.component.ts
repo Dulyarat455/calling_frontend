@@ -84,29 +84,6 @@ export class SidebarComponent {
     }
   }
 
-
-
-  // getLevelFromToken() {
-  //   const token = localStorage.getItem('angular_token');
-  //   const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
-
-  //   this.http
-  //     .get(config.apiServer + '/api/user/getLevelFromToken', {
-  //       headers: headers,
-  //     })
-  //     .subscribe((res: any) => {
-  //       this.level = res.level;
-  //     });
-  // }
-
-
-
-
-  // getLevelFromToken() {
-  //   this.authService.getUserLevel().subscribe((res: any) => {
-  //     this.level = res.level;
-  //   });
-  // }
   loadUserData() {
     this.name = localStorage.getItem('calling_name')!;
     this.empNo = localStorage.getItem('calling_empNo')!;

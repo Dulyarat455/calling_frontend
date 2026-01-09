@@ -164,13 +164,13 @@ export class ReportComponent {
     updatedAt: 0
   };
 
-
+  role: string = '';
   
 
   ngOnInit() {
     // ✅ default filter: เมื่อวาน -> วันนี้
     this.setDefaultDateRangeYesterdayToday();
-
+    this.role = localStorage.getItem('calling_role')!;
     this.fetchData();
     this.fetchMachine();
     this.fetchCallNode(); 
@@ -446,10 +446,21 @@ export class ReportComponent {
 //******************************************* */
 
   formatDate(iso?: string | null): string {
+    // if (!iso) return '-';
+    // const d = new Date(iso);
+    // if (isNaN(d.getTime())) return '-';
+    // return d.toLocaleDateString('th-TH');
+
     if (!iso) return '-';
     const d = new Date(iso);
     if (isNaN(d.getTime())) return '-';
-    return d.toLocaleDateString('th-TH');
+
+    // ✅ เดือน/วัน/ปี (ค.ศ.)
+    return d.toLocaleDateString('en-US', {
+      month: '2-digit',
+      day: '2-digit',
+      year: 'numeric',
+    });
   }
 
   formatTime(iso?: string | null): string {
@@ -690,6 +701,70 @@ private setDefaultDateRangeYesterdayToday() {
   // ✅ ให้ filter ทำงานทันที (ไม่ต้องกด search)
   this.applied = { ...this.applied, startDate: start, endDate: end };
 }
+
+
+
+
+onDeleteReportRow(row: reportRow) {
+  Swal.fire({
+    title: 'ยืนยันการลบ Job?',
+    html: `
+      <div style="text-align:left">
+        <div><b>Job:</b> ${row.jobNo ?? '-'}</div>
+        <div><b>Area:</b> ${row.machineName ?? '-'}</div>
+        <div><b>From:</b> ${row.fromNodeName ?? '-'}</div>
+        <div><b>To:</b> ${row.toNodeName ?? '-'}</div>
+      </div>
+    `,
+    icon: 'warning',
+    showCancelButton: true,
+    confirmButtonText: 'ลบ',
+    cancelButtonText: 'ยกเลิก',
+    confirmButtonColor: '#dc2626',
+  }).then((r) => {
+    if (!r.isConfirmed) return;
+
+    if (row?.jobId == null) {
+      Swal.fire({ title: 'Error', text: 'ไม่พบ jobId', icon: 'error' });
+      return;
+    }
+
+    this.isLoading = true;
+
+    this.http.post(config.apiServer + '/api/job/delete', { jobId: row.jobId }).subscribe({
+      next: () => {
+        this.isLoading = false;
+
+        Swal.fire({
+          title: 'สำเร็จ',
+          text: 'ลบ Job เรียบร้อย',
+          icon: 'success',
+          timer: 1200,
+          showConfirmButton: false,
+        });
+
+        // ✅ ลบออกจากตารางทันที
+        this.reportRows = this.reportRows.filter(x => x.jobId !== row.jobId);
+
+        // ✅ update snapshot ให้ตรงกับหน้าปัจจุบันด้วย (กัน export เห็นของที่ลบไปแล้ว)
+        this.lastView = {
+          applied: { ...this.applied },
+          rows: [...this.filteredRows],
+          updatedAt: Date.now()
+        };
+      },
+      error: (err) => {
+        this.isLoading = false;
+        Swal.fire({
+          title: 'ผิดพลาด',
+          text: err?.error?.message || err.message || 'ลบไม่สำเร็จ',
+          icon: 'error',
+        });
+      },
+    });
+  });
+}
+
 
   
 

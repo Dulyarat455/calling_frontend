@@ -337,3 +337,164 @@
   font-weight:700;
   color:#555;
 }
+
+
+
+
+.delete-icon-btn{
+  background: #fff1f2;
+  color: #dc2626;
+  border: 1px solid rgba(220,38,38,.25);
+  border-radius: 10px;
+  width: 36px;
+  height: 36px;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  box-shadow: 0 2px 4px rgba(0,0,0,0.12);
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.delete-icon-btn:hover{
+  background: #fee2e2;
+  transform: translateY(-1px);
+}
+
+.delete-icon-btn i{
+  font-size: 16px;
+}
+
+
+
+
+
+/* =========================
+   Responsive: top bar (green header + chips + button)
+   ใช้ vw/vh + clamp เพื่อให้ scale บนมือถือ
+========================= */
+
+.lam-topbar {
+  flex-wrap: wrap;
+  gap: clamp(8px, 2vw, 14px);
+}
+
+.lam-topbar-main {
+  min-width: 0; /* กัน flex ล้น */
+}
+
+.lam-topbar-main .fw-semibold.fs-5 {
+  font-size: clamp(16px, 4.2vw, 20px) !important;
+}
+
+.lam-summary {
+  flex-wrap: wrap;
+  gap: clamp(6px, 2vw, 14px) !important;
+  justify-content: flex-end;
+}
+
+.summary-chip {
+  font-size: clamp(12px, 3.2vw, 14px);
+  padding: clamp(4px, 1.2vw, 6px) clamp(10px, 2.2vw, 14px);
+}
+
+/* ปุ่ม Add Job ให้ไม่ดันล้น */
+.lam-add-btn {
+  white-space: nowrap;
+}
+
+/* =========================
+   Responsive: scroll area height based on vh
+========================= */
+.lam-preview-scroll {
+  /* จากเดิม 300px → ปรับตามจอ */
+  max-height: min(55vh, 520px);
+}
+
+/* =========================
+   Responsive: row layout on small screens
+   ให้แถวซ้อน (ซ้ายบน / ขวาล่าง) ไม่ล้น
+========================= */
+.lam-row-left,
+.lam-row-right {
+  min-width: 0;
+}
+
+@media (max-width: 576px) {
+  /* topbar: ให้กรอบเขียว + ปุ่มขึ้นบรรทัดใหม่ */
+  .lam-topbar-main {
+    flex: 1 1 100%;
+  }
+
+  .lam-add-btn {
+    flex: 1 1 100%;
+    width: 100%;
+    margin-left: 0 !important;
+  }
+
+  /* chips ให้ไปอยู่บรรทัดถัดไปและชิดซ้าย/กลาง */
+  .lam-summary {
+    width: 100%;
+    justify-content: flex-start;
+    margin-top: 6px;
+  }
+
+  /* แถวงาน: จากแนวนอน → ซ้อนกัน */
+  .lam-preview-scroll .list-group-item {
+    flex-direction: column;
+    align-items: flex-start !important;
+    gap: 10px;
+  }
+
+  .lam-row-left {
+    width: 100%;
+    flex-wrap: wrap;
+    gap: 8px !important;
+  }
+
+  .lam-row-right {
+    width: 100%;
+    flex-wrap: wrap;
+    justify-content: flex-start;
+    gap: 8px !important;
+  }
+
+  /* ลดขนาด tag/badge/ปุ่มให้พอดีมือถือ */
+  .node-tag {
+    font-size: clamp(12px, 3.4vw, 14px);
+    padding: 4px 10px;
+  }
+
+  .status-pill {
+    font-size: clamp(12px, 3.4vw, 14px);
+    padding: 6px 12px !important;
+  }
+
+  .detail-icon-btn,
+  .delete-icon-btn {
+    width: clamp(34px, 10vw, 38px);
+    height: clamp(34px, 10vw, 38px);
+  }
+
+  /* ใช้พื้นที่จอให้คุ้มขึ้น */
+  .lam-preview-scroll {
+    max-height: min(62vh, 620px);
+  }
+}
+
+/* =========================
+   Optional: กันข้อความยาวๆ ล้นแถว
+========================= */
+.remark-text {
+  max-width: min(46vw, 220px);
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+@media (max-width: 576px) {
+  .remark-text {
+    max-width: 80vw;
+  }
+}

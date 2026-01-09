@@ -1,6 +1,6 @@
 
 <div class="mt-3">
-    <div class="card-header">Machine Page</div>
+    <div class="card-header">Area Page</div>
     <div class="card-body mt-3">
       <button
         class="btn btn-primary me-2"
@@ -8,9 +8,9 @@
         data-bs-target="#modalRegister"
         (click)="openModal()"
       >
-        <i class="fa fa-user-plus me-2"></i>Add Machine
+        <i class="fa fa-user-plus me-2"></i>Add Area
       </button>
-      <button
+      <!-- <button
         class="btn btn-success me-2"
         data-bs-toggle="modal"
         data-bs-target="#modalExcel"
@@ -19,7 +19,7 @@
       </button>
       <button class="btn btn-success">
         <i class="fa fa-download me-2"></i>Export to Excel
-      </button>
+      </button> -->
       <div class="form-inline mt-3">
         <div class="input-group">
           <input
@@ -37,7 +37,7 @@
       <table class="table table-bordered table-striped mt-3 mb-4">
         <thead>
           <tr>
-            <th> Machines Code</th>
+            <th>Areas Code</th>
             <th>Group</th>
             <th>Status</th>
             <th width="50px">แก้ไข</th>
@@ -80,7 +80,7 @@
         <div class="card-header text-center">
           <h5 class="mb-0 fw-bold">
             <i class="fas fas fa-cogs me-2"></i>
-            Add Machine
+            Add Area
           </h5>
         </div>
   
@@ -89,7 +89,7 @@
           <!-- Title -->
           <div class="section-title mt-2 mb-3">
             <span class="line"></span>
-            <span>Add Machine name</span>
+            <span>Add Area name</span>
             <span class="line"></span>
           </div>
   
@@ -101,7 +101,7 @@
             <input
               type="text"
               class="form-control"
-              placeholder="Group Name"
+              placeholder="Area Name"
               [(ngModel)]="code"
               [disabled]="isLoading"
             />
@@ -130,7 +130,7 @@
               @if(isLoading){
                 <i class="fas fa-spinner fa-spin me-2"></i>Processing...
               } @else {
-                <i class="fas fa-save me-2"></i> Save Group
+                <i class="fas fa-save me-2"></i> Save Area
               }
             </button>
   

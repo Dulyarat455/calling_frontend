@@ -84,7 +84,7 @@
       
         <!-- Machine -->
         <div class="col-md-3 position-relative">
-          <label class="form-label mb-1">Machine*</label>
+          <label class="form-label mb-1">Area*</label>
         
           <input
             type="text"
@@ -177,14 +177,13 @@
               <th width="80">
                 <div class="head-title">Shift</div>
                 <div class="head-hint">
-                  Drop down<br>
                   A, B, C
                 </div>
               </th>
         
               <th width="100">
-                <div class="head-title">M/C</div>
-                <div class="head-hint">Drop down</div>
+                <div class="head-title">Area</div>
+                <div class="head-hint">machine, area</div>
               </th>
         
               <th width="130">
@@ -246,6 +245,13 @@
                 <div class="head-title">Incharge by</div>
                 <div class="head-hint">Input&nbsp;&nbsp;Input</div>
               </th>
+              
+              @if (role === 'admin') {
+              <th width="70">
+                <div class="head-title">Action</div>
+                <div class="head-hint">Delete</div>
+              </th>
+            }
             </tr>
           </thead>
           <tbody>
@@ -309,6 +315,19 @@
                   {{ row.userIncharge?.userName || '-' }}
                 </div>
               </td>
+
+              @if (role === 'admin') {
+              <td class="text-center">
+                <button
+                  class="delete-icon-btn"
+                  type="button"
+                  title="Delete job"
+                  (click)="onDeleteReportRow(row)"
+                >
+                  <i class="fas fa-trash-alt"></i>
+                </button>
+              </td>
+            }
             </tr>
           </tbody>
       </table>
