@@ -13,11 +13,11 @@
     @if (groupId === 2 || sectionName === 'PC' ) {
     <div class="mb-4" *ngIf="general">
       <!-- หัว + summary + ปุ่ม (บรรทัดเดียวกัน) -->
-      <div class="d-flex align-items-center justify-content-between mb-2">
-        <div class="p-3 rounded-3 head-block flex-grow-1" style="background-color: #d4f787">
+      <div class="d-flex align-items-center justify-content-between mb-2 gs-topbar">
+        <div class="p-3 rounded-3 head-block flex-grow-1 gs-topbar-main" style="background-color: #d4f787">
           <div class="d-flex justify-content-between align-items-center">
             <span class="fw-semibold fs-5">General</span>
-            <div class="d-flex gap-4">
+            <div class="d-flex gap-4 gs-summary">
               <span 
                 class="summary-chip"
                 [ngClass]="{ 'notify': checkGenNotifyWait === 1 }"
@@ -41,7 +41,7 @@
           </div>
         </div>
         @if (groupId === 2) {
-        <button class="btn btn-primary ms-3" (click)="openModal()">
+        <button class="btn btn-primary ms-3 gs-add-btn" (click)="openModal()">
           <i class="fa fa-file-alt me-1"></i> Add Job
         </button>
       }
@@ -67,7 +67,7 @@
             [ngClass]="{ 'row-late': isJobLate(r) }"
             *ngFor="let r of general.Rows"
           >
-            <div class="d-flex align-items-center gap-3" >
+            <div class="d-flex align-items-center gap-3 gs-row-left" >
               <span class="mono fw-semibold">{{ r.date }}</span>
               <span class="mono fw-semibold">{{ r.time }}</span>
               <span class="fw-semibold">{{ r.machineName }}</span>
@@ -97,7 +97,7 @@
 
             </div>
 
-            <div class="d-flex align-items-center gap-2">
+            <div class="d-flex align-items-center gap-2 gs-row-right">
               @if (userId === r.createByUserId) {
                 <i class="fas fa-user-circle text-primary"></i>
               }
@@ -151,7 +151,7 @@
               <i class="fas fa-bars"></i>
           </button>
 
-          @if (userId === r.createByUserId) {
+          @if (userId === r.createByUserId || userRole === 'admin') {
             <button
             class="delete-icon-btn"
             (click)="onDeleteJob('general', r, $event)"
@@ -179,11 +179,11 @@
      @if (groupId === 4 || sectionName === 'PC' ) {
     <div *ngIf="stator">
       <!-- หัว + summary + ปุ่ม (บรรทัดเดียวกัน) -->
-      <div class="d-flex align-items-center justify-content-between mb-2">
-        <div class="p-3 rounded-3 head-block flex-grow-1" style="background-color: #9feefc">
+      <div class="d-flex align-items-center justify-content-between mb-2 gs-topbar">
+        <div class="p-3 rounded-3 head-block flex-grow-1 gs-topbar-main" style="background-color: #9feefc">
           <div class="d-flex justify-content-between align-items-center">
             <span class="fw-semibold fs-5">Stator</span>
-            <div class="d-flex gap-4">
+            <div class="d-flex gap-4 gs-summary">
               <span 
                 class="summary-chip"
                 [ngClass]="{ 'notify': checkStaNotifyWait === 1 }"
@@ -207,7 +207,7 @@
           </div>
         </div>
         @if (groupId === 4) {
-          <button class="btn btn-primary ms-3" (click)="openModal()">
+          <button class="btn btn-primary ms-3 gs-add-btn" (click)="openModal()">
             <i class="fa fa-file-alt me-1"></i> Add Job
           </button>
         }
@@ -233,7 +233,7 @@
             [ngClass]="{ 'row-late': isJobLate(r) }"
             *ngFor="let r of stator.Rows"
           >
-            <div class="d-flex align-items-center gap-3">
+            <div class="d-flex align-items-center gap-3 gs-row-left">
               <span class="mono fw-semibold">{{ r.date }}</span>
               <span class="mono fw-semibold">{{ r.time }}</span>
               <span class="fw-semibold">{{ r.machineName }}</span>
@@ -261,7 +261,7 @@
               }
             </div>
 
-            <div class="d-flex align-items-center gap-2">
+            <div class="d-flex align-items-center gap-2 gs-row-right">
 
               @if (userId === r.createByUserId) {
                 <i class="fas fa-user-circle text-primary"></i>
@@ -314,7 +314,7 @@
              <i class="fas fa-bars"></i>
             </button>
 
-            @if (userId === r.createByUserId) {
+            @if (userId === r.createByUserId || userRole === 'admin') {
               <button
               class="delete-icon-btn"
               (click)="onDeleteJob('stator', r, $event)"

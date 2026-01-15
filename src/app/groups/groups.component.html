@@ -22,10 +22,13 @@
       <div class="form-inline mt-3">
         <div class="input-group">
           <input
-            type="text"
-            class="form-control"
-            placeholder="ค้นหา machine code"
-          />
+          type="text"
+          class="form-control"
+          placeholder="ค้นหา group name"
+          [(ngModel)]="searchText"
+          (input)="onSearch()"
+        />
+        
           <div class="input-group-append">
             <button class="btn btn-primary">
               <i class="fas fa-search fa-fw"></i>
@@ -44,7 +47,7 @@
           </tr>
         </thead>
         <tbody>
-          @for (item of groups; track $index) {
+          @for (item of filteredGroups; track $index) {
           <tr>
             <td>{{item.name}}</td>
             <td>{{item.createdAt}}</td>

@@ -4,8 +4,6 @@
     <div class="card-body mt-3">
       <button
         class="btn btn-primary me-2"
-        data-bs-toggle="modal"
-        data-bs-target="#modalRegister"
         (click)="openModal()"
       >
         <i class="fa fa-user-plus me-2"></i>Add Area
@@ -25,8 +23,11 @@
           <input
             type="text"
             class="form-control"
-            placeholder="ค้นหา machine code"
+            placeholder="ค้นหา machine code / group"
+            [(ngModel)]="searchText"
+            (input)="onSearchChange()"
           />
+
           <div class="input-group-append">
             <button class="btn btn-primary">
               <i class="fas fa-search fa-fw"></i>
@@ -80,7 +81,7 @@
         <div class="card-header text-center">
           <h5 class="mb-0 fw-bold">
             <i class="fas fas fa-cogs me-2"></i>
-            Add Area
+            {{ isEditMode ? 'Edit Area' : 'Add Area' }}
           </h5>
         </div>
   
@@ -89,7 +90,7 @@
           <!-- Title -->
           <div class="section-title mt-2 mb-3">
             <span class="line"></span>
-            <span>Add Area name</span>
+            <span>{{ isEditMode ? 'Edit Area' : 'Add Area' }}</span>
             <span class="line"></span>
           </div>
   
@@ -126,13 +127,14 @@
   
           <!-- Buttons -->
           <div class="mt-4">
-            <button class="btn btn-primary w-100"  [disabled]="isLoading" (click)="add()">
+            <button class="btn btn-primary w-100" [disabled]="isLoading" (click)="save()">
               @if(isLoading){
                 <i class="fas fa-spinner fa-spin me-2"></i>Processing...
               } @else {
-                <i class="fas fa-save me-2"></i> Save Area
+                <i class="fas fa-save me-2"></i> {{ isEditMode ? 'Update' : 'Save' }}
               }
             </button>
+            
   
             <button class="btn btn-secondary w-100 mt-3" [disabled]="isLoading" (click)="clearForm()">
               <i class="fas fa-times me-2"></i> Clear

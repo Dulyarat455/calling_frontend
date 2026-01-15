@@ -370,5 +370,133 @@
 }
 
 
+/* =========================
+   General/Stator Responsive (mobile)
+   - top bar wrap
+   - rows stack on small screens
+   - height uses vh
+========================= */
+
+/* --- top bar (head + chips + button) --- */
+.gs-topbar{
+  flex-wrap: wrap;
+  gap: clamp(8px, 2vw, 14px);
+}
+
+.gs-topbar-main{
+  min-width: 0; /* กัน flex ล้น */
+}
+
+/* หัวข้อ General/Stator */
+.gs-topbar-main .fw-semibold.fs-5{
+  font-size: clamp(16px, 4.2vw, 20px) !important;
+}
+
+/* chips ให้ wrap ได้ */
+.gs-summary{
+  flex-wrap: wrap;
+  gap: clamp(6px, 2vw, 14px) !important;
+  justify-content: flex-end;
+}
+
+/* ปรับขนาด chip ตามจอ */
+.summary-chip{
+  font-size: clamp(12px, 3.2vw, 14px);
+  padding: clamp(4px, 1.2vw, 6px) clamp(10px, 2.2vw, 14px);
+}
+
+/* ปุ่ม Add Job ไม่ดันจนล้น */
+.gs-add-btn{
+  white-space: nowrap;
+}
+
+/* --- scroll area: ใช้ vh ให้พอดีมือถือ --- */
+.lam-preview-scroll{
+  max-height: min(55vh, 520px); /* เดิม 280px → ปรับตามจอ */
+}
+
+/* --- row left/right base --- */
+.gs-row-left,
+.gs-row-right{
+  min-width: 0;
+}
+
+/* กันข้อความยาวๆ (machineName/remark) ให้ไม่ดันล้น */
+.gs-row-left .fw-semibold{
+  min-width: 0;
+}
+
+/* =========================================================
+   Mobile breakpoint
+========================================================= */
+@media (max-width: 576px){
+
+  /* topbar: ให้ head-block + ปุ่มขึ้นบรรทัดใหม่ */
+  .gs-topbar-main{
+    flex: 1 1 100%;
+  }
+
+  .gs-add-btn{
+    flex: 1 1 100%;
+    width: 100%;
+    margin-left: 0 !important;
+  }
+
+  /* chips ไปบรรทัดใหม่และชิดซ้าย */
+  .gs-summary{
+    width: 100%;
+    justify-content: flex-start;
+    margin-top: 6px;
+  }
+
+  /* แถวงาน: จากแนวนอน → ซ้อนกัน */
+  .lam-preview-scroll .list-group-item{
+    flex-direction: column;
+    align-items: flex-start !important;
+    gap: 10px;
+  }
+
+  .gs-row-left{
+    width: 100%;
+    flex-wrap: wrap;
+    gap: 8px !important;
+  }
+
+  .gs-row-right{
+    width: 100%;
+    flex-wrap: wrap;
+    justify-content: flex-start;
+    gap: 8px !important;
+  }
+
+  /* ปรับ tag/badge ให้พอดี */
+  .node-tag{
+    font-size: clamp(12px, 3.4vw, 14px);
+    padding: 4px 10px;
+  }
+
+  .status-chip{
+    font-size: clamp(12px, 3.4vw, 14px);
+    padding: 6px 12px !important;
+  }
+
+  .detail-icon-btn,
+  .delete-icon-btn{
+    width: clamp(34px, 10vw, 38px);
+    height: clamp(34px, 10vw, 38px);
+  }
+
+  /* ใช้พื้นที่จอมากขึ้น */
+  .lam-preview-scroll{
+    max-height: min(62vh, 620px);
+  }
+
+  /* remark แบบแสดงสั้น ให้ไม่ล้น */
+  .remark-text{
+    max-width: 80vw;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+}
 
 

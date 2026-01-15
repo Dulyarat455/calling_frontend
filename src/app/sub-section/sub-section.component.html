@@ -22,10 +22,13 @@
       <div class="form-inline mt-3">
         <div class="input-group">
           <input
-            type="text"
-            class="form-control"
-            placeholder="ค้นหา machine code"
+          type="text"
+          class="form-control"
+          placeholder="ค้นหา Subsection / Section"
+          [(ngModel)]="searchText"
+          (input)="onSearch()"
           />
+
           <div class="input-group-append">
             <button class="btn btn-primary">
               <i class="fas fa-search fa-fw"></i>
@@ -40,18 +43,18 @@
             <th>Section</th>
             <th>CreateAt</th>
             <th>UpdateAt</th>
-            <th width="50px">แก้ไข</th>
-            <th width="50px">ลบ</th>
+            <!-- <th width="50px">แก้ไข</th>
+            <th width="50px">ลบ</th> -->
           </tr>
         </thead>
         <tbody>
-          @for (item of subSections; track $index) {
+          @for (item of filteredSubSections; track $index) {
           <tr>
             <td>{{item.name}}</td>
             <td>{{item.section}}</td>
             <td>{{item.createAt}}</td>
             <td>{{item.updateAt}}</td>
-            <td class="text-center">
+            <!-- <td class="text-center">
               <button
                 class="btn btn-primary"
                 (click)="edit(item)"
@@ -65,7 +68,7 @@
               <button class="btn btn-danger" (click)="remove(item)">
                 <i class="fa fa-times"></i>
               </button>
-            </td>
+            </td> -->
           </tr>
           }
         </tbody>

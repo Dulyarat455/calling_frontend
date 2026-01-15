@@ -1,0 +1,59 @@
+/* =========================
+   Navbar Responsive Fix
+========================= */
+
+/* ให้ navbar wrap ได้บนมือถือ */
+.main-header.navbar{
+    flex-wrap: wrap;
+    gap: 4px;
+  }
+  
+  /* ซ้าย/ขวาไม่ดันกันจนล้น */
+  .nav-left, .nav-right{
+    min-width: 0;
+  }
+  
+  /* แท็บเมนูไม่ให้ยาวเกิน */
+  .nav-tab{
+    white-space: nowrap;
+  }
+  
+  /* -------------------------
+     Mobile
+  ------------------------- */
+  @media (max-width: 576px){
+  
+    /* ทำให้ซ้ายเต็มบรรทัดแรก */
+    .nav-left{
+      flex: 1 1 100%;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 6px;
+    }
+  
+    /* ขวาลงบรรทัดใหม่ และชิดขวา */
+    .nav-right{
+      flex: 1 1 100%;
+      display: flex;
+      justify-content: flex-end;
+      align-items: center;
+      gap: 6px;
+    }
+  
+    /* ซ่อน date/time บนมือถือ (มันกินพื้นที่มาก) */
+    .nav-datetime{
+      display: none !important;
+    }
+  
+    /* ปรับ padding ให้ไม่อ้วน */
+    .main-header.navbar .nav-link{
+      padding: 0.35rem 0.55rem;
+    }
+  
+    /* ลดขนาดตัวอักษรนิดนึง */
+    .nav-tab{
+      font-size: 0.95rem;
+    }
+  }
+  

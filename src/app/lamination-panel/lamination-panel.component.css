@@ -498,3 +498,38 @@
     max-width: 80vw;
   }
 }
+
+
+
+
+
+
+/* จอปกติ: อยู่แบบเดิม (ชื่อซ้าย ชิปขวา) */
+.lam-topbar-main{
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+}
+
+.lam-summary{
+  display: flex;
+  gap: 14px;
+  justify-content: flex-end;
+}
+
+/* ✅ มือถือ/จอแคบ: ให้ชิปลงล่าง */
+@media (max-width: 576px){
+  .lam-topbar-main{
+    flex-direction: column;        /* ซ้อนเป็น 2 บรรทัด */
+    align-items: flex-start;       /* ชิดซ้าย */
+  }
+
+  .lam-summary{
+    width: 100%;
+    justify-content: flex-start;   /* ชิปชิดซ้าย */
+    flex-wrap: wrap;              /* กันล้น */
+    margin-top: 8px;
+    gap: 10px;
+  }
+}

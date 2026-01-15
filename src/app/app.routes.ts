@@ -13,6 +13,7 @@ import { SubSectionComponent } from './sub-section/sub-section.component';
 import { FlowJobComponent } from './flow-job/flow-job.component';
 import { ReportComponent } from './report/report.component';
 import { NavbarChartComponent } from './navbar-chart/navbar-chart.component';
+import { AnalyticsComponent } from './analytics/analytics.component';
 
 
 export const routes: Routes = [
@@ -68,6 +69,10 @@ export const routes: Routes = [
   {
     path: 'chart',
     component: NavbarChartComponent
+  },
+  {
+    path: 'analytic',
+    component: AnalyticsComponent
   },
   {
     path: '404',

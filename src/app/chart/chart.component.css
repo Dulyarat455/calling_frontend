@@ -1,168 +1,208 @@
+/* =========================
+   Chart responsive (FIX)
+   - No overflow on mobile
+   - No data always centered
+   - Donut + legend adapt by viewport
+========================= */
+
 .charts-wrap{
-    margin: 12px 0 18px;
-  }
-  
+  margin: 12px 0 18px;
+}
+
+/* ✅ FIX: grid ไม่บังคับ min 260 จนล้นมือถือ */
+.charts-grid{
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 14px;
+  align-items: start;
+}
+
+/* ✅ ปรับเป็น auto-fit เมื่อหน้าจอเล็กลง */
+@media (max-width: 1200px){
   .charts-grid{
-    display: grid;
-    grid-template-columns: repeat(3, minmax(260px, 1fr));
-    gap: 14px;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
-  
-  .group-card{
-    border-radius: 12px;
-    background: transparent; /* โปร่งตามที่ต้องการ */
-    padding: 10px 10px 12px;
-  }
-  
-  .group-head{
-    display:flex;
-    justify-content:center;
-    margin-bottom: 8px;
-  }
-  
-  .group-pill{
-    font-weight: 800;
-    padding: 8px 18px;
-    border-radius: 999px;
-    letter-spacing: .2px;
-    color:#0b4aa6;
-    box-shadow: 0 4px 12px rgba(0,0,0,.08);
-  }
-  
-  /* โทนตาม dashboard เดิม */
-  .group-card.lam .group-pill{ background:#79f2a2; }
-  .group-card.gen .group-pill{ background:#d4f787; }
-  .group-card.sta .group-pill{ background:#9feefc; }
-  
-  .row-2{
-    display:grid;
+}
+@media (max-width: 900px){
+  .charts-grid{
     grid-template-columns: 1fr;
-    gap: 10px;
   }
-  
-  .metric-card{
-    border-radius: 12px;
-    padding: 10px 10px 12px;
-    background: rgba(255,255,255,0.22); /* โปร่งนิดๆ ไม่โล่ง */
-    backdrop-filter: blur(6px);
-    border: 1px solid rgba(0,0,0,0.06);
-  }
-  
-  .metric-title{
-    text-align:center;
-    font-size: 20px;
-    font-weight: 900;
-    color:#0b4aa6;
-    margin: 2px 0 10px;
-  }
-  
+}
+
+.group-card{
+  border-radius: 12px;
+  background: transparent;
+  padding: 10px 10px 12px;
+  min-width: 0;                 /* ✅ สำคัญ: กัน overflow ใน grid */
+}
+
+.group-head{
+  display:flex;
+  justify-content:center;
+  margin-bottom: 8px;
+}
+
+.group-pill{
+  font-weight: 800;
+  padding: 8px 18px;
+  border-radius: 999px;
+  letter-spacing: .2px;
+  color:#0b4aa6;
+  box-shadow: 0 4px 12px rgba(0,0,0,.08);
+}
+
+/* โทนตามเดิม */
+.group-card.lam .group-pill{ background:#79f2a2; }
+.group-card.gen .group-pill{ background:#d4f787; }
+.group-card.sta .group-pill{ background:#9feefc; }
+
+/* ===== Metric cards ===== */
+.row-2{
+  display:grid;
+  grid-template-columns: 1fr;
+  gap: 10px;
+}
+
+.metric-card{
+  border-radius: 12px;
+  padding: 10px 10px 12px;
+  background: rgba(255,255,255,0.22);
+  backdrop-filter: blur(6px);
+  border: 1px solid rgba(0,0,0,0.06);
+  min-width: 0;                 /* ✅ กันลูกล้น */
+}
+
+.metric-title{
+  text-align:center;
+  font-size: clamp(18px, 2.3vw, 20px);
+  font-weight: 900;
+  color:#0b4aa6;
+  margin: 2px 0 10px;
+}
+
+/* ✅ FIX: metric-body ให้จัด donut+legend “เป็นแถว” บนจอใหญ่
+   และ “เป็นคอลัมน์” บนมือถือ + ไม่ล้น */
+.metric-body{
+  /* ใช้ clamp เพื่อให้สูงพอดีทั้งมือถือ/PC */
+  min-height: clamp(190px, 28vh, 240px);
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+
+  width: 100%;
+  min-width: 0;
+}
+
+/* ✅ Desktop: donut ซ้าย legend ขวา */
+@media (min-width: 900px){
   .metric-body{
-    height: 180px;             
-    display: flex;
-    align-items: center;       
-    justify-content: center;
+    flex-direction: row;
+    flex-wrap: nowrap;
   }
-  
-  .donut{
-    width: 150px;
-    height: 150px;
-    margin: 0 auto;
-  }
-  .donut canvas{
-    width: 150px !important;
-    height: 150px !important;
-  }
-  
-  .legend-chips{
-    display:flex;
-    flex-direction:column;
-    gap: 6px;
-    min-width: 0;
-  
-    /* ✅ lock 3 rows then scroll (3 chip + 2 gaps) */
-    max-height: calc(28px * 3 + 6px * 2);
-    overflow-y: auto;
-    padding-right: 6px;
-  }
-  
-  .chip{
-    height: 28px;              /* ✅ ทำให้คุม 3 แถวได้เป๊ะ */
-    display:flex;
-    align-items:center;
-    gap: 8px;
-    padding: 6px 10px;
-    border-radius: 10px;
-    background: rgba(255,255,255,0.50);
-    border: 1px solid rgba(0,0,0,0.06);
-    font-size: 16px;
-    line-height: 1;
-    box-sizing: border-box;    /* กันเพี้ยนจาก padding */
-  }
+}
 
-
-  .legend-chips::-webkit-scrollbar{ width: 8px; }
-  .legend-chips::-webkit-scrollbar-thumb{
-    background: rgba(0,0,0,0.18);
-    border-radius: 999px;
-  }
-  .legend-chips::-webkit-scrollbar-track{ background: transparent; }
-
-  
-  
-  .dot{
-    width: 10px;
-    height: 10px;
-    border-radius: 50%;
-    flex: 0 0 10px;
-  }
-  
-  .name{
-    flex: 1;
-    min-width: 0;
-    overflow:hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-    font-weight: 700;
-    color:#2b2b2b;
-  }
-  
-  .val{
-    font-weight: 900;
-    color:#111;
-  }
-
-
-
-
-  .empty-box {
-    height: 100%;
-    min-height: 160px;        /* ความสูงพื้นที่ empty */
-    display: flex;
+/* ✅ Mobile: stack ลงมา ไม่ล้น */
+@media (max-width: 899px){
+  .metric-body{
     flex-direction: column;
-    align-items: center;      /* แนวนอน */
-    justify-content: center;  /* แนวตั้ง */
-    gap: 8px;
-    opacity: 0.7;
+    flex-wrap: nowrap;
   }
-  
-  .empty-box img {
-    width: 64px;
-    height: auto;
-  }
-  
-  .empty-text {
-    font-size: 14px;
-    color: #9ca3af;
-    font-weight: 600;
-  }
-  
+}
 
-  
-  /* responsive */
-  @media (max-width: 1050px){
-    .charts-grid{ grid-template-columns: 1fr; }
-    .metric-body{ grid-template-columns: 150px 1fr; }
-  }
-  
+/* ===== Donut sizing responsive ===== */
+.donut{
+  /* ใช้ vw ให้ donut โต/เล็กตามจอ */
+  width: clamp(130px, 42vw, 160px);
+  height: clamp(130px, 42vw, 160px);
+  flex: 0 0 auto;
+}
+.donut canvas{
+  width: 100% !important;
+  height: 100% !important;
+}
 
+/* ===== Legend ===== */
+.legend-chips{
+  display:flex;
+  flex-direction:column;
+  gap: 6px;
+  min-width: 0;
+  width: min(100%, 260px);  /* ✅ กันล้นมือถือ */
+  flex: 1 1 auto;
 
+  /* lock 3 rows then scroll */
+  max-height: calc(28px * 3 + 6px * 2);
+  overflow-y: auto;
+  padding-right: 6px;
+}
+
+.legend-chips::-webkit-scrollbar{ width: 8px; }
+.legend-chips::-webkit-scrollbar-thumb{
+  background: rgba(0,0,0,0.18);
+  border-radius: 999px;
+}
+.legend-chips::-webkit-scrollbar-track{ background: transparent; }
+
+.chip{
+  height: 28px;
+  display:flex;
+  align-items:center;
+  gap: 8px;
+  padding: 6px 10px;
+  border-radius: 10px;
+  background: rgba(255,255,255,0.50);
+  border: 1px solid rgba(0,0,0,0.06);
+  font-size: 16px;
+  line-height: 1;
+  box-sizing: border-box;
+  min-width: 0;                 /* ✅ กันชื่อยาวดันล้น */
+}
+
+.dot{
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  flex: 0 0 10px;
+}
+
+.name{
+  flex: 1;
+  min-width: 0;
+  overflow:hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-weight: 700;
+  color:#2b2b2b;
+}
+
+.val{
+  font-weight: 900;
+  color:#111;
+}
+
+/* ✅ FIX: No data ให้อยู่กลางเสมอ ทั้งมือถือ/PC */
+.metric-body .empty-box{
+  width: 100%;
+  height: 100%;
+  min-height: inherit;          /* ใช้ความสูงจาก metric-body */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  opacity: 0.7;
+  text-align: center;
+}
+
+.metric-body .empty-box img{
+  width: clamp(54px, 12vw, 72px);
+  height: auto;
+}
+
+.metric-body .empty-text{
+  font-size: 14px;
+  color: #9ca3af;
+  font-weight: 600;
+}

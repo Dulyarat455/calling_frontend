@@ -68,6 +68,9 @@ export class FlowJobComponent {
   modalMode: 'create' | 'edit' = 'create';
   editingId: number | null = null;
 
+  searchText: string = '';
+  flowJobsBackup: FlowJobRow[] = [];
+
 
   ngOnInit() {
     this.fetchGroup();
@@ -136,6 +139,7 @@ export class FlowJobComponent {
     this.http.get(config.apiServer + '/api/flowJob/list').subscribe({
       next: (res: any) => {
         this.flowJobs = res.results || [];
+        this.flowJobsBackup = this.flowJobs; 
       },
       error: (err) => {
         Swal.fire({
@@ -224,6 +228,38 @@ export class FlowJobComponent {
     this.modalMode = 'create';
     this.editingId = null;
   }
+
+
+
+  search() {
+    const q = (this.searchText || '').trim().toLowerCase();
+  
+    // ไม่มีคำค้น → คืนค่าทั้งหมด
+    if (!q) {
+      this.flowJobs = this.flowJobsBackup;
+      return;
+    }
+  
+    this.flowJobs = this.flowJobsBackup.filter(x => {
+      const from = (x.fromNodeName || '').toLowerCase();
+      const to = (x.toNodeName || '').toLowerCase();
+      const group = (x.groupName || '').toLowerCase();
+      const status = (x.status || '').toLowerCase();
+  
+      // ✅ ค้นได้หลายฟิลด์
+      return (
+        from.includes(q) ||
+        to.includes(q) ||
+        group.includes(q) ||
+        status.includes(q)
+      );
+    });
+  }
+  
+  onSearchChange() {
+    this.search(); // realtime ตอนพิมพ์
+  }
+  
 
 
   submitFlowJob() {
@@ -343,6 +379,7 @@ remove(item: FlowJobRow) {
 
         // ✅ เอาออกจากหน้าเลย
         this.flowJobs = this.flowJobs.filter(x => x.id !== item.id);
+        this.flowJobsBackup = this.flowJobsBackup.filter(x => x.id !== item.id);
       },
       error: (err) => {
         this.isLoading = false;

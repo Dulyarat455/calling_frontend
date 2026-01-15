@@ -24,15 +24,19 @@
           <input
             type="text"
             class="form-control"
-            placeholder="ค้นหา machine code"
+            placeholder="ค้นหา Code / Sub / Section / Group"
+            [(ngModel)]="searchText"
+            (input)="onSearchChange()"
+            (keyup.enter)="search()"
           />
           <div class="input-group-append">
-            <button class="btn btn-primary">
+            <button class="btn btn-primary" (click)="search()">
               <i class="fas fa-search fa-fw"></i>
             </button>
           </div>
         </div>
       </div>
+      
       <table class="table table-bordered table-striped mt-3 mb-4">
         <thead>
           <tr>
@@ -41,8 +45,8 @@
             <th>Section</th>
             <th>Group</th>
             <th>Status</th>
-            <th width="50px">แก้ไข</th>
-            <th width="50px">ลบ</th>
+            <!-- <th width="50px">แก้ไข</th>
+            <th width="50px">ลบ</th> -->
           </tr>
         </thead>
         <tbody>
@@ -53,7 +57,7 @@
             <td>{{item.sectionName}}</td>
             <td>{{item.groupName}}</td>
             <td>{{ item.isActive === 1 ? 'Active': 'Inactive'}}</td>
-            <td class="text-center">
+            <!-- <td class="text-center">
               <button
                 class="btn btn-primary"
                 (click)="edit(item)"
@@ -67,7 +71,7 @@
               <button class="btn btn-danger" (click)="remove(item)">
                 <i class="fa fa-times"></i>
               </button>
-            </td>
+            </td> -->
           </tr>
           }
         </tbody>

@@ -1,0 +1,312 @@
+.chart-card{
+    background: #fff;
+    border-radius: 16px;
+    padding: 14px 16px;
+    box-shadow: 0 8px 24px rgba(15, 23, 42, 0.08);
+    border: 1px solid rgba(15, 23, 42, 0.06);
+    margin-bottom: 18px;
+  }
+  
+  .chart-title{
+    font-weight: 800;
+    font-size: 18px;
+    color: #0f172a;
+    margin-bottom: 10px;
+  }
+  
+  .chart-box{
+    height: 420px; /* ✅ คุมความสูงกราฟให้สวย */
+  }
+  
+
+  .chart-box{
+    height: 420px;           /* ปรับได้ */
+  }
+  
+  .chart-scroll{
+    width: 100%;
+    height: 100%;
+    overflow-x: auto;        /* ✅ scroll แนวนอน */
+    overflow-y: hidden;
+    padding-bottom: 8px;     /* กัน scrollbar ทับกราฟ */
+  }
+  
+  .chart-inner{
+    height: 100%;
+    min-width: 900px;        /* กันกราฟเล็กเกิน */
+  }
+  
+
+  .analytics-page {
+    padding-bottom: 64px;   /* กันชนขอบล่างจอ */
+  }
+  
+
+  /* ===== Timeline guideline (like your sample image) ===== */
+.tg{
+    background:#fff;
+    border-radius:16px;
+    padding:22px 26px 18px;
+    max-width: 1100px;
+    margin: 0 auto 16px;
+    text-align:center;
+  }
+  
+  .tg-head{
+    display:flex;
+    justify-content:space-between;
+    color:#1d4ed8; /* blue */
+    font-weight:600;
+    font-size:18px;
+    margin-bottom:10px;
+  }
+  
+  .tg-bar{
+    position:relative;
+    height:10px;
+    margin: 0 10px 18px;
+  }
+  .tg-bar-base{
+    height:10px;
+    border-radius:999px;
+    background:#f4e84a; /* yellow line */
+  }
+  .tg-dot{
+    position:absolute;
+    top:50%;
+    transform:translate(-50%,-50%);
+    width:12px;
+    height:12px;
+    border-radius:50%;
+    background:#f4e84a;
+    box-shadow: 0 0 0 4px #fff; /* cut like sample */
+  }
+  
+  /* braces row */
+  .tg-braces{
+    display:flex;
+    justify-content:space-between;
+    gap:24px;
+    margin: 0 10px 6px;
+  }
+  .tg-brace{
+    width:48%;
+    position:relative;
+    padding-top:18px;
+  }
+  
+  /* brace line */
+  .tg-brace-line{
+    height:2px;
+    background:#334155; /* dark slate */
+    border-radius:999px;
+  }
+  
+  /* brace curves (left & right) */
+  .tg-brace-curves{
+    position:absolute;
+    left:0; right:0;
+    top:2px;
+    height:18px;
+  }
+  .tg-brace-curves .c{
+    position:absolute;
+    width:34px;
+    height:18px;
+    border:2px solid #334155;
+    border-top:0;
+    border-left:0;
+    border-radius:0 0 24px 0;
+  }
+  .tg-brace-curves .c.left{
+    left:-2px;
+    transform: scaleX(-1);
+  }
+  .tg-brace-curves .c.right{
+    right:-2px;
+  }
+  
+  /* label under brace */
+  .tg-brace-label{
+    margin-top:10px;
+    color:#1d4ed8;
+    font-weight:600;
+    font-size:18px;
+  }
+  
+  /* total brace */
+  .tg-total{
+    position:relative;
+    margin: 10px 10px 0;
+    padding-top:22px;
+  }
+  .tg-total-line{
+    height:3px;
+    background:#334155;
+    border-radius:999px;
+  }
+  
+  /* total curves: left, mid-notch, right */
+  .tg-total-curves{
+    position:absolute;
+    left:0; right:0;
+    top:3px;
+    height:22px;
+  }
+  .tg-total-curves .c{
+    position:absolute;
+    border:3px solid #334155;
+    border-top:0;
+    border-left:0;
+    height:22px;
+  }
+  .tg-total-curves .c.left{
+    left:-3px;
+    width:52px;
+    border-radius:0 0 42px 0;
+    transform: scaleX(-1);
+  }
+  .tg-total-curves .c.right{
+    right:-3px;
+    width:52px;
+    border-radius:0 0 42px 0;
+  }
+  .tg-total-curves .c.mid{
+    left:50%;
+    transform:translateX(-50%);
+    width:34px;
+    border-radius:0 0 28px 0;
+    /* ทำเป็นรอยเว้า (notch) */
+    clip-path: polygon(0 0,100% 0,100% 100%,0 100%);
+  }
+  
+  /* total label */
+  .tg-total-label{
+    margin-top:12px;
+    color:#1d4ed8;
+    font-weight:700;
+    font-size:20px;
+  }
+  
+  
+
+
+
+  /* ===== Matrix Card ===== */
+.matrix-card {
+  background: #ffffff;
+  border-radius: 18px;
+  padding: 16px 16px 8px 16px;
+  box-shadow: 0 10px 26px rgba(15, 23, 42, 0.06);
+  margin-bottom: 48px;
+}
+
+.matrix-title {
+  font-size: 18px;
+  font-weight: 900;
+  color: #0f172a;
+  margin: 6px 0 12px 0;
+  letter-spacing: 0.2px;
+}
+
+.matrix-sub {
+  font-size: 12px;
+  font-weight: 700;
+  color: #64748b; /* slate-500 */
+  margin-left: 8px;
+}
+
+/* scroll container */
+.matrix-scroll {
+  overflow: auto;
+  border-radius: 14px;
+  border: 1px solid rgba(15, 23, 42, 0.08);
+}
+
+/* table style */
+.matrix-table {
+  margin: 0;
+  min-width: 900px; /* กันตารางแคบเกิน */
+  font-size: 13px;
+}
+
+.matrix-table thead th {
+  background: #f8fafc; /* slate-50 */
+  font-weight: 800;
+  color: #0f172a;
+  border-bottom: 1px solid rgba(15, 23, 42, 0.08);
+  padding: 12px 12px;
+  white-space: nowrap;
+}
+
+.matrix-table tbody th,
+.matrix-table tbody td {
+  border-bottom: 1px solid rgba(15, 23, 42, 0.06);
+  padding: 10px 12px;
+  white-space: nowrap;
+}
+
+.matrix-table tbody th {
+  background: #ffffff;
+  font-weight: 800;
+  color: #0f172a;
+}
+
+/* sticky first column */
+.sticky-col {
+  position: sticky;
+  left: 0;
+  z-index: 2;
+}
+
+.matrix-table thead .sticky-col {
+  z-index: 3;
+}
+
+/* cells */
+.matrix-cell {
+  text-align: center;
+  font-weight: 800;
+  color: #111827;
+  border-left: 1px solid rgba(15, 23, 42, 0.05);
+}
+
+.matrix-cell:hover {
+  outline: 2px solid rgba(37, 99, 235, 0.22); /* blue hover */
+  outline-offset: -2px;
+}
+
+/* scrollbar nice */
+.matrix-scroll::-webkit-scrollbar {
+  height: 10px;
+  width: 10px;
+}
+.matrix-scroll::-webkit-scrollbar-thumb {
+  background: rgba(15, 23, 42, 0.18);
+  border-radius: 999px;
+}
+.matrix-scroll::-webkit-scrollbar-track {
+  background: rgba(15, 23, 42, 0.06);
+  border-radius: 999px;
+}
+
+
+.desc-toggle {
+  margin-top: 8px;
+}
+
+.desc-toggle button {
+  font-weight: 700;
+  color: #2563eb; /* blue-600 */
+  text-decoration: none;
+}
+
+.desc-box {
+  margin-top: 8px;
+  padding: 12px 14px;
+  background: #f8fafc; /* slate-50 */
+  border-left: 4px solid #2563eb;
+  border-radius: 8px;
+  font-size: 13px;
+  line-height: 1.6;
+}

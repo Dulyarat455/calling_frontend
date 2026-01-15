@@ -67,6 +67,11 @@ export class CallNodesComponent {
     selectedSubSectionId: number | null = null;
     codeName = '';
 
+    searchText: string = '';
+    callNodesBackup: callNodeRow[] = [];
+    
+
+    
 
     private resetForm() {
       this.codeName = '';
@@ -115,36 +120,7 @@ export class CallNodesComponent {
       
     }
 
-    // fetchSectionByGroup(){
-    //     // ถ้าไม่ได้เลือก Group ไม่ต้องยิง API
-    //     if (!this.selectedGroupId) {
-    //       this.sections = [];
-    //       this.selectedSectionId = null;
-    //       return;
-    //     }
-
-    //     this.http
-    //     .post(config.apiServer + '/api/section/filterByGroup', {
-    //       groupId: this.selectedGroupId,
-    //     })
-    //     .subscribe({
-    //       next: (res: any) => {
-    //         // backend ส่ง { results: [...] }
-    //         this.sections = res.results || [];
-    //         this.selectedSectionId = null; // เลือกใหม่ทุกครั้งที่เปลี่ยน section
-    //       },
-    //       error: (err) => {
-    //         Swal.fire({
-    //           title: 'Error',
-    //           text: err.message || 'Cannot load Section',
-    //           icon: 'error',
-    //         });
-    //       },
-    //     });
-
-    // }
-
-
+    
 
     fetchGroup(){
       this.http.get(config.apiServer + '/api/group/list').subscribe({
@@ -195,6 +171,8 @@ export class CallNodesComponent {
       this.http.get(config.apiServer + '/api/callnode/list').subscribe({
         next: (res: any) => {
           this.callNodes = res.results || [];
+          this.callNodesBackup = this.callNodes;
+
         },
         error: (err) => {
           Swal.fire({
@@ -252,6 +230,8 @@ export class CallNodesComponent {
           //*************************************************************** */
          // TODO: ถ้ามี API list callNodes ให้เรียกมารีเฟรชตาราง
          this.fetchCallNode();
+         this.searchText = ''; // ✅ reset search
+
 
        },
        error: (err) => {
@@ -283,6 +263,39 @@ export class CallNodesComponent {
       this.resetForm();
     }
 
+
+    search() {
+      const q = (this.searchText || '').trim().toLowerCase();
+    
+      // ไม่มีคำค้น → คืนค่าทั้งหมด
+      if (!q) {
+        this.callNodes = this.callNodesBackup;
+        return;
+      }
+    
+      this.callNodes = this.callNodesBackup.filter(x => {
+        const code = (x.code || '').toLowerCase();
+        const sub = (x.subSectionName || '').toLowerCase();
+        const sec = (x.sectionName || '').toLowerCase();
+        const group = (x.groupName || '').toLowerCase();
+    
+        // ในตารางคุณแสดงจาก isActive เป็น Active/Inactive
+        const statusText = (x.isActive === 1 ? 'active' : 'inactive');
+    
+        return (
+          code.includes(q) ||
+          sub.includes(q) ||
+          sec.includes(q) ||
+          group.includes(q) ||
+          statusText.includes(q)
+        );
+      });
+    }
+    
+    onSearchChange() {
+      this.search(); // realtime ตอนพิมพ์
+    }
+      
     
   edit(item:any){
     this.openModal();

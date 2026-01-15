@@ -609,8 +609,7 @@ export class LaminationPanelComponent {
       title: 'ยืนยันการลบ Job?',
       html: `
         <div style="text-align:left">
-          <div><b>Job:</b> ${item.jobNo ?? '-'}</div>
-          <div><b>Machine:</b> ${item.machineName}</div>
+          <div><b>Area:</b> ${item.machineName}</div>
           <div><b>To:</b> ${item.toNodeName}</div>
           ${item.remark ? `<div><b>Remark:</b> ${item.remark}</div>` : ''}
         </div>

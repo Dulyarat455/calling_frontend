@@ -132,6 +132,7 @@ export class GeneralStatorPanelComponent {
     sectionId: number | null = null;
     sectionName: string = "";
     empNo: string = "";
+    userRole : string = "";
     subSectionId: number | null = null;
     subSectionName: string = "";
     groupId: number | null = null;
@@ -150,11 +151,12 @@ export class GeneralStatorPanelComponent {
     remarkJobValue: string = "";
     priorityValue: string = "";
     isLoading = false;
-
+    
 
     ngOnInit() {
       this.userName = localStorage.getItem('calling_name')!;
       this.empNo = localStorage.getItem('calling_empNo')!;
+      this.userRole = localStorage.getItem('calling_role')!;
       this.userId = parseInt(localStorage.getItem('calling_id')!);
       this.sectionId = parseInt(localStorage.getItem("calling_sectionId")!);
       this.sectionName = localStorage.getItem("calling_section")!;
@@ -688,8 +690,8 @@ onDeleteJob(panelKey: 'general' | 'stator', item: RowItem, ev?: Event) {
     title: 'ยืนยันการลบ Job?',
     html: `
       <div style="text-align:left">
-        <div><b>Job:</b> ${item.jobNo ?? '-'}</div>
-        <div><b>Machine:</b> ${item.machineName ?? '-'}</div>
+       
+        <div><b>Area:</b> ${item.machineName ?? '-'}</div>
         <div><b>To:</b> ${item.toNodeName ?? '-'}</div>
         ${item.remark ? `<div><b>Remark:</b> ${item.remark}</div>` : ''}
       </div>

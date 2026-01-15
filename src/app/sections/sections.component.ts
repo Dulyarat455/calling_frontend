@@ -32,6 +32,9 @@ export class SectionsComponent {
     sections: sectionRow[] = []
     name: string = '' ;
     isLoading = false;
+
+    filteredSections: sectionRow[] = [];
+    searchText: string = '';
   
     ngOnInit() {
       this.fetchData();
@@ -56,6 +59,9 @@ export class SectionsComponent {
             createdAt: r.createdAt,
             updateAt: r.updateAt
           }))
+
+          this.filteredSections = [...this.sections];
+
         },
         error: (err) => {
           Swal.fire({
@@ -113,6 +119,22 @@ export class SectionsComponent {
 
 
     }
+
+
+
+    onSearch() {
+      const q = this.searchText.trim().toLowerCase();
+    
+      if (!q) {
+        this.filteredSections = [...this.sections];
+        return;
+      }
+    
+      this.filteredSections = this.sections.filter(x =>
+        x.name.toLowerCase().includes(q)
+      );
+    }
+    
 
 
 

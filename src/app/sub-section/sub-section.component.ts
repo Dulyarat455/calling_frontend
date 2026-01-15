@@ -47,6 +47,10 @@ export class SubSectionComponent {
     sections: SectionRow[] = [];
     selectedSectionId: number | null = null;
 
+    searchText: string = '';
+    filteredSubSections: subSectionRow[] = [];
+
+
 
     ngOnInit() {
       this.fetchData();
@@ -72,6 +76,8 @@ export class SubSectionComponent {
             section: r.section,
             sectionId: r.sectionId
           }))
+
+          this.filteredSubSections = [...this.subSections];
         },
         error: (err) => {
           Swal.fire({
@@ -151,6 +157,21 @@ export class SubSectionComponent {
       this.name = ''
       this.selectedSectionId = null
     }
+
+    onSearch() {
+      const q = this.searchText.trim().toLowerCase();
+  
+      if (!q) {
+        this.filteredSubSections = [...this.subSections];
+        return;
+      }
+  
+      this.filteredSubSections = this.subSections.filter((x) =>
+        x.name.toLowerCase().includes(q) ||
+        x.section.toLowerCase().includes(q)
+      );
+    }
+    
 
     edit(item:any){
 

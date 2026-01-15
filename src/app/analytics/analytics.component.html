@@ -1,0 +1,253 @@
+<div class="analytics-page">
+  <div class="mt-3">
+    <div class="card-header d-flex justify-content-between align-items-center">
+      <b>Analytics</b>
+    </div>
+  
+    <div class="card-body mt-3">
+  
+      <!-- ✅ Filters -->
+      <div class="row g-3 align-items-end mb-3">
+  
+        <div class="col-md-3">
+          <label class="form-label mb-1">Start date</label>
+          <input type="date" class="form-control" [(ngModel)]="startDate" />
+        </div>
+  
+        <div class="col-md-3">
+          <label class="form-label mb-1">End date</label>
+          <input type="date" class="form-control" [(ngModel)]="endDate" />
+        </div>
+  
+        <div class="col-md-3">
+          <label class="form-label mb-1">Line</label>
+          <select class="form-select" [(ngModel)]="selectedLine">
+            <option value="ALL">All</option>
+            <option value="LAM">Lamination</option>
+            <option value="GEN">General</option>
+            <option value="STA">Stator</option>
+          </select>
+        </div>
+  
+        <div class="col-md-3 d-flex gap-2">
+          <button class="btn btn-primary flex-fill" type="button" (click)="applyDateRange()">
+            <i class="fas fa-search me-2"></i>Search
+          </button>
+          <button class="btn btn-outline-secondary" type="button" (click)="resetFilters()">
+            Reset
+          </button>
+        </div>
+  
+      </div>
+  
+      <!-- Loading -->
+      <div *ngIf="isLoading" class="text-muted">
+        <i class="fas fa-spinner fa-spin me-2"></i>Loading...
+      </div>
+  
+      <!-- Charts -->
+      <div *ngIf="!isLoading && filteredRows.length">
+        
+        <div class="chart-card">
+           
+          <!-- ================= Guideline (NEW) ================= -->
+            <div class="tg">
+                <div class="tg-head">
+                <span>Create job</span>
+                <span>Accept</span>
+                <span>Finish</span>
+                </div>
+            
+                <div class="tg-bar">
+                <div class="tg-bar-base"></div>
+                <!-- จุด Accept -->
+                <span class="tg-dot" style="left:50%"></span>
+                </div>
+            
+                <!-- Wait / Work braces -->
+                <div class="tg-braces">
+                <div class="tg-brace tg-wait">
+                    <div class="tg-brace-line"></div>
+                    <div class="tg-brace-curves">
+                    <span class="c left"></span>
+                    <span class="c right"></span>
+                    </div>
+                    <div class="tg-brace-label">Wait Time</div>
+                </div>
+            
+                <div class="tg-brace tg-work">
+                    <div class="tg-brace-line"></div>
+                    <div class="tg-brace-curves">
+                    <span class="c left"></span>
+                    <span class="c right"></span>
+                    </div>
+                    <div class="tg-brace-label">Work Time</div>
+                </div>
+                </div>
+            
+                <!-- Total brace -->
+                <div class="tg-total">
+                <div class="tg-total-line"></div>
+                <div class="tg-total-curves">
+                    <span class="c left"></span>
+                    
+                    <span class="c right"></span>
+                </div>
+                <div class="tg-total-label">Total Time</div>
+                </div>
+            </div>
+  
+        </div>
+
+
+        <div class="chart-card">
+          <div class="chart-title">Average Time by Call From</div>
+          <div class="chart-box">
+            <div class="chart-scroll">
+              <div class="chart-inner" [style.width]="getChartWidth(avgFromData.labels)">
+                <canvas baseChart [type]="'bar'" [data]="avgFromData" [options]="chartOptions"></canvas>
+              </div>
+            </div>
+          </div>
+          
+        </div>
+
+        <div class="desc-toggle">
+          <button class="btn btn-link p-0" (click)="showDescFrom = !showDescFrom">
+            <i class="fas" [class.fa-chevron-down]="!showDescFrom"
+                            [class.fa-chevron-up]="showDescFrom"></i>
+            {{ showDescFrom ? 'Hide description' : 'Show description' }}
+          </button>
+        </div>
+        
+        <div class="desc-box" *ngIf="showDescFrom">
+          <p><b>Average Time by Call From</b></p>
+          <p>
+            กราฟนี้ใช้แสดงเวลาเฉลี่ยของงานที่ถูกสร้างจากแต่ละ Process (Call From)
+            เพื่อวิเคราะห์ว่า Process ใดสร้างภาระงานสูง และมีความเสี่ยงเกิดคอขวดหรือไม่
+          </p>
+          <p>เวลาที่แสดงเป็นค่าเฉลี่ยของ เวลาที่ผู้รับงานใช้จริงไม่ใช่เวลาของเจ้าของ Process โดยตรง แต่เป็นเวลาตั้งแต่งานถูกส่งต่อไปยังผู้รับงานจนเสร็จสิ้น</p>
+          <p>ข้อมูลนี้ช่วยให้สามารถประเมินได้ว่า</p>
+          <p> - Process ใดสร้างภาระงานสูง</p>
+          <p> - จำนวนผู้รับงานใน Process นั้นเพียงพอหรือไม่</p>
+          <p> - มีความเสี่ยงเกิดคอขวด (Bottleneck) หรือไม่</p>
+
+          <p class="text-muted">
+            This chart shows the average processing time of jobs generated by each source process,
+            helping identify workload distribution and potential bottlenecks.
+          </p>
+          <p class="text-muted">
+            The displayed time represents the average time spent by job receivers,
+            not the process owner itself, but the actual execution time after the job has been handed over.
+          </p>
+          <p class="text-muted">This insight is useful for evaluating:</p>
+          <p class="text-muted">- Which processes generate high workload</p>
+          <p class="text-muted">- Whether manpower is sufficient for each process</p>
+          <p class="text-muted">- Potential bottlenecks in the workflow</p>
+        </div>
+        
+  
+        <hr class="my-4"/>
+  
+        <div class="chart-card">
+          <div class="chart-title">Average Time by Call To</div>
+          <div class="chart-box">
+            <div class="chart-scroll">
+              <div class="chart-inner" [style.width]="getChartWidth(avgToData.labels)">
+                <canvas baseChart [type]="'bar'" [data]="avgToData" [options]="chartOptions"></canvas>
+              </div>
+            </div>
+          </div>
+          
+        </div>
+
+        <div class="desc-toggle">
+          <button class="btn btn-link p-0" (click)="showDescTo = !showDescTo">
+            <i class="fas" [class.fa-chevron-down]="!showDescTo"
+                            [class.fa-chevron-up]="showDescTo"></i>
+            {{ showDescTo ? 'Hide description' : 'Show description' }}
+          </button>
+        </div>
+        
+        <div class="desc-box" *ngIf="showDescTo">
+          <p><b>Average Time by Call To</b></p>
+          <p>
+                กราฟนี้ใช้วิเคราะห์ประสิทธิภาพของหน่วยงานหรือ Process ที่รับงานไปดำเนินการ
+            โดยแสดงเวลาเฉลี่ยตั้งแต่รับงานจนเสร็จสิ้น
+          </p>
+          <p>
+            เวลาที่แสดงเป็นค่าเฉลี่ยของระยะเวลาที่ใช้ในการดำเนินงานจริง
+            ตั้งแต่งานถูกยอมรับจนเสร็จสิ้น
+          </p>
+          <p>ข้อมูลนี้ช่วยให้สามารถ:</p>
+          <p>- เปรียบเทียบประสิทธิภาพของแต่ละหน่วยรับงาน</p>
+          <p>- ตรวจสอบว่าหน่วยงานใดใช้เวลานานผิดปกติ</p>
+          <p>- ใช้ประกอบการวางแผนกำลังคนและการกระจายงาน</p>
+
+          <p class="text-muted">
+            This chart analyzes job execution performance by destination,
+            helping compare efficiency and support manpower planning.
+          </p>
+          <p class="text-muted">
+            The time shown reflects the actual execution duration,
+            from job acceptance until completion.
+          </p>
+          <p class="text-muted">This data helps to:</p>
+          <p class="text-muted">- Compare performance across job receivers</p>
+          <p class="text-muted">- Identify units with unusually long processing time</p>
+          <p class="text-muted">- Support manpower planning and workload balancing</p>
+
+        </div>
+        
+  
+      </div>
+  
+      <div *ngIf="!isLoading && !filteredRows.length" class="alert alert-warning">
+        ไม่มีข้อมูลสำหรับเงื่อนไขที่เลือก
+      </div>
+  
+    </div>
+
+
+    <!-- ✅ Matrix -->
+    <div class="matrix-card mt-4" *ngIf="matrix.cols.length && matrix.rows.length">
+      <div class="matrix-title">
+        Call From × Call To : Average Total Time
+        <span class="matrix-sub">(based on filtered data)</span>
+      </div>
+
+      <div class="matrix-scroll">
+        <table class="table matrix-table">
+          <thead>
+            <tr>
+              <th class="sticky-col">Call From</th>
+              <th *ngFor="let c of matrix.cols">{{ c }}</th>
+            </tr>
+          </thead>
+
+          <tbody>
+            <tr *ngFor="let r of matrix.rows">
+              <th class="sticky-col">{{ r.from }}</th>
+
+              <td
+                *ngFor="let v of r.cells"
+                class="matrix-cell"
+                [ngStyle]="cellStyle(v)"
+              >
+                {{ formatCellMin(v) }}
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="alert alert-warning mt-4" *ngIf="!isLoading && filteredRows.length && (!matrix.cols.length || !matrix.rows.length)">
+      ไม่มีข้อมูลเพียงพอสำหรับสร้าง Matrix
+    </div>
+
+
+
+
+  </div>
+</div>

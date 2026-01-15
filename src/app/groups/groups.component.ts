@@ -34,6 +34,10 @@ export class GroupsComponent {
   groups: groupRow[] = []
   isLoading = false;
 
+
+  filteredGroups: groupRow[] = [];
+  searchText: string = '';
+
   ngOnInit() {
     this.fetchData();
   }
@@ -59,7 +63,7 @@ export class GroupsComponent {
           createdAt: r.createdAt,
           updateAt: r.updateAt
         }))
-        console.log("Groups page : ", res.results);
+      this.filteredGroups = [...this.groups];
 
       },
       error: (err) => {
@@ -116,7 +120,19 @@ export class GroupsComponent {
         })
   }
 
-
+  onSearch() {
+    const q = this.searchText.trim().toLowerCase();
+  
+    if (!q) {
+      this.filteredGroups = [...this.groups];
+      return;
+    }
+  
+    this.filteredGroups = this.groups.filter(g =>
+      g.name.toLowerCase().includes(q)
+    );
+  }
+  
 
 
 
