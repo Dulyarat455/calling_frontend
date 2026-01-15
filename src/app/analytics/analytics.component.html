@@ -72,7 +72,12 @@
                     <span class="c left"></span>
                     <span class="c right"></span>
                     </div>
-                    <div class="tg-brace-label">Wait Time</div>
+                    <div class="tg-brace-label">Wait Time
+                      <span class="tg-pill">
+                        {{ formatMinShort(insight.avgWaitMin) }}
+                        <span class="tg-pill-sub">({{ insight.waitPct }}%)</span>
+                      </span>
+                    </div>
                 </div>
             
                 <div class="tg-brace tg-work">
@@ -81,7 +86,12 @@
                     <span class="c left"></span>
                     <span class="c right"></span>
                     </div>
-                    <div class="tg-brace-label">Work Time</div>
+                    <div class="tg-brace-label">Work Time
+                      <span class="tg-pill">
+                        {{ formatMinShort(insight.avgWorkMin) }}
+                        <span class="tg-pill-sub">({{ insight.workPct }}%)</span>
+                      </span>
+                    </div>
                 </div>
                 </div>
             
@@ -93,7 +103,11 @@
                     
                     <span class="c right"></span>
                 </div>
-                <div class="tg-total-label">Total Time</div>
+                <div class="tg-total-label">Total Time
+                  <span class="tg-pill tg-pill-strong">
+                    {{ formatMinShort(insight.avgTotalMin) }}
+                  </span>
+                </div>
                 </div>
             </div>
   
@@ -219,9 +233,25 @@
       <div class="matrix-scroll">
         <table class="table matrix-table">
           <thead>
-            <tr>
-              <th class="sticky-col">Call From</th>
-              <th *ngFor="let c of matrix.cols">{{ c }}</th>
+            <!-- แถวบน -->
+            <tr class="matrix-head-top">
+              <th class="sticky-col matrix-head-from" rowspan="2">
+                Call From
+              </th>
+          
+              <th
+                class="matrix-head-to sticky-top"
+                [attr.colspan]="matrix.cols.length"
+              >
+                Call To
+              </th>
+            </tr>
+          
+            <!-- แถวล่าง -->
+            <tr class="matrix-head-sub">
+              <th *ngFor="let c of matrix.cols">
+                {{ c }}
+              </th>
             </tr>
           </thead>
 

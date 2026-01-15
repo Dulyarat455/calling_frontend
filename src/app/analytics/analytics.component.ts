@@ -233,6 +233,9 @@ export class AnalyticsComponent {
     rows = this.applyDateFilter(rows);
 
     this.filteredRows = rows;
+
+    this.buildInsightFromRows(this.filteredRows);
+
     this.buildCharts();
   }
 
@@ -428,7 +431,7 @@ export class AnalyticsComponent {
     return `${v.toFixed(2)} min`;
   }
   
-  private formatMinShort(v: number): string {
+  formatMinShort(v: number): string {
       if (!Number.isFinite(v) || v <= 0) return '';
     if (v < 60) return `${Math.round(v)} min`;
 
@@ -561,6 +564,51 @@ cellStyle(v: number | null): any {
   // สีเหลืองสุภาพเข้ากับ wait time แต่จาง ๆ
   const alpha = 0.08 + ratio * 0.22; // 0.08..0.30
   return { backgroundColor: `rgba(253, 224, 71, ${alpha})` };
+}
+
+
+insight = {
+  avgWaitMin: 0,
+  avgWorkMin: 0,
+  avgTotalMin: 0,
+  waitPct: 0,
+  workPct: 0
+};
+
+// เรียกหลังจาก filter เสร็จแล้ว (filteredRows เปลี่ยน)
+private buildInsightFromRows(rows: ExportRow[]) {
+  const waits: number[] = [];
+  const works: number[] = [];
+  const totals: number[] = [];
+
+  for (const r of rows) {
+    const w = this.hhmmssToMin(r.waitTime);
+    const k = this.hhmmssToMin(r.workTime);
+    const t = this.hhmmssToMin(r.totalTime);
+
+    if (Number.isFinite(w)) waits.push(w);
+    if (Number.isFinite(k)) works.push(k);
+    if (Number.isFinite(t)) totals.push(t);
+  }
+
+  const avgWait = this.avg(waits);
+  const avgWork = this.avg(works);
+
+  // ✅ total ใช้ avg(total) จริง ถ้ามีข้อมูล
+  // ถ้าไม่มี total ให้ fallback เป็น avgWait+avgWork
+  const avgTotal = totals.length ? this.avg(totals) : +(avgWait + avgWork).toFixed(2);
+
+  const sum = avgWait + avgWork;
+  const waitPct = sum > 0 ? Math.round((avgWait / sum) * 100) : 0;
+  const workPct = sum > 0 ? 100 - waitPct : 0;
+
+  this.insight = {
+    avgWaitMin: avgWait,
+    avgWorkMin: avgWork,
+    avgTotalMin: avgTotal,
+    waitPct,
+    workPct
+  };
 }
 
 
