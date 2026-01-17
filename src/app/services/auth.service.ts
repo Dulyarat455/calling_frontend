@@ -73,7 +73,7 @@ export class AuthService {
     localStorage.removeItem('calling_callNodeCode');
     
     this.authStatus.next(false);
-    window.location.href = '/ScrapPress';
+    window.location.href = '/CallingPress';
     // this.refreshComponents.next(true); // แจ้ง components ให้ refresh
     // this.router.navigate(['/']);
   }

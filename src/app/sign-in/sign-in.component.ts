@@ -6,10 +6,14 @@ import Swal from 'sweetalert2';
 import { RouterModule, Router } from '@angular/router';
 import { AuthService } from '../services/auth.service';
 
+import { MyModal } from '../my-modal/my-modal.component';
+import { CommonModule } from '@angular/common';
+
+
 @Component({
   selector: 'app-sign-in',
   standalone: true,
-  imports: [FormsModule, RouterModule],
+  imports: [FormsModule, RouterModule, MyModal, CommonModule],
   templateUrl: './sign-in.component.html',
   styleUrl: './sign-in.component.css',
 })
@@ -22,6 +26,18 @@ export class SignInComponent {
   empNo: string = '';
   rfid: string = '';
   isLoading: boolean = false;
+
+  isPickingAccount = false;
+
+
+  @ViewChild(MyModal) myModal!: MyModal;
+
+  rfidAccounts: any[] = [];
+  selectedUserId: number | null = null;
+  rfidPendingValue: string = '';
+  searchAccount: string = '';
+  filteredAccounts: any[] = [];
+
 
   constructor(
     private http: HttpClient,
@@ -75,81 +91,141 @@ export class SignInComponent {
   }
 
   // RFID Login
+  // async signInWithRFID(rfidValue: string) {
+  //   if (this.isLoading) return;
+
+  //   try {
+  //     this.isLoading = true;
+
+  //     const payload = {
+  //       rfId: rfidValue,
+  //     };
+
+  //     this.http
+  //       .post(config.apiServer + '/api/user/signin-rfid', payload)
+  //       .subscribe({
+  //         next: (res: any) => {
+  //           // ตรวจสอบ unauthorized message
+  //           if (res.message === 'unauthorized') {
+  //             this.resetLoginState();
+  //             Swal.fire({
+  //               title: 'ไม่สามารถเข้าสู่ระบบได้',
+  //               text: 'ไม่มีสิทธิ์ในการเข้าถึง',
+  //               icon: 'error',
+  //               timer: 2000,
+  //             });
+  //             return;
+  //           }
+
+  //           this.authService.login(res);
+  //           // Show success message
+  //           Swal.fire({
+  //             title: 'เข้าสู่ระบบสำเร็จ',
+  //             text: `ยินดีต้อนรับ ${res.name}`,
+  //             icon: 'success',
+  //             timer: 1500,
+  //             showConfirmButton: true,
+  //           }).then(() => {
+  //             // location.reload();
+  //             this.token = localStorage.getItem('calling_token')!;
+  //             this.empNo = localStorage.getItem('calling_empNo')!;
+  //             this.router.navigate(['/dashboard']);
+  //           });
+  //           // }
+  //         },
+  //         error: (error) => {
+  //           console.error('RFID Login Error:', error);
+
+  //           // ตรวจสอบ error message
+  //           const errorMessage =
+  //             error.error?.message || 'เกิดข้อผิดพลาดในการเข้าสู่ระบบ';
+
+  //           if (error.error?.message === 'unauthorized') {
+  //             this.resetLoginState();
+  //             Swal.fire({
+  //               title: 'ไม่สามารถเข้าสู่ระบบได้',
+  //               text: 'ไม่มีสิทธิ์ในการเข้าถึง',
+  //               icon: 'error',
+  //               timer: 2000,
+  //             });
+  //             return;
+  //           }
+
+  //           // แสดง error อื่นๆ
+  //           Swal.fire({
+  //             title: 'ไม่สามารถเข้าสู่ระบบได้',
+  //             text: errorMessage,
+  //             icon: 'error',
+  //             timer: 2000,
+  //           });
+
+  //           this.resetLoginState();
+  //         },
+  //         complete: () => {
+  //           // ไม่ต้อง reset loading state ที่นี่
+  //           // เพราะจะถูก handle ใน next หรือ error แล้ว
+  //         },
+  //       });
+  //   } catch (error: any) {
+  //     this.resetLoginState();
+  //     Swal.fire({
+  //       title: 'เกิดข้อผิดพลาด',
+  //       text: error.message,
+  //       icon: 'error',
+  //     });
+  //   }
+  // }
+
+
   async signInWithRFID(rfidValue: string) {
     if (this.isLoading) return;
-
+  
     try {
       this.isLoading = true;
-
-      const payload = {
-        rfId: rfidValue,
-      };
-
+  
       this.http
-        .post(config.apiServer + '/api/user/signin-rfid', payload)
+        .post(config.apiServer + '/api/user/check-rfid', { rfId: rfidValue })
         .subscribe({
-          next: (res: any) => {
-            // ตรวจสอบ unauthorized message
-            if (res.message === 'unauthorized') {
+          next: async (resp: any) => {
+            const accounts = resp.accounts || [];
+            const count = resp.count || accounts.length;
+  
+            // ❌ ไม่พบ account
+            if (count <= 0) {
               this.resetLoginState();
               Swal.fire({
                 title: 'ไม่สามารถเข้าสู่ระบบได้',
-                text: 'ไม่มีสิทธิ์ในการเข้าถึง',
+                text: 'ไม่พบบัญชีที่ใช้งานได้สำหรับ RFID นี้',
                 icon: 'error',
                 timer: 2000,
               });
               return;
             }
-
-            this.authService.login(res);
-            // Show success message
-            Swal.fire({
-              title: 'เข้าสู่ระบบสำเร็จ',
-              text: `ยินดีต้อนรับ ${res.name}`,
-              icon: 'success',
-              timer: 1500,
-              showConfirmButton: true,
-            }).then(() => {
-              // location.reload();
-              this.token = localStorage.getItem('calling_token')!;
-              this.empNo = localStorage.getItem('calling_empNo')!;
-              this.router.navigate(['/dashboard']);
-            });
-            // }
+  
+            // ✅ มี account เดียว → login ทันที
+            if (count === 1) {
+              await this.loginByRfidAndUserId(rfidValue, accounts[0].userId);
+              return;
+            }
+  
+            // ✅ หลาย account → เปิด MyModal (ไม่ await)
+            this.openAccountModal(rfidValue, accounts);
+  
+            // ❗ ห้าม resetLoginState ที่นี่
+            // เพราะเรายังอยู่ในขั้นตอนเลือกบัญชี
           },
+  
           error: (error) => {
-            console.error('RFID Login Error:', error);
-
-            // ตรวจสอบ error message
-            const errorMessage =
-              error.error?.message || 'เกิดข้อผิดพลาดในการเข้าสู่ระบบ';
-
-            if (error.error?.message === 'unauthorized') {
-              this.resetLoginState();
-              Swal.fire({
-                title: 'ไม่สามารถเข้าสู่ระบบได้',
-                text: 'ไม่มีสิทธิ์ในการเข้าถึง',
-                icon: 'error',
-                timer: 2000,
-              });
-              return;
-            }
-
-            // แสดง error อื่นๆ
-            Swal.fire({
-              title: 'ไม่สามารถเข้าสู่ระบบได้',
-              text: errorMessage,
-              icon: 'error',
-              timer: 2000,
-            });
-
+            console.error('Check RFID Error:', error);
             this.resetLoginState();
-          },
-          complete: () => {
-            // ไม่ต้อง reset loading state ที่นี่
-            // เพราะจะถูก handle ใน next หรือ error แล้ว
+            Swal.fire({
+              title: 'เกิดข้อผิดพลาด',
+              text: error.error?.message || 'ตรวจสอบ RFID ไม่สำเร็จ',
+              icon: 'error',
+            });
           },
         });
+  
     } catch (error: any) {
       this.resetLoginState();
       Swal.fire({
@@ -159,7 +235,58 @@ export class SignInComponent {
       });
     }
   }
+  
+  
 
+
+
+  private loginByRfidAndUserId(rfId: string, userId: number): Promise<void> {
+    return new Promise((resolve) => {
+      this.http
+        .post(config.apiServer + '/api/user/signin-rfid', { rfId, userId })
+        .subscribe({
+          next: (res: any) => {
+            if (res.message === 'unauthorized') {
+              this.resetLoginState();
+              Swal.fire({
+                title: 'ไม่สามารถเข้าสู่ระบบได้',
+                text: 'ไม่มีสิทธิ์ในการเข้าถึง',
+                icon: 'error',
+                timer: 2000,
+              });
+              return resolve();
+            }
+  
+            this.authService.login(res);
+  
+            Swal.fire({
+              title: 'เข้าสู่ระบบสำเร็จ',
+              text: `ยินดีต้อนรับ ${res.name}`,
+              icon: 'success',
+              timer: 1200,
+              showConfirmButton: false,
+            }).then(() => {
+              this.token = localStorage.getItem('calling_token')!;
+              this.empNo = localStorage.getItem('calling_empNo')!;
+              this.router.navigate(['/dashboard']);
+              resolve();
+            });
+          },
+          error: (error) => {
+            console.error('RFID Login Error:', error);
+            this.resetLoginState();
+            Swal.fire({
+              title: 'ไม่สามารถเข้าสู่ระบบได้',
+              text: error.error?.message || 'เกิดข้อผิดพลาดในการเข้าสู่ระบบ',
+              icon: 'error',
+              timer: 2000,
+            });
+            resolve();
+          },
+        });
+    });
+  }
+  
 
 
   // Regular login
@@ -259,7 +386,120 @@ export class SignInComponent {
       this.password = '';
     }
   }
+
+
+
+  private async showAccountPickerPopup(accounts: any[]): Promise<number | null> {
+    // ทำ option: key = userId, value = label
+    const inputOptions: Record<string, string> = {};
+    for (const a of accounts) {
+      const empNo = a.empNo ?? '-';
+      const role = String(a.role ?? '-').toUpperCase();
+      const sub = a.subSectionName ?? '-';
+      inputOptions[String(a.userId)] = `${empNo}  |  ${role}  |  ${sub}`;
+    }
+  
+    const result = await Swal.fire({
+      title: 'Select Account',
+      text: 'พบหลายบัญชีใน RFID นี้ กรุณาเลือกบัญชีที่ต้องการเข้าสู่ระบบ',
+      input: 'radio',
+      inputOptions,
+      inputValidator: (value) => {
+        if (!value) return 'กรุณาเลือกบัญชีก่อน';
+        return null;
+      },
+      showCancelButton: true,
+      confirmButtonText: 'Sign in',
+      cancelButtonText: 'ยกเลิก',
+      allowOutsideClick: false,
+    });
+  
+    if (!result.isConfirmed) return null;
+    return Number(result.value);
+  }
+  
+  
+
+  private openAccountModal(rfidValue: string, accounts: any[]) {
+    this.rfidPendingValue = rfidValue;
+    this.rfidAccounts = accounts || [];
+    this.filteredAccounts = [...this.rfidAccounts]; // ใช้อันนี้ render
+    this.selectedUserId = null;
+    this.myModal.open();
+  }
+  
+  closeAccountModal() {
+    this.myModal.close();
+    this.resetLoginState(); // ถ้าปิด modal ให้ reset (แล้วกลับไป focus RFID)
+  }
+  
+  onSearchAccount() {
+    const q = (this.searchAccount || '').trim().toLowerCase();
+    if (!q) {
+      this.filteredAccounts = [...this.rfidAccounts];
+      return;
+    }
+    this.filteredAccounts = this.rfidAccounts.filter((a: any) => {
+      const empNo = String(a.empNo ?? '').toLowerCase();
+      const role = String(a.role ?? '').toLowerCase();
+      const sub = String(a.subSectionName ?? '').toLowerCase();
+      return empNo.includes(q) || role.includes(q) || sub.includes(q);
+    });
+  }
+  
+  selectAccount(userId: number) {
+    this.selectedUserId = userId;
+  }
+  
+  async confirmAccountLogin() {
+    if (!this.selectedUserId) {
+      Swal.fire({
+        title: 'เลือกบัญชี',
+        text: 'กรุณาเลือกบัญชีก่อนเข้าสู่ระบบ',
+        icon: 'warning',
+        timer: 1500,
+        showConfirmButton: false,
+      });
+      return;
+    }
+  
+    const rfId = this.rfidPendingValue;
+    const userId = this.selectedUserId;
+  
+    this.myModal.close();
+    await this.loginByRfidAndUserId(rfId, userId);
+  }
+  
+
+
+  async pickAndLogin(userId: number) {
+    if (this.isPickingAccount) return;     // กัน double click
+    this.isPickingAccount = true;
+  
+    this.selectedUserId = userId;
+  
+    const rfId = this.rfidPendingValue;
+  
+    // ปิด modal ก่อน แล้วค่อย login
+    this.myModal.close();
+  
+    await this.loginByRfidAndUserId(rfId, userId);
+  
+    // reset flag หลังทำเสร็จ
+    this.isPickingAccount = false;
+  }
+  
+
+
+
 }
+
+
+
+
+
+
+
 
 
 

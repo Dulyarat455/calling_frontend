@@ -80,7 +80,7 @@ export class SidebarComponent {
 
       // location.reload();
       this.router.navigate(['/']);
-      // window.location.href = '/ScrapPress';
+      //  window.location.href = '/CallingPress/';
     }
   }
 
