@@ -35,7 +35,7 @@ export class SignInComponent {
   rfidAccounts: any[] = [];
   selectedUserId: number | null = null;
   rfidPendingValue: string = '';
-  searchAccount: string = '';
+
   filteredAccounts: any[] = [];
 
 
@@ -90,92 +90,7 @@ export class SignInComponent {
     }
   }
 
-  // RFID Login
-  // async signInWithRFID(rfidValue: string) {
-  //   if (this.isLoading) return;
-
-  //   try {
-  //     this.isLoading = true;
-
-  //     const payload = {
-  //       rfId: rfidValue,
-  //     };
-
-  //     this.http
-  //       .post(config.apiServer + '/api/user/signin-rfid', payload)
-  //       .subscribe({
-  //         next: (res: any) => {
-  //           // ตรวจสอบ unauthorized message
-  //           if (res.message === 'unauthorized') {
-  //             this.resetLoginState();
-  //             Swal.fire({
-  //               title: 'ไม่สามารถเข้าสู่ระบบได้',
-  //               text: 'ไม่มีสิทธิ์ในการเข้าถึง',
-  //               icon: 'error',
-  //               timer: 2000,
-  //             });
-  //             return;
-  //           }
-
-  //           this.authService.login(res);
-  //           // Show success message
-  //           Swal.fire({
-  //             title: 'เข้าสู่ระบบสำเร็จ',
-  //             text: `ยินดีต้อนรับ ${res.name}`,
-  //             icon: 'success',
-  //             timer: 1500,
-  //             showConfirmButton: true,
-  //           }).then(() => {
-  //             // location.reload();
-  //             this.token = localStorage.getItem('calling_token')!;
-  //             this.empNo = localStorage.getItem('calling_empNo')!;
-  //             this.router.navigate(['/dashboard']);
-  //           });
-  //           // }
-  //         },
-  //         error: (error) => {
-  //           console.error('RFID Login Error:', error);
-
-  //           // ตรวจสอบ error message
-  //           const errorMessage =
-  //             error.error?.message || 'เกิดข้อผิดพลาดในการเข้าสู่ระบบ';
-
-  //           if (error.error?.message === 'unauthorized') {
-  //             this.resetLoginState();
-  //             Swal.fire({
-  //               title: 'ไม่สามารถเข้าสู่ระบบได้',
-  //               text: 'ไม่มีสิทธิ์ในการเข้าถึง',
-  //               icon: 'error',
-  //               timer: 2000,
-  //             });
-  //             return;
-  //           }
-
-  //           // แสดง error อื่นๆ
-  //           Swal.fire({
-  //             title: 'ไม่สามารถเข้าสู่ระบบได้',
-  //             text: errorMessage,
-  //             icon: 'error',
-  //             timer: 2000,
-  //           });
-
-  //           this.resetLoginState();
-  //         },
-  //         complete: () => {
-  //           // ไม่ต้อง reset loading state ที่นี่
-  //           // เพราะจะถูก handle ใน next หรือ error แล้ว
-  //         },
-  //       });
-  //   } catch (error: any) {
-  //     this.resetLoginState();
-  //     Swal.fire({
-  //       title: 'เกิดข้อผิดพลาด',
-  //       text: error.message,
-  //       icon: 'error',
-  //     });
-  //   }
-  // }
-
+  
 
   async signInWithRFID(rfidValue: string) {
     if (this.isLoading) return;
@@ -389,37 +304,6 @@ export class SignInComponent {
 
 
 
-  private async showAccountPickerPopup(accounts: any[]): Promise<number | null> {
-    // ทำ option: key = userId, value = label
-    const inputOptions: Record<string, string> = {};
-    for (const a of accounts) {
-      const empNo = a.empNo ?? '-';
-      const role = String(a.role ?? '-').toUpperCase();
-      const sub = a.subSectionName ?? '-';
-      inputOptions[String(a.userId)] = `${empNo}  |  ${role}  |  ${sub}`;
-    }
-  
-    const result = await Swal.fire({
-      title: 'Select Account',
-      text: 'พบหลายบัญชีใน RFID นี้ กรุณาเลือกบัญชีที่ต้องการเข้าสู่ระบบ',
-      input: 'radio',
-      inputOptions,
-      inputValidator: (value) => {
-        if (!value) return 'กรุณาเลือกบัญชีก่อน';
-        return null;
-      },
-      showCancelButton: true,
-      confirmButtonText: 'Sign in',
-      cancelButtonText: 'ยกเลิก',
-      allowOutsideClick: false,
-    });
-  
-    if (!result.isConfirmed) return null;
-    return Number(result.value);
-  }
-  
-  
-
   private openAccountModal(rfidValue: string, accounts: any[]) {
     this.rfidPendingValue = rfidValue;
     this.rfidAccounts = accounts || [];
@@ -433,44 +317,6 @@ export class SignInComponent {
     this.resetLoginState(); // ถ้าปิด modal ให้ reset (แล้วกลับไป focus RFID)
   }
   
-  onSearchAccount() {
-    const q = (this.searchAccount || '').trim().toLowerCase();
-    if (!q) {
-      this.filteredAccounts = [...this.rfidAccounts];
-      return;
-    }
-    this.filteredAccounts = this.rfidAccounts.filter((a: any) => {
-      const empNo = String(a.empNo ?? '').toLowerCase();
-      const role = String(a.role ?? '').toLowerCase();
-      const sub = String(a.subSectionName ?? '').toLowerCase();
-      return empNo.includes(q) || role.includes(q) || sub.includes(q);
-    });
-  }
-  
-  selectAccount(userId: number) {
-    this.selectedUserId = userId;
-  }
-  
-  async confirmAccountLogin() {
-    if (!this.selectedUserId) {
-      Swal.fire({
-        title: 'เลือกบัญชี',
-        text: 'กรุณาเลือกบัญชีก่อนเข้าสู่ระบบ',
-        icon: 'warning',
-        timer: 1500,
-        showConfirmButton: false,
-      });
-      return;
-    }
-  
-    const rfId = this.rfidPendingValue;
-    const userId = this.selectedUserId;
-  
-    this.myModal.close();
-    await this.loginByRfidAndUserId(rfId, userId);
-  }
-  
-
 
   async pickAndLogin(userId: number) {
     if (this.isPickingAccount) return;     // กัน double click
@@ -490,20 +336,7 @@ export class SignInComponent {
   }
   
 
-
-
 }
-
-
-
-
-
-
-
-
-
-
-
 
 
 //landing page for condition else in sig-in.html

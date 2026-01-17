@@ -224,11 +224,7 @@
   letter-spacing: .15px;
 }
 
-/* ทำคำว่า Wait/Work/Total ดูเป็น “label” นิ่มๆ */
-.tg-brace-label::first-letter,
-.tg-total-label::first-letter{
-  /* ไม่บังคับ - แค่กันโดด */
-}
+
 
 /* ตัวเลขใน pill (เวลา + %) */
 .tg-pill{
@@ -437,4 +433,141 @@
   border-radius: 8px;
   font-size: 13px;
   line-height: 1.6;
+}
+
+
+
+
+
+/* =========================
+   Matrix: Mobile responsive
+   ========================= */
+
+/* ให้ scroll แนวนอนได้แน่นอนบนมือถือ */
+.matrix-scroll{
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* มือถือ: ลดความกว้างคอลัมน์ Call From */
+@media (max-width: 576px){
+  /* คุมความกว้างคอลัมน์แรก (ทั้งหัวและแถว) */
+  .matrix-head-from,
+  .matrix-table tbody th.sticky-col{
+    min-width: 140px !important;   /* จากเดิม 240px */
+    max-width: 140px !important;
+    width: 140px !important;
+  }
+
+  /* กันข้อความยาวล้นใน Call From */
+  .matrix-table tbody th.sticky-col{
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  /* ให้คอลัมน์ Call To มีพื้นที่ขั้นต่ำเสมอ */
+  .matrix-table thead th,
+  .matrix-table tbody td{
+    min-width: 140px;              /* คอลัมน์ Call To แต่ละช่อง */
+  }
+
+  /* ลด padding ให้ตารางไม่บวมบนจอเล็ก */
+  .matrix-table thead th{
+    padding: 10px 10px;
+  }
+  .matrix-table tbody th,
+  .matrix-table tbody td{
+    padding: 10px 10px;
+  }
+
+  /* ลดเงาของ sticky ให้ไม่กินพื้นที่สายตา */
+  .sticky-col{
+    box-shadow: 4px 0 10px rgba(15, 23, 42, 0.05);
+  }
+}
+
+/* จอเล็กระดับ tablet: ลดลงนิด */
+@media (min-width: 577px) and (max-width: 992px){
+  .matrix-head-from,
+  .matrix-table tbody th.sticky-col{
+    min-width: 180px !important;
+    max-width: 180px !important;
+    width: 180px !important;
+  }
+}
+
+
+
+/* ===== Relation dropdown (Call To) ===== */
+
+
+
+
+/* ===== prettier Call To dropdown ===== */
+.rel-filter2{
+  width: 320px;
+  padding: 12px 14px;
+  border-radius: 16px;
+  background: #ffffff;
+  border: 1px solid rgba(15,23,42,.10);
+  box-shadow: 0 10px 26px rgba(15, 23, 42, 0.08);
+}
+
+.rel-filter2__label{
+  font-size: 12px;
+  font-weight: 900;
+  color: #0f172a;
+  letter-spacing: .25px;
+  margin-bottom: 8px;
+}
+
+.rel-filter2__control{
+  position: relative;
+}
+
+.rel-filter2__select{
+  appearance: none;              /* ซ่อนลูกศรเดิม */
+  -webkit-appearance: none;
+  -moz-appearance: none;
+
+  width: 100%;
+  height: 44px;
+  padding: 0 44px 0 14px;        /* เว้นที่ให้ไอคอน */
+  border-radius: 14px;
+
+  background: #f8fafc;           /* slate-50 */
+  border: 1px solid rgba(15,23,42,.10);
+
+  font-weight: 800;
+  color: #0f172a;
+
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.7);
+}
+
+.rel-filter2__chev{
+  position: absolute;
+  right: 14px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 12px;
+  color: rgba(15,23,42,.55);
+  pointer-events: none;
+}
+
+/* hover/focus ให้ดูนุ่ม */
+.rel-filter2__select:hover{
+  border-color: rgba(15,23,42,.18);
+  background: #ffffff;
+}
+
+.rel-filter2__select:focus{
+  border-color: rgba(37,99,235,.45);
+  box-shadow: 0 0 0 4px rgba(37,99,235,.12);
+  background: #ffffff;
+}
+
+/* มือถือ */
+@media (max-width: 576px){
+  .rel-filter2{ width: 100%; }
 }

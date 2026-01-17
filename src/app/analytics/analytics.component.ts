@@ -97,6 +97,15 @@ export class AnalyticsComponent {
   avgFromData: ChartData<'bar'> = { labels: [], datasets: [] };
   avgToData: ChartData<'bar'> = { labels: [], datasets: [] };
 
+
+  /** relation chart: CallFrom -> selected CallTo */
+  relationCallToOptions: string[] = [];
+  selectedCallToForRelation: string = '';
+  relationFromToData: ChartData<'bar'> = { labels: [], datasets: [] };
+
+
+
+
   startDate: string = ''; // yyyy-MM-dd
   endDate: string = '';   // yyyy-MM-dd
 
@@ -105,13 +114,13 @@ export class AnalyticsComponent {
 
   showDescFrom = false;
   showDescTo = false;
-
+  showDescrelated = false;
 
 
   chartOptions: ChartConfiguration<'bar'>['options'] = {
     responsive: true,
     maintainAspectRatio: false, // ✅ ให้คุมความสูงด้วย div ได้
-    layout: { padding: { top: 28, right: 18, left: 10, bottom: 0 } },
+    layout: { padding: { top: 46, right: 18, left: 10, bottom: 0 } },
     plugins: {
       legend: {
         position: 'top',
@@ -167,6 +176,22 @@ export class AnalyticsComponent {
       y: {
         stacked: true,
         beginAtZero: true,
+        // ✅ เพิ่ม headroom ให้แท่งสูงๆ ไม่ชนขอบบน (ช่วยทั้งกราฟ)
+        grace: '18%',                 // Chart.js v3+ ใช้ได้
+        suggestedMax: (ctx: any) => {
+          // ctx.chart.data.datasets[0/1] = work/wait (stacked)
+          const ds0 = (ctx?.chart?.data?.datasets?.[0]?.data || []) as any[];
+          const ds1 = (ctx?.chart?.data?.datasets?.[1]?.data || []) as any[];
+
+          let max = 0;
+          for (let i = 0; i < Math.max(ds0.length, ds1.length); i++) {
+            const v = Number(ds0[i] ?? 0) + Number(ds1[i] ?? 0);
+            if (v > max) max = v;
+          }
+
+          // เผื่ออีก ~12% + 5 นาที กัน label ชน
+          return Math.ceil(max * 1.12 + 5);
+        },
         ticks: {
           callback: (v) => this.formatMinAxis(Number(v)),
           font: { size: 11 }
@@ -255,7 +280,22 @@ export class AnalyticsComponent {
     this.avgFromData = this.buildStackedData(byFrom);
     this.avgToData   = this.buildStackedData(byTo);
     // ✅ สร้าง matrix จาก filteredRows
-  this.matrix = this.buildMatrix(this.filteredRows);
+    this.matrix = this.buildMatrix(this.filteredRows);
+
+     // ✅ NEW: prepare dropdown CallTo options for relation chart
+    this.relationCallToOptions = Array.from(
+      new Set(this.filteredRows.map(r => (r.callTo || 'UNKNOWN').trim()))
+    ).filter(Boolean).sort((a,b)=>a.localeCompare(b));
+
+    // ✅ auto select if empty or not exist in option
+    if (!this.selectedCallToForRelation || !this.relationCallToOptions.includes(this.selectedCallToForRelation)) {
+      this.selectedCallToForRelation = this.relationCallToOptions[0] || '';
+    }
+
+
+    // ✅ build relation chart
+    this.buildRelationChart();
+
   }
 
   private buildStackedData(items: AvgItem[]): ChartData<'bar'> {
@@ -314,8 +354,9 @@ export class AnalyticsComponent {
             },
             anchor: 'end',        // ✅ เกาะ “ปลายแท่ง”
             align: 'end',         // ✅ วางตรงหัวแท่ง
-            offset: 1,            // ✅ ชิดหัวแท่ง (ปรับ 0-3 ได้)
+            offset: 6,            // ✅ ชิดหัวแท่ง (ปรับ 0-3 ได้)
             clamp: true,
+            clip: false,
             color: '#0f172a',
             font: { weight: 800, size: 11 }
           }
@@ -610,6 +651,59 @@ private buildInsightFromRows(rows: ExportRow[]) {
     workPct
   };
 }
+
+
+
+
+private groupAveragePair(rows: ExportRow[], fixedCallTo: string): AvgItem[] {
+  const map = new Map<string, { wait: number[]; work: number[]; total: number[] }>();
+
+  for (const r of rows) {
+    const to = (r.callTo || 'UNKNOWN').trim();
+    if (to !== fixedCallTo) continue;
+
+    const from = (r.callFrom || 'UNKNOWN').trim();
+
+    const t = this.hhmmssToMin(r.totalTime);
+    const w = this.hhmmssToMin(r.waitTime);
+    const k = this.hhmmssToMin(r.workTime);
+
+    if (!Number.isFinite(t) && !Number.isFinite(w) && !Number.isFinite(k)) continue;
+
+    if (!map.has(from)) map.set(from, { wait: [], work: [], total: [] });
+    const b = map.get(from)!;
+
+    if (Number.isFinite(w)) b.wait.push(w);
+    if (Number.isFinite(k)) b.work.push(k);
+    if (Number.isFinite(t)) b.total.push(t);
+  }
+
+  return Array.from(map.entries())
+    .map(([label, v]) => {
+      const avgWait = this.avg(v.wait);
+      const avgWork = this.avg(v.work);
+      const avgTotal = v.total.length ? this.avg(v.total) : +(avgWait + avgWork).toFixed(2);
+
+      return { label, avgTotal, avgWait, avgWork };
+    })
+    .sort((a, b) => b.avgTotal - a.avgTotal);
+}
+
+buildRelationChart() {
+  const to = (this.selectedCallToForRelation || '').trim();
+  if (!to) {
+    this.relationFromToData = { labels: [], datasets: [] };
+    return;
+  }
+
+  // ✅ group by callFrom under selected callTo
+  const items = this.groupAveragePair(this.filteredRows, to);
+
+  // ✅ เอาแค่ top 8 เหมือนกราฟอื่น (ปรับได้)
+  const top = items.slice(0, 8);
+  this.relationFromToData = this.buildStackedData(top);
+}
+
 
 
 }

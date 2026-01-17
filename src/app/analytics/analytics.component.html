@@ -175,6 +175,9 @@
           
         </div>
 
+
+
+
         <div class="desc-toggle">
           <button class="btn btn-link p-0" (click)="showDescTo = !showDescTo">
             <i class="fas" [class.fa-chevron-down]="!showDescTo"
@@ -212,7 +215,106 @@
           <p class="text-muted">- Support manpower planning and workload balancing</p>
 
         </div>
+
+        <hr class="my-4"/>
+
+        <!-- ✅ Relation drilldown (NEW) -->
+        <div class="chart-card mt-3" *ngIf="!isLoading && filteredRows.length">
+
+         <!-- Header -->
+        <div class="chart-title">
+          Call From related to selected Call To
+          <span class="text-muted" style="font-size:12px; font-weight:600;">
+            (avg time per CallFrom → selected CallTo)
+          </span>
+        </div>
+
+        <!-- Dropdown row -->
+        <div class="rel-filter2">
+          <div class="rel-filter2__label">Call To</div>
         
+          <div class="rel-filter2__control">
+            <select
+              class="form-select form-select-sm rel-filter2__select"
+              [(ngModel)]="selectedCallToForRelation"
+              (change)="buildRelationChart()"
+            >
+              <option value="">-- Select Call To --</option>
+              <option *ngFor="let c of relationCallToOptions" [value]="c">{{ c }}</option>
+            </select>
+        
+            <i class="fas fa-chevron-down rel-filter2__chev"></i>
+          </div>
+        </div>
+        
+        
+
+
+          <div class="chart-box mt-2" *ngIf="selectedCallToForRelation && relationFromToData.labels?.length">
+            <div class="chart-scroll">
+              <div class="chart-inner" [style.width]="getChartWidth(relationFromToData.labels)">
+                <canvas baseChart
+                        [type]="'bar'"
+                        [data]="relationFromToData"
+                        [options]="chartOptions">
+                </canvas>
+              </div>
+            </div>
+          </div>
+
+          <div class="alert alert-light mt-3"
+              *ngIf="selectedCallToForRelation && !relationFromToData.labels?.length"
+              style="border: 1px dashed rgba(15,23,42,.2);">
+            ไม่พบความสัมพันธ์ CallFrom → <b>{{ selectedCallToForRelation }}</b> ในช่วงที่กรองไว้
+          </div>
+
+          <div class="text-muted mt-2" *ngIf="!selectedCallToForRelation" style="font-size:12px;">
+            เลือก Call To เพื่อดูว่ามี Call From ไหน “ส่งงานให้” และใช้เวลาเฉลี่ยเท่าไร (เฉพาะคู่นั้น)
+          </div>
+
+        </div>
+
+        
+        <div class="desc-toggle">
+          <button class="btn btn-link p-0" (click)="showDescrelated = !showDescrelated">
+            <i class="fas" [class.fa-chevron-down]="!showDescrelated"
+                            [class.fa-chevron-up]="showDescrelated"></i>
+            {{ showDescTo ? 'Hide description' : 'Show description' }}
+          </button>
+        </div>
+        
+        <div class="desc-box" *ngIf="showDescrelated">
+          <p><b>avg time per CallFrom → selected CallTo</b></p>
+          <p>
+            กราฟนี้ใช้แสดง เวลาเฉลี่ยของงานที่ถูกส่งมาจากแต่ละ Process (Call From)
+            ไปยัง Process ปลายทางที่เลือก (Call To) เพื่อวิเคราะห์ความสัมพันธ์เชิงเวลาเฉพาะคู่งานนั้น
+          </p>
+          <p>
+            เวลาที่แสดงเป็นค่าเฉลี่ยของระยะเวลาที่ใช้จริง
+            ตั้งแต่งานถูกส่งต่อจาก Call From ไปยัง Call To จนงานเสร็จสิ้น
+          </p>
+          <p>ข้อมูลนี้ช่วยให้สามารถ:</p>
+          <p>- วิเคราะห์ว่า Call From ใด ส่งงานให้ Call To ที่เลือกบ่อยและใช้เวลานาน</p>
+          <p>- ตรวจสอบ ต้นตอของความล่าช้า ที่ส่งผลต่อ Process ปลายทาง</p>
+          <p>- ระบุความเสี่ยงของการเกิด Bottleneck ระหว่าง Process</p>
+          <p>- ใช้ประกอบการปรับปรุงขั้นตอนงาน หรือการกระจายภาระงานระหว่างหน่วยงาน</p>
+
+
+          <p class="text-muted">
+            This chart shows the average processing time of jobs sent from each source process (Call From)
+            to the selected destination process (Call To), focusing on that specific relationship.
+          </p>
+          <p class="text-muted">
+            The displayed time represents the average duration from job handover by the source process
+            until completion by the selected destination.
+          </p>
+          <p class="text-muted">This insight helps to:</p>
+          <p class="text-muted">- Identify which source processes contribute most to the selected destination’s workload</p>
+          <p class="text-muted">- Detect potential sources of delay affecting the selected process</p>
+          <p class="text-muted">- Analyze bottlenecks between specific process pairs</p>
+          <p class="text-muted">- Support workflow optimization and workload balancing decisions</p>
+
+        </div>
   
       </div>
   
@@ -221,6 +323,8 @@
       </div>
   
     </div>
+
+    <hr class="my-4"/>
 
 
     <!-- ✅ Matrix -->
