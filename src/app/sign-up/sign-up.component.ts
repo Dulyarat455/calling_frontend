@@ -851,55 +851,40 @@ export class SignUpComponent {
 
 
   downloadExcel() {
-    if (!this.users || this.users.length === 0) {
-      Swal.fire('Info', 'ไม่มีข้อมูลให้ Export', 'info');
-      return;
-    }
-    
-      // ✅ แจ้งกำลังเตรียมไฟล์
-  Swal.fire({
-    title: 'กำลังเตรียมไฟล์...',
-    text: 'โปรดรอสักครู่',
-    allowOutsideClick: false,
-    didOpen: () => Swal.showLoading(),
-  });
-
+    Swal.fire({
+      title: 'กำลังเตรียมไฟล์...',
+      text: 'โปรดรอสักครู่',
+      allowOutsideClick: false,
+      didOpen: () => Swal.showLoading(),
+    });
+  
     const payload = {
       userRole: 'admin',
-      rows: this.users.map(u => ({
-        empNo: u.empNo,
-        name: u.name,
-        role: u.role,
-        rfId: u.rfId,
-        status: u.status,
-        groupName: u.groupName,
-        sectionName: u.sectionName,
-        subSectionName: u.subSectionName,
-        password: u.password,
-      })),
+      q: (this.searchEmpNo || '').trim(),
+  
+      // ✅ ส่ง filter เพิ่มไปหลังบ้าน
+      groupId: this.selectedGroupId,         // number | null
+      sectionId: this.selectedSectionId,     // number | null
+      subSectionId: this.selectedSubSectionId, // number | null
+  
+      accountState: 'use',
     };
   
     this.http.post(
-      config.apiServer + '/api/user/exportExcelUsers',
+      config.apiServer + '/api/user/exportExcelUsersByFilter',
       payload,
-      { responseType: 'blob' } // ✅ รับไฟล์
+      { responseType: 'blob' }
     ).subscribe({
       next: (blob: Blob) => {
-        // ปิด loading
         Swal.close();
-
+  
         const url = window.URL.createObjectURL(blob);
         const a = document.createElement('a');
         a.href = url;
-  
-        // ตั้งชื่อไฟล์ง่ายๆ
         a.download = `users-${new Date().toISOString().slice(0,10)}.xlsx`;
         a.click();
-  
         window.URL.revokeObjectURL(url);
-
-
-        // ✅ แจ้งโหลดสำเร็จ
+  
         Swal.fire({
           icon: 'success',
           title: 'Download สำเร็จ',
@@ -907,13 +892,14 @@ export class SignUpComponent {
           timer: 1500,
           showConfirmButton: false,
         });
-
       },
       error: (err) => {
+        Swal.close();
         Swal.fire('Error', err.error?.message || err.message || 'Export failed', 'error');
       }
     });
   }
+  
   
 
   remove(item: UsersRow){

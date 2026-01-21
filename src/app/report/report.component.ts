@@ -606,73 +606,43 @@ export class ReportComponent {
   exportExcel() {
     if (this.isLoading) return;
   
-    // ✅ snapshot ตามหน้าปัจจุบัน (applied + filteredRows)
-    this.lastView = {
-      applied: { ...this.applied },
-      rows: [...this.filteredRows],
-      updatedAt: Date.now(),
-    };
-  
-    const viewRows = this.lastView.rows;
-  
-    if (!viewRows.length) {
-      Swal.fire('No data', 'ไม่มีข้อมูลสำหรับ Export', 'info');
-      return;
-    }
-  
-    const exportRows: ExportRow[] = viewRows.map((r) => this.mapToExportRow(r));
-  
-    const payload = {
-      filters: { ...this.lastView.applied }, // ✅ ใช้ applied ที่หน้าใช้อยู่จริง
-      rows: exportRows,                      // ✅ flatten + calculate แล้ว
-      exportedAt: new Date().toISOString(),
-      count: exportRows.length,
-    };
+    // ใช้ applied filters จากหน้าจอจริง
+    const payload = { filters: { ...this.applied } };
   
     this.isLoading = true;
   
-    this.http
-      .post(config.apiServer + '/api/report/exportExcel', payload, {
-        responseType: 'blob',
-        observe: 'response', // ✅ เพื่ออ่าน header (filename)
-      })
-      .subscribe({
-        next: (resp) => {
-          const blob = resp.body as Blob;
+    this.http.post(config.apiServer + '/api/report/exportExcel', payload, {
+      responseType: 'blob',
+      observe: 'response',
+    }).subscribe({
+      next: (resp) => {
+        const blob = resp.body as Blob;
   
-          // ✅ ดึงชื่อไฟล์จาก header ถ้ามี
-          const cd = resp.headers.get('content-disposition') || '';
-          const match = cd.match(/filename="?([^"]+)"?/i);
-          const serverFileName = match?.[1];
+        const cd = resp.headers.get('content-disposition') || '';
+        const match = cd.match(/filename="?([^"]+)"?/i);
+        const serverFileName = match?.[1];
   
-          const fallbackName =
-            `report-${new Date().toISOString().slice(0, 19).replace(/[:T]/g, '-')}.xlsx`;
+        const fallbackName =
+          `report-${new Date().toISOString().slice(0, 19).replace(/[:T]/g, '-')}.xlsx`;
   
-          const fileName = serverFileName || fallbackName;
+        const fileName = serverFileName || fallbackName;
   
-          // ✅ download
-          const url = window.URL.createObjectURL(blob);
-          const a = document.createElement('a');
-          a.href = url;
-          a.download = fileName;
-          a.click();
-          window.URL.revokeObjectURL(url);
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = fileName;
+        a.click();
+        window.URL.revokeObjectURL(url);
   
-          this.isLoading = false;
-        },
-        error: (err) => {
-          this.isLoading = false;
-  
-          // บางที error จะเป็น blob → แปลงเป็นข้อความก่อน (optional)
-          const msg =
-            err?.error?.message ||
-            err?.message ||
-            'Export failed';
-  
-          Swal.fire('Error', msg, 'error');
-        },
-      });
+        this.isLoading = false;
+      },
+      error: (err) => {
+        this.isLoading = false;
+        Swal.fire('Error', err?.error?.message || err.message || 'Export failed', 'error');
+      },
+    });
   }
+  
   
   
 

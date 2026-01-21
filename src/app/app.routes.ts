@@ -14,6 +14,7 @@ import { FlowJobComponent } from './flow-job/flow-job.component';
 import { ReportComponent } from './report/report.component';
 import { NavbarChartComponent } from './navbar-chart/navbar-chart.component';
 import { AnalyticsComponent } from './analytics/analytics.component';
+import { Analytics2Component } from './analytics2/analytics2.component';
 
 
 export const routes: Routes = [
@@ -73,6 +74,10 @@ export const routes: Routes = [
   {
     path: 'analytic',
     component: AnalyticsComponent
+  },
+  {
+    path: 'analytic2',
+    component: Analytics2Component
   },
   {
     path: '404',

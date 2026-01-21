@@ -1,0 +1,138 @@
+<div class="analytics2-page">
+    <div class="card-header d-flex justify-content-between align-items-center">
+      <b>Analytics 2</b>
+    </div>
+  
+    <div class="card-body mt-3">
+  
+      <!-- ===== BIG FILTERS ===== -->
+      <div class="row g-3 align-items-end mb-3">
+  
+        <div class="col-md-3">
+          <label class="form-label mb-1">From date</label>
+          <input type="date" class="form-control" [(ngModel)]="fromDate" />
+        </div>
+  
+        <div class="col-md-3">
+          <label class="form-label mb-1">To date</label>
+          <input type="date" class="form-control" [(ngModel)]="toDate" />
+        </div>
+  
+        <div class="col-md-3">
+          <label class="form-label mb-1">Group</label>
+          <select class="form-select" [(ngModel)]="selectedLine">
+            <option value="ALL">All</option>
+            <option value="LAM">Lamination</option>
+            <option value="GEN">General</option>
+            <option value="STA">Stator</option>
+          </select>
+        </div>
+  
+        <div class="col-md-3">
+          <label class="form-label mb-1">Time type</label>
+          <select class="form-select" [(ngModel)]="selectedTimeType">
+            <option value="WAIT">Wait time</option>
+            <option value="WORK">Work time</option>
+            <option value="TOTAL">Total time</option>
+          </select>
+        </div>
+  
+        <div class="col-12 d-flex gap-2 mt-2">
+          <button class="btn btn-primary" type="button" (click)="applyFilters()">
+            <i class="fas fa-search me-2"></i>Search
+          </button>
+          <button class="btn btn-outline-secondary" type="button" (click)="resetFilters()">
+            Reset
+          </button>
+        </div>
+      </div>
+  
+      <div *ngIf="isLoading" class="text-muted">
+        <i class="fas fa-spinner fa-spin me-2"></i>Loading...
+      </div>
+  
+      <div *ngIf="!isLoading && filteredRows.length">
+  
+        <!-- ===== PART 1: AVG CallTo ===== -->
+        <div class="chart-card">
+          <div class="chart-title">Part 1: Avg by Call To ({{ timeTypeLabel(selectedTimeType) }})</div>
+          <div class="chart-box">
+            <div class="chart-scroll">
+              <div class="chart-inner" [style.width]="getChartWidth(avgCallToData.labels)">
+                <canvas baseChart [type]="'bar'" [data]="avgCallToData" [options]="chartOptions"></canvas>
+              </div>
+            </div>
+          </div>
+        </div>
+  
+        <!-- ===== PART 2: TOTAL CallTo ===== -->
+        <div class="chart-card">
+          <div class="chart-title">Part 2: Total by Call To ({{ timeTypeLabel(selectedTimeType) }})</div>
+          <div class="chart-box">
+            <div class="chart-scroll">
+              <div class="chart-inner" [style.width]="getChartWidth(totalCallToData.labels)">
+                <canvas baseChart [type]="'bar'" [data]="totalCallToData" [options]="chartOptions"></canvas>
+              </div>
+            </div>
+          </div>
+        </div>
+  
+        <!-- ===== PART 3: CallFrom related to selected CallTo (2 graphs) ===== -->
+        <div class="chart-card">
+  
+          <div class="d-flex flex-column align-items-start gap-2 mb-2">
+            <div class="chart-title mb-0">
+              Part 3: Call From related to selected Call To
+              <span class="text-muted" style="font-size:12px; font-weight:600;">
+                (CallFrom → selected CallTo)
+              </span>
+            </div>
+  
+            <!-- dropdown อยู่บรรทัดใหม่ + ชิดซ้าย -->
+            <div class="callto-filter">
+              <label class="form-label mb-1">Call To</label>
+              <select class="form-select form-select-sm"
+                      [(ngModel)]="selectedCallTo"
+                      (change)="onSelectedCallToChange()">
+                <option *ngFor="let c of callToOptions" [value]="c">{{ c }}</option>
+              </select>
+            </div>
+          </div>
+  
+        
+  
+       
+  
+          <!-- 3.2 AVG callFrom -->
+          <div class="subchart-title">3.1 Avg ({{ timeTypeLabel(selectedTimeType) }})</div>
+          <div class="chart-box">
+            <div class="chart-scroll">
+              <div class="chart-inner" [style.width]="getChartWidth(avgCallFromBySelectedCallToData.labels)">
+                <canvas baseChart [type]="'bar'" [data]="avgCallFromBySelectedCallToData" [options]="chartOptions"></canvas>
+              </div>
+            </div>
+          </div>
+
+          <hr class="my-3"/>
+
+            <!-- 3.1 TOTAL callFrom -->
+            <div class="subchart-title">3.2 Total ({{ timeTypeLabel(selectedTimeType) }})</div>
+            <div class="chart-box">
+              <div class="chart-scroll">
+                <div class="chart-inner" [style.width]="getChartWidth(totalCallFromBySelectedCallToData.labels)">
+                  <canvas baseChart [type]="'bar'" [data]="totalCallFromBySelectedCallToData" [options]="chartOptions"></canvas>
+                </div>
+              </div>
+            </div>
+  
+        </div>
+  
+      </div>
+  
+      <div *ngIf="!isLoading && !filteredRows.length" class="alert alert-warning">
+        ไม่มีข้อมูลสำหรับเงื่อนไขที่เลือก
+      </div>
+  
+    </div>
+  </div>
+  
