@@ -246,7 +246,7 @@ export class AnalyticsComponent {
     this.applyLineFilter();
   }
 
-  private applyLineFilter() {
+ applyLineFilter() {
     const gid = this.getGroupIdByLine(this.selectedLine);
 
     // ✅ 1) filter ตาม line ก่อน

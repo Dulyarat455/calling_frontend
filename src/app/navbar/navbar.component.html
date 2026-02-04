@@ -48,17 +48,7 @@
         Chart
       </a>
     </li>
-    <li class="nav-item">
-      <a
-        [routerLink]="['/analytic']"
-        class="nav-link nav-tab"
-        routerLinkActive="active border-bottom fw-semibold text-dark"
-        [routerLinkActiveOptions]="{ exact: true }"
-        style="--bs-border-color: black;"
-      >
-      analytic
-      </a>
-    </li>
+
     <li class="nav-item">
       <a
         [routerLink]="['/analytic2']"
@@ -67,9 +57,22 @@
         [routerLinkActiveOptions]="{ exact: true }"
         style="--bs-border-color: black;"
       >
-      analytic2
+      Analytic
       </a>
     </li>
+
+    <li class="nav-item">
+      <a
+        [routerLink]="['/analytic']"
+        class="nav-link nav-tab"
+        routerLinkActive="active border-bottom fw-semibold text-dark"
+        [routerLinkActiveOptions]="{ exact: true }"
+        style="--bs-border-color: black;"
+      >
+      Analytic2
+      </a>
+    </li>
+  
   }
 </ul>
 

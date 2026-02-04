@@ -140,7 +140,7 @@ export class Analytics2Component implements OnInit {
     this.buildPart3();
   }
 
-  private applyBigFiltersAndBuildAll() {
+ applyBigFiltersAndBuildAll() {
     // 1) group filter
     const gid = this.getGroupIdByLine(this.selectedLine);
     let rows = gid
@@ -260,50 +260,100 @@ export class Analytics2Component implements OnInit {
     },
   };
 
-  private buildSingleBarData(items: { label: string; value: number }[], datasetLabel: string): ChartData<'bar'> {
-    const top = items.slice(0, 12); // ปรับตามใจ
+  private buildSingleBarData(
+    items: { label: string; value: number; count: number }[],
+    datasetLabel: string
+  ): ChartData<'bar'> {
+  
+    const top = items.slice(0, 12);
+  
     return {
-      labels: top.map((x) => x.label),
+      labels: top.map(x => x.label),
       datasets: [
         {
           label: datasetLabel,
-          data: top.map((x) => x.value),
+          data: top.map(x => ({
+            x: x.label,
+            y: x.value,
+            count: x.count
+          })) as any,
+  
           borderRadius: 10,
           borderSkipped: false,
           barThickness: 64,
           categoryPercentage: 0.9,
           barPercentage: 0.95,
-        },
-      ],
+  
+          datalabels: {
+            labels: {
+  
+              /* ===== เวลา (หัวแท่ง) ===== */
+              value: {
+                anchor: 'end',
+                align: 'end',
+                offset: 2,
+                color: '#0f172a',
+                font: { weight: 900, size: 13 },
+                formatter: (v: any) => {
+                  const y = Number(v?.y ?? 0);
+                  return y ? this.formatMinShort(y) : '';
+                }
+              },
+  
+              /* ===== จำนวน job (ในแท่ง) ===== */
+              count: {
+                anchor: 'center',
+                align: 'center',
+                color: '#334155', // slate-700
+                font: { weight: 800, size: 12 },
+                formatter: (v: any) => {
+                  const n = Number(v?.count ?? 0);
+                  if (!n) return '';
+                  return `n=${n}`;
+                }
+              }
+  
+            }
+          }
+        }
+      ]
     };
   }
+  
 
   private groupAgg(
     rows: ExportRow[],
     key: 'callTo' | 'callFrom',
     mode: 'AVG' | 'SUM',
     timeType: TimeType
-  ): { label: string; value: number }[] {
+  ): { label: string; value: number; count: number }[] {
+  
     const map = new Map<string, number[]>();
-
+  
     for (const r of rows) {
       const k = (r[key] || 'UNKNOWN').trim();
       const v = this.pickMin(r, timeType);
       if (!Number.isFinite(v) || v <= 0) continue;
-
+  
       if (!map.has(k)) map.set(k, []);
       map.get(k)!.push(v);
     }
-
+  
     const items = Array.from(map.entries()).map(([label, arr]) => {
       const value = mode === 'SUM' ? this.sum(arr) : this.avg(arr);
-      return { label, value };
+      return {
+        label,
+        value,
+        count: arr.length // ✅ จำนวน job
+      };
     });
-
-    // sort มาก -> น้อย
-    items.sort((a, b) => b.value - a.value);
+  
+    // items.sort((a, b) => b.value - a.value);
+    items.sort((a, b) => a.label.localeCompare(b.label));
     return items;
   }
+  
+
 
   private pickMin(r: ExportRow, t: TimeType): number {
     if (t === 'WAIT') return r.waitMin;
